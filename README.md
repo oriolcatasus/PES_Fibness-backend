@@ -1,17 +1,29 @@
 # PES_Fibness-backend
 
-Integrantes
+### Integrantes
 
-1.- Alejandro, Kenny
+1. Alejandro, Kenny
+2. Catasús I Llena , Oriol 
+3. Gesa Pascual, Arnau 
+4. Hossain, Tanvir 
+5. Maynou Yelamos, Marc
+6. Pascual Garcia, Sergio
+7. Ventura Herce, Adrià
 
-2.- Catasús I Llena , Oriol 
+### Setup
 
-3.- Gesa Pascual, Arnau 
+Requerimientos:
+- git
+- node
+- npm
 
-4.- Hossain, Tanvir 
 
-5.- Maynou Yelamos, Marc
+Para instalar las dependencias:
+```
+npm install
+```
 
-6.- Pascual Garcia, Sergio
-
-7.- Ventura Herce, Adrià
+Para iniciar el servidor:
+```
+node index.js
+```
