@@ -25,6 +25,5 @@ async function insert(table, values) {
 }
 
 module.exports = {
-    init,
     insert
 }
