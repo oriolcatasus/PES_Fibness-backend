@@ -15,7 +15,7 @@ const queries = {
 }
 
 async function insert(table, values) {
-    values.unshift("DEFAULT");  //serial id
+    //values.unshift("DEFAULT");  //serial id
     let query = {
         text: queries[table].insert,
         values
