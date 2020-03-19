@@ -5,6 +5,11 @@ const dbCtrl = require("../src/ctrls/dbCtrl");
 
 describe("userModel script", function() {
     describe("create function", function() {
+        beforeEach(async function() {
+            await dbCtrl.execute("DELETE FROM usuarios");
+        });
+
+
         it("should return user created correctly", async function() {
             let newUser = {
                 nombre: "Oriol",
@@ -12,11 +17,14 @@ describe("userModel script", function() {
                 email: "oriol@example.com",
             }
             await user.create(newUser);
-            let query = "SELECT nombre, password, email " +
-                        "FROM usuarios " + 
-                        "WHERE nombre = 'Oriol'";
-            let res = (await dbCtrl.execute(query)).rows[0];
-            
+
+            let query = {
+                text: "SELECT nombre, password, email \
+                        FROM usuarios \
+                        WHERE nombre = $1",
+                values: ["Oriol"],
+            };
+            let res = (await dbCtrl.execute(query)).rows[0];            
             assert.equal(newUser.nombre, res.nombre);
             assert.equal(newUser.password, res.password);
             assert.equal(newUser.email, newUser.email);
@@ -29,7 +37,17 @@ describe("userModel script", function() {
                 email: "oriol@example.com",
             }
             await user.create(newUser);
-            assert.rejects(async () => user.create(newUser), Error);
+            /*try {
+                await user.create(newUser);
+            } catch(e) {
+                //console.log(e.name);
+                console.log(e);
+                //console.log(e.toString);
+            }*/
+
+            assert.rejects(() => user.create(newUser), {
+                message: "duplicate key value violates unique constraint \"usuarios_nombre_key\""
+            });
         });
 
         it("should return not null constraint violation", async function() {
@@ -37,11 +55,10 @@ describe("userModel script", function() {
                 nombre: "Oriol",
                 email: "oriol@example.com",
             }
-            assert.rejects(async () => user.create(newUser), Error);
-        });
 
-        afterEach(async function() {
-            await dbCtrl.execute("DELETE FROM usuarios WHERE nombre = 'Oriol'");
-        })
+            assert.rejects(() => user.create(newUser), {
+                message: "null value in column \"password\" violates not-null constraint"
+            });
+        });
     });
 });
