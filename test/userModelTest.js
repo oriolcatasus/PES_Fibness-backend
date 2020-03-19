@@ -37,13 +37,6 @@ describe("userModel script", function() {
                 email: "oriol@example.com",
             }
             await user.create(newUser);
-            /*try {
-                await user.create(newUser);
-            } catch(e) {
-                //console.log(e.name);
-                console.log(e);
-                //console.log(e.toString);
-            }*/
 
             assert.rejects(() => user.create(newUser), {
                 message: "duplicate key value violates unique constraint \"usuarios_nombre_key\""
