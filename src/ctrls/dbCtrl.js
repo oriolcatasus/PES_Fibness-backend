@@ -8,18 +8,22 @@ const pool = new Pool({
     port: 5432
 });
 
-const queries = {
+/*const queries = {
     usuarios: {
-        insert: "INSERT INTO usuarios VALUES($1, $2, $3, $4)"
+        insert: "INSERT INTO usuarios VALUES($1, $2, $3, $4, $5, $6, $7, $8)"
     }
-}
+}*/
 
 async function insert(table, values) {
     //values.unshift("DEFAULT");  //serial id
-    let query = {
+    /*let query = {
         text: queries[table].insert,
         values
-    }
+    }*/
+    let query = {
+        text: "insert into usuarios(nombre,password,email) values($1,$2,$3)",
+        values: [values.nombre, values.password, values.email]
+    };
     let res = await pool.query(query);
     return res;
 }
