@@ -15,7 +15,7 @@ describe("userModel script", function() {
             let query = "SELECT nombre, password, email " +
                         "FROM usuarios " + 
                         "WHERE nombre = 'Oriol'";
-            let res = (await dbCtrl.select(query)).rows[0];
+            let res = (await dbCtrl.execute(query)).rows[0];
             
             assert.equal(newUser.nombre, res.nombre);
             assert.equal(newUser.password, res.password);
@@ -41,7 +41,7 @@ describe("userModel script", function() {
         });
 
         afterEach(async function() {
-            await dbCtrl.del("DELETE FROM usuarios WHERE nombre = 'Oriol'");
+            await dbCtrl.execute("DELETE FROM usuarios WHERE nombre = 'Oriol'");
         })
     });
 });

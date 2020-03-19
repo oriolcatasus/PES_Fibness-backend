@@ -5,7 +5,7 @@ async function create(user) {
         text: "INSERT INTO usuarios(nombre, password, email) values($1, $2, $3)",
         values: [user.nombre, user.password, user.email]
     }
-    await dbCtrl.insert(query);
+    await dbCtrl.execute(query);
 }
 
 

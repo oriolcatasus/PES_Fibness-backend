@@ -17,21 +17,11 @@ const pool = new Pool({
     port: 5432
 });
 
-async function select(query) {
-    return await pool.query(query);
-}
-
-async function insert(query) {
-    return await pool.query(query);
-}
-
-async function del(query) {
+async function execute(query) {
     return await pool.query(query);
 }
 
 
 module.exports = {
-    select,
-    insert,
-    del
+    execute
 }
