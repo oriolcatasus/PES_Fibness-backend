@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --color"
+    "test": "PGDATABASE=tests mocha --color"
   },
   "repository": {
     "type": "git",
