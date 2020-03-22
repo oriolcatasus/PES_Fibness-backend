@@ -22,14 +22,14 @@ create table elementos(
 	descripcion varchar(300),
 	idUsuario int,
 	primary key (idUsuario, nombre),
-	foreign key (idUsuario) references usuarios (id)
+	foreign key (idUsuario) references usuarios (id) on delete cascade
 );
 
 create table entrenamientos (
 	nombreElemento varchar(50),
 	idUsuario int,
 	primary key (nombreElemento, idUsuario),
-	foreign key (nombreElemento, idUsuario) references elementos (nombre, idUsuario)
+	foreign key (nombreElemento, idUsuario) references elementos (nombre, idUsuario) on delete cascade
 );
 
 create table actividades (
@@ -39,7 +39,7 @@ create table actividades (
 	nombreEntrenamiento varchar(50),
 	idUsuario int,
 	primary key (nombreEntrenamiento, idUsuario, nombre),
-	foreign key (nombreEntrenamiento, idUsuario) references entrenamientos (nombreElemento, idUsuario)
+	foreign key (nombreEntrenamiento, idUsuario) references entrenamientos (nombreElemento, idUsuario) on delete cascade
 );
 
 create table deportes (
@@ -47,7 +47,7 @@ create table deportes (
 	nombreActividad varchar(50),
 	idUsuario int,
 	primary key (nombreActividad, idUsuario, nombreEntrenamiento),
-	foreign key (nombreActividad, idUsuario, nombreEntrenamiento) references actividades (nombre, idUsuario, nombreEntrenamiento)
+	foreign key (nombreActividad, idUsuario, nombreEntrenamiento) references actividades (nombre, idUsuario, nombreEntrenamiento) on delete cascade
 );
 
 create table ejercicios (
@@ -58,5 +58,5 @@ create table ejercicios (
 	nombreActividad varchar(50),
 	idUsuario int,
 	primary key (nombreActividad, idUsuario, nombreEntrenamiento),
-	foreign key (nombreActividad, idUsuario, nombreEntrenamiento) references actividades (nombre, idUsuario, nombreEntrenamiento)
+	foreign key (nombreActividad, idUsuario, nombreEntrenamiento) references actividades (nombre, idUsuario, nombreEntrenamiento) on delete cascade
 );
