@@ -7,7 +7,7 @@ create table provincias(
 create table usuarios(
 	id serial,
 	tipoUsuario varchar(20) check (tipoUsuario in ('principiante', 'intermedio', 'avanzado')) default 'principiante',
-	nombre varchar(50) unique not null,
+	nombre varchar(50) not null,
 	password varchar(50) not null,
 	email varchar(100) unique not null,
 	fechaDeRegistro date default CURRENT_DATE,
