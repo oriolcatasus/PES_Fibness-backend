@@ -1,33 +1,26 @@
 const { Pool } = require('pg');
 
+const database = (function() {
+    let env = process.env.PGDATABASE;
+    if (env === undefined) {
+        return "fibness";
+    }
+    return env
+})();
+//console.log(database);
+
 const pool = new Pool({
     user: "fibness",
     host: "10.4.41.146",
-    database: "fibness",
+    database,
     password: "pes08",
     port: 5432
 });
 
-/*const queries = {
-    usuarios: {
-        insert: "INSERT INTO usuarios VALUES($1, $2, $3, $4, $5, $6, $7, $8)"
-    }
-}*/
-
-async function insert(table, values) {
-    //values.unshift("DEFAULT");  //serial id
-    /*let query = {
-        text: queries[table].insert,
-        values
-    }*/
-    let query = {
-        text: "insert into usuarios(nombre,password,email) values($1,$2,$3)",
-        values: [values.nombre, values.password, values.email]
-    };
-    let res = await pool.query(query);
-    return res;
+async function execute(query) {
+    return await pool.query(query);
 }
 
 module.exports = {
-    insert
+    execute
 }
