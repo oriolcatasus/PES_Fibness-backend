@@ -15,5 +15,15 @@ router.post('/', async (req, res) => {
     }
 });
 
+router.delete('/:id', async (req, res) => {
+    try {
+        await user.del(req.params.id);
+        res.sendStatus(200);
+    } catch (e) {
+        //console.error(e.message);
+        res.status(400).send(e.message);
+    }
+});
+
 
 module.exports = router;
