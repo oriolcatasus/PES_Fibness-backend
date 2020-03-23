@@ -54,4 +54,22 @@ describe("userModel script", function() {
             });
         });
     });
+    describe("delete user", function() {
+        it ("should return deleted", async function() {
+            let newUser = {
+                nombre: "Oriol",
+                password: "hash",
+                email: "oriol@example.com",
+            }
+            await user.create(newUser);
+            await user.del(newUser);
+
+            let query = {
+                text: "SELECT nombre, password, email \
+                        FROM usuarios" ,
+            };
+            let res = (await dbCtrl.execute(query)).rows.length();            
+            assert.equal(res.size, 0);
+        });
+    });
 });
