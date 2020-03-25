@@ -13,6 +13,15 @@ describe("userModel script", function() {
             }
             await user.create(newUser);
 
+            let queryGetID = {
+                text: "SELECT idelemento \
+                        FROM elementos \
+                        WHERE nombre = $1",
+                values: ["Oriol"],
+            };
+            let idTest = (await dbCtrl.execute(queryGetID)).rows[0].id;
+            await user.del(idTest);
+
             let query = {
                 text: "SELECT nombre, password, email \
                         FROM usuarios \

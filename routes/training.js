@@ -15,5 +15,15 @@ router.delete('/:nombre', async (req, res) => {
     }
 });
 
+router.post('/', async (req, res) => {
+    try {
+        await training.add(req.body);
+        res.sendStatus(200);
+    } catch (e) {
+        //console.error(e.message);
+        res.status(400).send(e.message);
+    }
+});
+
 
 module.exports = router;
