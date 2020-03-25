@@ -4,10 +4,10 @@ const training = require("../src/models/trainingModel");
 
 const router = express.Router();
 
-router.delete('/:nombre', async (req, res) => {
+router.delete('/:idElemento', async (req, res) => {
     //console.log(req.body);
     try {
-        await training.del(req.params.nombre);
+        await training.del(req.params.idElemento);
         res.sendStatus(200);
     } catch (e) {
         //console.error(e.message);
