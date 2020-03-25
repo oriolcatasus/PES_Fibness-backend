@@ -61,7 +61,7 @@ describe("userModel script", function() {
             await dbCtrl.execute("DELETE FROM usuarios");
         });
         
-        it ("should return deleted", async function() {
+        it ("should return deleted correctly", async function() {
             let newUser = {
                 nombre: "Oriol",
                 password: "hash",
