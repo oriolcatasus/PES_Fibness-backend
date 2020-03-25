@@ -15,14 +15,17 @@ async function add(training) {
     }
     await dbCtrl.execute(query);
 
+    console.log(training);
     let queryGetID = {
         text: "SELECT idElemento \
                 FROM elementos \
                 WHERE nombre = $1 and idUsuario = $2",
-        values: [training.nombreElemento, training.idUsuario],
+        values: [training.nombre, training.idUsuario],
     };
-    let idElem = (await dbCtrl.execute(queryGetID)).rows[0].idelemento;
-    
+    let res = (await dbCtrl.execute(queryGetID)).rows[0];
+    let idElem = res.idelemento;
+
+
     query = {
         text: "INSERT INTO entrenamientos(idElemento) values($1)",
         values: [idElem],
