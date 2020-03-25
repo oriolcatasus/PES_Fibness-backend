@@ -10,6 +10,7 @@ create table usuarios(
 	nombre varchar(50) not null,
 	password varchar(50) not null,
 	email varchar(100) unique not null,
+	facebook boolean not null,
 	fechaDeRegistro date default CURRENT_DATE,
 	provincia varchar(50),
 	tipoPerfil varchar(30) check (tipoPerfil in ('privado', 'publico')) default 'publico',
@@ -18,45 +19,43 @@ create table usuarios(
 );
 
 create table elementos(
+	idElemento serial,
 	nombre varchar(50),
 	descripcion varchar(300),
 	idUsuario int,
-	primary key (idUsuario, nombre),
+	primary key (idElemento),
 	foreign key (idUsuario) references usuarios (id) on delete cascade
 );
 
 create table entrenamientos (
 	nombreElemento varchar(50),
-	idUsuario int,
-	primary key (nombreElemento, idUsuario),
-	foreign key (nombreElemento, idUsuario) references elementos (nombre, idUsuario) on delete cascade
+	idElemento int,
+	primary key (idElemento),
+	foreign key (idElemento) references elementos (idElemento) on delete cascade
 );
 
 create table actividades (
 	nombre varchar(50),
-	descripción varchar(50),
+	descripcion varchar(50),
 	tiempoEjecucion Integer,
-	nombreEntrenamiento varchar(50),
-	idUsuario int,
-	primary key (nombreEntrenamiento, idUsuario, nombre),
-	foreign key (nombreEntrenamiento, idUsuario) references entrenamientos (nombreElemento, idUsuario) on delete cascade
+	idElemento int,
+	primary key (idElemento, nombre),
+	foreign key (idElemento) references entrenamientos (idElemento) on delete cascade
 );
 
 create table deportes (
-	nombreEntrenamiento varchar(50),
 	nombreActividad varchar(50),
-	idUsuario int,
-	primary key (nombreActividad, idUsuario, nombreEntrenamiento),
-	foreign key (nombreActividad, idUsuario, nombreEntrenamiento) references actividades (nombre, idUsuario, nombreEntrenamiento) on delete cascade
+	idElemento int,
+	primary key (idElemento,nombreActividad),
+	foreign key (idElemento,nombreActividad) references actividades (idElemento, nombre) on delete cascade
 );
 
 create table ejercicios (
 	numSets Integer,
 	numRepeticiones Integer,
 	tiempoDescanso Integer,
-	nombreEntrenamiento varchar(50),
 	nombreActividad varchar(50),
-	idUsuario int,
-	primary key (nombreActividad, idUsuario, nombreEntrenamiento),
-	foreign key (nombreActividad, idUsuario, nombreEntrenamiento) references actividades (nombre, idUsuario, nombreEntrenamiento) on delete cascade
-);
+	idElemento int,
+	primary key (idElemento, nombreActividad),
+	foreign key (idElemento, nombreActividad ) references actividades (idElemento, nombre) on delete cascade
+	);
