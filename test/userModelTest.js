@@ -5,6 +5,7 @@ const dbCtrl = require("../src/ctrls/dbCtrl");
 
 describe("userModel script", function() {
     describe("create function", function() {
+
         beforeEach(async function() {
             await dbCtrl.execute("DELETE FROM usuarios");
         });
@@ -54,4 +55,60 @@ describe("userModel script", function() {
             });
         });
     });
+
+    describe("validate", function() {
+
+        const fakeUser = {
+            nombre: "FakeName",
+            password: "fakeHash",
+            email: "fake@example.com",
+        };
+
+        before(async function() {
+            await dbCtrl.execute("DELETE FROM usuarios");            
+            await user.create(fakeUser);
+        });
+
+
+        it("should validate email & password", async function(){
+            const result = await user.validate({
+                email: fakeUser.email,
+                password: fakeUser.password
+            });
+
+            assert.equal(result, true);
+        });
+
+        it("should NOT validate email & password", async function() {
+            const result = await user.validate({
+                email: "another@example.com",
+                password: "anotherHash"
+            });
+
+            assert.equal(result, false);
+        });
+
+        it("should NOT validate just email", async function() {
+            const result = await user.validate({
+                email: fakeUser.email
+            });
+
+            assert.equal(result, false);
+        });
+
+        it("should NOT validate just password", async function() {
+            const result = await user.validate({
+                password: fakeUser.password
+            });
+
+            assert.equal(result, false);
+        });
+
+        after(async function() {
+            await dbCtrl.execute({
+                text: "DELETE FROM usuarios WHERE nombre=$1",
+                values: [fakeUser.nombre]
+            });
+        });
+    })
 });
