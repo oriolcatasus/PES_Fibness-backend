@@ -8,7 +8,7 @@ async function del(idElemento) {
     await dbCtrl.execute(query);
 }
 
-async function add(training) {
+async function create(training) {
     let query = {
         text: "INSERT INTO elementos(nombre, descripcion, idUsuario) values($1, $2, $3)",
         values: [training.nombre, training.descripcion, training.idUsuario]
@@ -35,5 +35,5 @@ async function add(training) {
 
 module.exports = {
     del,
-    add
+    create
 }
