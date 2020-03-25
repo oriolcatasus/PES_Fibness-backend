@@ -14,7 +14,7 @@ describe("userModel script", function() {
             await user.create(newUser);
 
             let queryGetID = {
-                text: "SELECT idelemento \
+                text: "SELECT idElemento \
                         FROM elementos \
                         WHERE nombre = $1",
                 values: ["Oriol"],
