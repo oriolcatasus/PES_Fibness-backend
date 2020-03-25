@@ -8,7 +8,7 @@ async function create(elemento) {
     await dbCtrl.execute(query);
 }
 
-async function update(elemento) {
+async function update(elemento ) {
     let query = {
         text: "UPDATE TABLE FROM elementos WHERE idElemento = $1 SET nombre = $2 ,descripcion = $3",
         values: [elemento.idElemento,elemento.nombre,elemnto.descripcion]

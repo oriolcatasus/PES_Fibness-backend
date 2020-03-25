@@ -57,5 +57,5 @@ create table ejercicios (
 	nombreActividad varchar(50),
 	idElemento int,
 	primary key (idElemento, nombreActividad),
-	foreign key (idElemento, nombreActividad) references actividades (idElemento, nombre) on delete cascade
+	foreign key (idElemento, nombreActividad ) references actividades (idElemento, nombre) on delete cascade
 	);
