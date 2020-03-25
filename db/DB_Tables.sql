@@ -10,7 +10,7 @@ create table usuarios(
 	nombre varchar(50) not null,
 	password varchar(100) not null,
 	email varchar(100) unique not null,
-	facebook boolean not null,
+	facebook boolean not null default false,
 	fechaDeRegistro date default CURRENT_DATE,
 	provincia varchar(50),
 	tipoPerfil varchar(30) check (tipoPerfil in ('privado', 'publico')) default 'publico',
