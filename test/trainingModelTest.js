@@ -19,7 +19,7 @@ describe("userModel script", function() {
                         WHERE nombre = $1",
                 values: ["Oriol"],
             };
-            let res = (await dbCtrl.execute(query)).rows[0] ;            
+            let res = (await dbCtrl.execute(query)).rows[0];            
             assert.equal(newUser.nombre, res.nombre);
             assert.equal(newUser.password, res.password);
             assert.equal(newUser.email, newUser.email);
