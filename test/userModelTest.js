@@ -39,7 +39,7 @@ describe("userModel script", function() {
             await user.create(newUser);
 
             assert.rejects(() => user.create(newUser), {
-                message: "duplicate key value violates unique constraint \"usuarios_nombre_key\""
+                message: "duplicate key value violates unique constraint \"usuarios_email_key\""
             });
         });
 
