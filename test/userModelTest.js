@@ -38,9 +38,7 @@ describe("userModel script", function() {
             }
             await user.create(newUser);
 
-            assert.rejects(() => user.create(newUser), {
-                message: "duplicate key value violates unique constraint \"usuarios_nombre_key\""
-            });
+            assert.rejects(() => user.create(newUser), Error);
         });
 
         it("should return not null constraint violation", async function() {
@@ -49,9 +47,7 @@ describe("userModel script", function() {
                 email: "oriol@example.com",
             }
 
-            assert.rejects(() => user.create(newUser), {
-                message: "null value in column \"password\" violates not-null constraint"
-            });
+            assert.rejects(() => user.create(newUser), Error);
         });
     });
 
