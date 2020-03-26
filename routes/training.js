@@ -1,13 +1,13 @@
 const express = require("express");
 
-const user = require("../src/models/userModel");
+const training = require("../src/models/trainingModel");
 
 const router = express.Router();
 
-router.post('/', async (req, res) => {
+router.delete('/:idElemento', async (req, res) => {
     //console.log(req.body);
     try {
-        await user.create(req.body);
+        await training.del(req.params.idElemento);
         res.sendStatus(200);
     } catch (e) {
         //console.error(e.message);
@@ -15,9 +15,9 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
-        await user.del(req.params.id);
+        await training.create(req.body);
         res.sendStatus(200);
     } catch (e) {
         //console.error(e.message);
