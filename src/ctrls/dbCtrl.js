@@ -21,7 +21,6 @@ async function execute(query) {
     return await pool.query(query);
 }
 
-
 module.exports = {
     execute
 }
