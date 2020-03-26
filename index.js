@@ -24,7 +24,7 @@ app.get("/test", (req, res) => {
 
 //Error Handlers
 app.use(errorHandler.validation);
-app.use(errorHandler.default);
+app.use(errorHandler.def);
 
 
 app.listen(port, function() {
