@@ -15,7 +15,6 @@ async function create(training, idUser) {
     }
     await dbCtrl.execute(query);
 
-    console.log(training);
     let queryGetID = {
         text: "SELECT idElemento \
                 FROM elementos \
