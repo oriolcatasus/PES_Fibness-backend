@@ -8,10 +8,10 @@ async function del(idElemento) {
     await dbCtrl.execute(query);
 }
 
-async function create(training) {
+async function create(training, idUser) {
     let query = {
         text: "INSERT INTO elementos(nombre, descripcion, idUsuario) values($1, $2, $3)",
-        values: [training.nombre, training.descripcion, training.idUsuario]
+        values: [training.nombre, training.descripcion, idUser]
     }
     await dbCtrl.execute(query);
 
@@ -20,7 +20,7 @@ async function create(training) {
         text: "SELECT idElemento \
                 FROM elementos \
                 WHERE nombre = $1 and idUsuario = $2",
-        values: [training.nombre, training.idUsuario],
+        values: [training.nombre, idUser],
     };
     let res = (await dbCtrl.execute(queryGetID)).rows[0];
     let idElem = res.idelemento;
