@@ -4,14 +4,13 @@ const user = require("../src/models/userModel");
 
 const router = express.Router();
 
-router.post('/', async (req, res) => {
-    //console.log(req.body);
+
+router.post('/', async function(req, res, next) {
     try {
         await user.create(req.body);
-        res.sendStatus(200);
-    } catch (e) {
-        //console.error(e.message);
-        res.status(400).send(e.message);
+        res.sendStatus(201);
+    } catch (err) {
+        next(err);
     }
 });
 
@@ -25,5 +24,13 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+router.post('/validate', async function(req, res, next) {
+    try {
+        const valid = await user.validate(req.body);
+        res.send(valid);
+    } catch (err) {
+        next(err);
+    }
+});
 
 module.exports = router;
