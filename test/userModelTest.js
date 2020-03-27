@@ -54,4 +54,43 @@ describe("userModel script", function() {
             });
         });
     });
+
+
+    describe("delete user", function() {
+        beforeEach(async function() {
+            await dbCtrl.execute("DELETE FROM usuarios");
+        });
+        
+        it ("should return deleted correctly", async function() {
+            let newUser = {
+                nombre: "Oriol",
+                password: "hash",
+                email: "oriol@example.com",
+            }
+            await user.create(newUser);
+
+            let newUser2 = {
+                nombre: "Oriol2",
+                password: "hash2",
+                email: "oriol2@example.com",
+            }
+            await user.create(newUser2);
+
+            let queryGetID = {
+                text: "SELECT id \
+                        FROM usuarios \
+                        WHERE nombre = $1",
+                values: ["Oriol"],
+            };
+            let idTest = (await dbCtrl.execute(queryGetID)).rows[0].id;
+            await user.del(idTest);
+
+            let query = {
+                text: "SELECT nombre, password, email \
+                        FROM usuarios" ,
+            };
+            let res = (await dbCtrl.execute(query)).rows;
+            assert.equal(res.length, 1);
+        });
+    });
 });
