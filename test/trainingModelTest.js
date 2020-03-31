@@ -43,7 +43,7 @@ describe("trainingModel script", function() {
                 values: [newTraining.nombre, idTest],
             };
             res = (await dbCtrl.execute(queryGetID)).rows[0];
-            idElem = res.idelemento;
+            idElem = res.idElemento;
 
             query = {
                 text: "SELECT nombre, descripcion, idUsuario \
@@ -87,7 +87,6 @@ describe("trainingModel script", function() {
             }
             await training.create(newTraining, idTest);
 
-
             let queryGetID = {
                 text: "SELECT idElemento \
                         FROM elementos \
@@ -95,7 +94,7 @@ describe("trainingModel script", function() {
                 values: [newTraining.nombre, idTest],
             };
             res = (await dbCtrl.execute(queryGetID)).rows[0];
-            idElem = res.idelemento;
+            idElem = res.idElemento;
 
             await training.del(idElem);
 
