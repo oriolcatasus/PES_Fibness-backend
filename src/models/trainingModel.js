@@ -8,23 +8,25 @@ async function del(idElemento) {
     await dbCtrl.execute(query);
 }
 
-async function create(training, idUser) {
+async function create(training) {
+    //create the element
     let query = {
         text: "INSERT INTO elementos(nombre, descripcion, idUsuario) values($1, $2, $3)",
-        values: [training.nombre, training.descripcion, idUser]
+        values: [training.nombre, training.descripcion, training.idUser]
     }
     await dbCtrl.execute(query);
 
+    //get the automatically generated id of the element (that will be referred from training)
     let queryGetID = {
         text: "SELECT idElemento \
                 FROM elementos \
                 WHERE nombre = $1 and idUsuario = $2",
-        values: [training.nombre, idUser],
+        values: [training.nombre, training.idUser],
     };
-    let res = (await dbCtrl.execute(queryGetID)).rows[0];
-    let idElem = res.idelemento;
+    let res = (await dbCtrl.execute(queryGetID)).rows;
+    let idElem = res[0].idelemento;
 
-
+    //create training
     query = {
         text: "INSERT INTO entrenamientos(idElemento) values($1)",
         values: [idElem],
@@ -32,7 +34,16 @@ async function create(training, idUser) {
     await dbCtrl.execute(query);
 }
 
+async function update(elemento) {
+    let query = {
+        text: "UPDATE elementos SET nombre = $2 ,descripcion = $3 WHERE idElemento = $1",
+        values: [elemento.idElemento, elemento.nombre, elemento.descripcion]
+    }
+    await dbCtrl.execute(query);
+}
+
+
+
 module.exports = {
-    del,
-    create
+    create,update,del
 }

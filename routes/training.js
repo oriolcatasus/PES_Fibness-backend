@@ -4,6 +4,7 @@ const training = require("../src/models/trainingModel");
 
 const router = express.Router();
 
+//delete
 router.delete('/:idElemento', async (req, res) => {
     console.log(req.body);
     try {
@@ -15,17 +16,32 @@ router.delete('/:idElemento', async (req, res) => {
     }
 });
 
+//create
 router.post('/', async (req, res) => {
     console.log(req.params.id);
     console.log(req.body);
     try {
-        await training.create(req.body, req.params.id);
+        await training.create(req.body);
         res.sendStatus(200);
     } catch (e) {
         console.error(e.message);
         res.status(400).send(e.message);
     }
 });
+
+
+//update element (aka name and/or description)
+router.put('/:idElemento', async (req, res) => {
+    //console.log(req.body);
+    try {
+        await training.update(req.body);
+        res.sendStatus(200);
+    } catch (e) {
+        //console.error(e.message);
+        res.status(400).send(e.message);
+    }
+});
+
 
 
 module.exports = router;

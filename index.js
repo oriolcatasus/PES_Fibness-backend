@@ -15,7 +15,7 @@ app.use(express.json());
 
 app.use("/user", user);
 
-app.use("/user/:id/training", training);
+app.use("/training", training);
 
 app.get("/test", (req, res) => {
     console.log("Hello");
