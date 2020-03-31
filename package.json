@@ -1,21 +1,21 @@
 {
   "name": "fibness-backend",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.0-alpha1",
+  "description": "Fibness API",
   "main": "index.js",
   "scripts": {
     "test": "mocha --color"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/oriolcatasus/fibness-backend.git"
+    "url": "git+https://github.com/oriolcatasus/PES_Fibness-backend.git"
   },
-  "author": "",
+  "author": "Oriol Catasús, Marc Maynou, Kenny Alejandro, Tanvir Hossain, Arnau Gesa, Sergio Pascual i Adrià Ventura",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/oriolcatasus/fibness-backend/issues"
+    "url": "https://github.com/oriolcatasus/PES_Fibness-backend/issues"
   },
-  "homepage": "https://github.com/oriolcatasus/fibness-backend#readme",
+  "homepage": "https://github.com/oriolcatasus/PES_Fibness-backend#readme",
   "dependencies": {
     "express": "^4.17.1",
     "pg": "^7.18.2"
