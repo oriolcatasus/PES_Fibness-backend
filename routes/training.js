@@ -16,6 +16,7 @@ router.delete('/:idElemento', async (req, res) => {
     }
 });
 
+//create
 router.post('/', async (req, res) => {
     console.log(req.params.id);
     console.log(req.body);
@@ -29,7 +30,7 @@ router.post('/', async (req, res) => {
 });
 
 
-//update training
+//update element (aka name and/or description)
 router.put('/:idElemento', async (req, res) => {
     //console.log(req.body);
     try {

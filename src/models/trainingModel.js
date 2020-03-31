@@ -9,12 +9,14 @@ async function del(idElemento) {
 }
 
 async function create(training) {
+    //create the element
     let query = {
         text: "INSERT INTO elementos(nombre, descripcion, idUsuario) values($1, $2, $3)",
         values: [training.nombre, training.descripcion, training.idUser]
     }
     await dbCtrl.execute(query);
 
+    //get the automatically generated id of the element (that will be referred from training)
     let queryGetID = {
         text: "SELECT idElemento \
                 FROM elementos \
@@ -24,6 +26,7 @@ async function create(training) {
     let res = (await dbCtrl.execute(queryGetID)).rows;
     let idElem = res[0].idelemento;
 
+    //create training
     query = {
         text: "INSERT INTO entrenamientos(idElemento) values($1)",
         values: [idElem],

@@ -91,7 +91,7 @@ describe("trainingModel script", function() {
             }
             await training.create(newTraining);
 
-            //create training (and element) with same name and idUser
+            //create training (and element) with same name and idUser, which violates unique constraint
             newTraining = {
                 nombre: "TrainingTest",
                 descripcion: "TrainingDescription2",
