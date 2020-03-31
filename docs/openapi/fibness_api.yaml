@@ -1,0 +1,104 @@
+openapi: "3.0.0"
+info:
+  title: Fibness API
+  version: 1.0.0-alpha
+servers:
+  - url: http://10.4.41.146
+    description: FIB server, UPC VPN required to connect
+tags:
+  - name: user
+    description: Operations about users
+  - name: training
+    description: Operations about trainings
+paths:
+  /user:
+    post:
+      summary: Creates a user
+      tags: 
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: Oriol
+                email:
+                  type: string
+                  example: oriol@example.com
+                password:
+                  type: string
+                  description: Hashed user password
+                  example: 5f4dcc3b5aa765d61d8327deb882cf99
+              required: [nombre, password, email]
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Some required parameters are missing or with an incorrect type or a user with the given email already exists
+  /user/{id}:
+    delete:
+      summary: Deletes a user by id
+      tags: 
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user to delete
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Ok
+  /user/validate:
+    post:
+      summary: Validates the given user
+      description: Validates a user with the given email and password exists
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: oriol@example.com
+                password:
+                  type: string
+                  description: Hashed user password
+                  example: 5f4dcc3b5aa765d61d8327deb882cf99
+              required: [email, password]
+      responses:
+        '200':
+          description: Result from the validation
+          content:
+            application/json:
+              schema:
+                type: boolean
+                example: "true"
+  /training/{id}:
+    delete:
+      summary: Deletes a training by id
+      tags:
+        - training
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the training to delete
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Ok
+            
+      
