@@ -1,10 +1,10 @@
-openapi: "3.0.0"
+openapi: 3.0.0
 info:
   title: Fibness API
-  version: 1.0.0-alpha
+  version: "1.0.0-oas3"
 servers:
-  - url: http://10.4.41.146
-    description: FIB server, UPC VPN required to connect
+  - url: 'http://10.4.41.146'
+    description: 'FIB server, UPC VPN required to connect'
 tags:
   - name: user
     description: Operations about users
@@ -14,13 +14,13 @@ paths:
   /user:
     post:
       summary: Creates a user
-      tags: 
+      tags:
         - user
       requestBody:
         required: true
         content:
           application/json:
-            schema: 
+            schema:
               type: object
               properties:
                 nombre:
@@ -33,16 +33,21 @@ paths:
                   type: string
                   description: Hashed user password
                   example: 5f4dcc3b5aa765d61d8327deb882cf99
-              required: [nombre, password, email]
+              required:
+                - nombre
+                - password
+                - email
       responses:
         '201':
           description: Created
         '400':
-          description: Some required parameters are missing or with an incorrect type or a user with the given email already exists
-  /user/{id}:
+          description: >-
+            Some required parameters are missing or with an incorrect type or a
+            user with the given email already exists
+  '/user/{id}':
     delete:
       summary: Deletes a user by id
-      tags: 
+      tags:
         - user
       parameters:
         - name: id
@@ -75,7 +80,9 @@ paths:
                   type: string
                   description: Hashed user password
                   example: 5f4dcc3b5aa765d61d8327deb882cf99
-              required: [email, password]
+              required:
+                - email
+                - password
       responses:
         '200':
           description: Result from the validation
@@ -83,8 +90,8 @@ paths:
             application/json:
               schema:
                 type: boolean
-                example: "true"
-  /training/{id}:
+                example: 'true'
+  '/training/{id}':
     delete:
       summary: Deletes a training by id
       tags:
@@ -100,5 +107,34 @@ paths:
       responses:
         '200':
           description: Ok
-            
-      
+    put:
+      summary: Update a training by id
+      tags:
+        - training
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the training to update
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: weekends training
+                description:
+                  type: string
+                  example: This training has vareity of exerices. 
+              required:
+                - name
+                - description
+      responses:
+            '200':
+              description: Ok
