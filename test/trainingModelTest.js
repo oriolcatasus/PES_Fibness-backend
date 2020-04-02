@@ -113,7 +113,7 @@ describe("trainingModel script", function() {
                 descripcion: "TrainingDescription2",
                 idUser: idTest,
             }
-            assert.rejects(() => training.create(newUser), Error);
+            assert.rejects(() => training.create(newTraining), Error);
         });
     });
     describe("delete function", function() {
