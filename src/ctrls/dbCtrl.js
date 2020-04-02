@@ -1,26 +1,21 @@
 const { Pool } = require('pg');
 
-const database = (function() {
-    let env = process.env.PGDATABASE;
-    if (env === undefined) {
-        return "fibness";
-    }
-    return env
-})();
-//console.log(database);
+let pool;
 
-const pool = new Pool({
-    user: "fibness",
-    host: "10.4.41.146",
-    database,
-    password: "pes08",
-    port: 5432
-});
+function connect(config) {
+   pool = new Pool(config);
+}
 
 async function execute(query) {
     return await pool.query(query);
 }
 
+async function disconnect() {
+    await pool.end();
+}
+
 module.exports = {
-    execute
+    connect,
+    execute,
+    disconnect
 }

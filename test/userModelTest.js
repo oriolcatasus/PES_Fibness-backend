@@ -3,7 +3,13 @@ const assert = require("assert");
 const user = require("../src/models/userModel");
 const dbCtrl = require("../src/ctrls/dbCtrl");
 
+const dbConfig = require("../db/config/integrationdb_config");
+
 describe("userModel script", function() {
+    before(async function() {
+        dbCtrl.connect(dbConfig);
+    });
+
     describe("create function", function() {
 
         beforeEach(async function() {
@@ -32,23 +38,23 @@ describe("userModel script", function() {
         });
 
         it("should return unique constraint violation", async function() {
-            let newUser = {
-                nombre: "Oriol",
-                password: "hash",
-                email: "oriol@example.com",
+            const newUser = {
+                nombre: "Fake",
+                password: "fakeHash",
+                email: "fake@example.com",
             }
             await user.create(newUser);
 
-            assert.rejects(() => user.create(newUser), Error);
+            await assert.rejects(async () => user.create(newUser), Error);
         });
 
         it("should return not null constraint violation", async function() {
-            let newUser = {
-                nombre: "Oriol",
-                email: "oriol@example.com",
+            const newUser = {
+                nombre: "Fake",
+                email: "fake@example.com",
             }
 
-            assert.rejects(() => user.create(newUser), Error);
+            await assert.rejects(async () => user.create(newUser), Error);
         });
     });
 
@@ -65,14 +71,13 @@ describe("userModel script", function() {
                 email: "oriol@example.com",
             }
             await user.create(newUser);
-
             let newUser2 = {
                 nombre: "Oriol2",
                 password: "hash2",
                 email: "oriol2@example.com",
             }
             await user.create(newUser2);
-
+            
             let queryGetID = {
                 text: "SELECT id \
                         FROM usuarios \
@@ -145,5 +150,9 @@ describe("userModel script", function() {
                 values: [fakeUser.nombre]
             });
         });
-    })
+    });
+
+    after(async function() {
+        await dbCtrl.disconnect();
+    });
 });
