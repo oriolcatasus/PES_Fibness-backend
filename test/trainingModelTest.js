@@ -62,12 +62,11 @@ describe("trainingModel script", function() {
                 values: [idElem],
             };
 
-            //make sure the element exists and it is the same as the one we wanted to create
+            //make sure it really is the training we created
             res = (await dbCtrl.execute(query)).rows[0];            
             assert.equal(newTraining.nombre, res.nombre);
             assert.equal(newTraining.descripcion, res.descripcion);
             assert.equal(idTest, res.idusuario);
-
 
             //same as above but with training
             query = {
@@ -214,14 +213,6 @@ describe("trainingModel script", function() {
             }
             await training.create(newTraining);
             
-            let modifiedTraining = {
-                nombre: "TrainingTest",
-                descripcion: "TrainingDescription",
-                idUsuario: idTest,
-            }
-
-            //update training
-            await training.update(modifiedTraining);
             //get the automatically generated id for the training in order to access it
             let queryGetID = {
                 text: "SELECT idElemento \
@@ -231,6 +222,15 @@ describe("trainingModel script", function() {
             };
             res = (await dbCtrl.execute(queryGetID)).rows[0];
             idElem = res.idelemento;
+            
+            let modifiedTraining = {
+                nombre: "TrainingTest",
+                descripcion: "TrainingDescription",
+                idElemento: idElem,
+            }
+
+            //update training
+            await training.update(modifiedTraining);
 
             //get the modified training
             query = {
@@ -244,7 +244,7 @@ describe("trainingModel script", function() {
             //make sure the modifications have been made
             assert.equal(modifiedTraining.nombre, res.nombre);
             assert.equal(modifiedTraining.descripcion, res.descripcion);
-            assert.equal(modifiedTraining.idUsuario, res.idusuario);
+            assert.equal(newTraining.idUser, res.idusuario);
         });
     });
 
