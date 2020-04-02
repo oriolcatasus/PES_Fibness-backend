@@ -16,5 +16,16 @@ router.post('/', async (req, res) => {
     }
 });
 
+//delete
+router.delete('/:idElemento', async (req, res) => {
+    try {
+        await diet.del(req.params.idElemento);
+        res.sendStatus(200);
+    } catch (e) {
+        console.error(e.message);
+        res.status(400).send(e.message);
+    }
+});
+
 
 module.exports = router;

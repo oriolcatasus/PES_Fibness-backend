@@ -26,8 +26,14 @@ async function create(diet) {
     await dbCtrl.execute(query);
 }
 
-
+async function del(idElemento) {
+    let query = {
+        text: "DELETE FROM elementos WHERE idElemento = $1",
+        values: [idElemento]
+    }
+    await dbCtrl.execute(query);
+}
 
 module.exports = {
-    create
+    create,del
 }

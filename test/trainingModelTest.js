@@ -67,6 +67,16 @@ describe("trainingModel script", function() {
             assert.equal(newTraining.nombre, res.nombre);
             assert.equal(newTraining.descripcion, res.descripcion);
             assert.equal(idTest, res.idusuario);
+
+            //same as above but with training
+            query = {
+                text: "SELECT idElemento \
+                        FROM entrenamientos \
+                        WHERE idElemento = $1",
+                values: [idElem],
+            };
+            res = (await dbCtrl.execute(query)).rows[0]; 
+            assert.equal(idElem, res.idelemento);
         });
 
         it("should return unique constraint violation", async function() {
@@ -102,7 +112,7 @@ describe("trainingModel script", function() {
                 descripcion: "TrainingDescription2",
                 idUser: idTest,
             }
-            assert.rejects(() => training.create(newUser), Error);
+            assert.rejects(() => training.create(newTraining), Error);
         });
     });
     describe("delete function", function() {

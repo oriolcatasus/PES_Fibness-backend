@@ -38,7 +38,7 @@ describe("dietModel script", function() {
 
             //create diet (and element)
             let newDiet = {
-                nombre: "TrainingDiet",
+                nombre: "DietTest",
                 descripcion: "DietDescription",
                 idUser: idTest,
             }
@@ -62,14 +62,24 @@ describe("dietModel script", function() {
                 values: [idElem],
             };
 
-            //make sure it really is the diet we created
+            //make sure it really is the element we created
             res = (await dbCtrl.execute(query)).rows[0];            
             assert.equal(newDiet.nombre, res.nombre);
             assert.equal(newDiet.descripcion, res.descripcion);
             assert.equal(idTest, res.idusuario);
+
+            //same as above but with diet
+            query = {
+                text: "SELECT idElemento \
+                        FROM dietas \
+                        WHERE idElemento = $1",
+                values: [idElem],
+            };
+            res = (await dbCtrl.execute(query)).rows[0]; 
+            assert.equal(idElem, res.idelemento);
         });
 
-        /*it("should return unique constraint violation", async function() {
+        it("should return unique constraint violation", async function() {
             //create user
             let newUser = {
                 nombre: "Oriol",
@@ -78,7 +88,7 @@ describe("dietModel script", function() {
             }
             await user.create(newUser);
 
-            //select id from user in order to create a training (we need it for the foreign key of element)
+            //select id from user in order to create a diet (we need it for the foreign key of element)
             let query = {
                 text: "SELECT id \
                         FROM usuarios \
@@ -88,22 +98,86 @@ describe("dietModel script", function() {
             let res = (await dbCtrl.execute(query)).rows[0];
             idTest = res.id; 
 
-            //create training (and element)
-            let newTraining = {
-                nombre: "TrainingTest",
-                descripcion: "TrainingDescription",
+            //create diet (and element)
+            let newDiet = {
+                nombre: "DietTest",
+                descripcion: "DietDescription",
                 idUser: idTest,
             }
-            await training.create(newTraining);
+            await diet.create(newDiet);
 
-            //create training (and element) with same name and idUser, which violates unique constraint
-            newTraining = {
-                nombre: "TrainingTest",
-                descripcion: "TrainingDescription2",
+            //create diet (and element) with same name and idUser, which violates unique constraint
+            newDiet = {
+                nombre: "DietTest",
+                descripcion: "DietDescription2",
                 idUser: idTest,
             }
-            assert.rejects(() => training.create(newUser), Error);
-        });*/
+            assert.rejects(() => diet.create(newDiet), Error);
+        });
+    });
+
+    describe("delete function", function() {
+        beforeEach(async function() {
+            await dbCtrl.execute("DELETE FROM usuarios");
+            await dbCtrl.execute("DELETE FROM elementos");
+            await dbCtrl.execute("DELETE FROM entrenamientos");
+        });
+        
+        it("should return diet deleted correctly", async function() {
+            //create user
+            let newUser = {
+                nombre: "Oriol",
+                password: "hash",
+                email: "oriol@example.com",
+            }
+            await user.create(newUser);
+
+            //select id from user in order to create a diet (we need it for the foreign key of element)
+            let query = {
+                text: "SELECT id \
+                        FROM usuarios \
+                        WHERE nombre = $1",
+                values: ["Oriol"],
+            };
+            let res = (await dbCtrl.execute(query)).rows[0];
+            idTest = res.id; 
+
+            //create diet (and element)
+            let newDiet = {
+                nombre: "DietTest",
+                descripcion: "DietDescription",
+                idUser: idTest,
+            }
+            await diet.create(newDiet);
+
+            //get the automatically generated id for the diet in order to access it
+            let queryGetID = {
+                text: "SELECT idElemento \
+                        FROM elementos \
+                        WHERE nombre = $1 and idUsuario = $2",
+                values: [newDiet.nombre, idTest],
+            };
+            res = (await dbCtrl.execute(queryGetID)).rows[0];
+            idElem = res.idelemento;
+
+            //deletion of the diet
+            await diet.del(idElem);
+
+            //making sure neither the diet nor the element exist
+            query = {
+                text: "SELECT * \
+                        FROM dietas" ,
+            };
+            res = (await dbCtrl.execute(query)).rows;
+            assert.equal(res.length, 0);
+
+            query = {
+                text: "SELECT * \
+                        FROM elementos" ,
+            };
+            res = (await dbCtrl.execute(query)).rows;
+            assert.equal(res.length, 0);
+        });
     });
     after(async function() {
         await dbCtrl.disconnect();
