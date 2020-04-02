@@ -62,11 +62,22 @@ describe("trainingModel script", function() {
                 values: [idElem],
             };
 
-            //make sure it really is the training we created
+            //make sure the element exists and it is the same as the one we wanted to create
             res = (await dbCtrl.execute(query)).rows[0];            
             assert.equal(newTraining.nombre, res.nombre);
             assert.equal(newTraining.descripcion, res.descripcion);
             assert.equal(idTest, res.idusuario);
+
+
+            //same as above but with training
+            query = {
+                text: "SELECT idElemento \
+                        FROM entrenamientos \
+                        WHERE idElemento = $1",
+                values: [idElem],
+            };
+            res = (await dbCtrl.execute(query)).rows[0]; 
+            assert.equal(idElem, res.idelemento);
         });
 
         it("should return unique constraint violation", async function() {
