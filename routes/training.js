@@ -18,8 +18,6 @@ router.delete('/:idElemento', async (req, res) => {
 
 //create
 router.post('/', async (req, res) => {
-    console.log(req.params.id);
-    console.log(req.body);
     try {
         await training.create(req.body);
         res.sendStatus(200);
