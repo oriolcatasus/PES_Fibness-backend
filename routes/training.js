@@ -28,7 +28,7 @@ router.post('/', async (req, res) => {
 
 
 //update element (aka name and/or description)
-router.put('/:idElemento', async (req, res) => {
+router.put('/', async (req, res) => {
     try {
         await training.update(req.body);
         res.sendStatus(200);

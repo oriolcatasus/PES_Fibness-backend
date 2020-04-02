@@ -120,7 +120,7 @@ describe("dietModel script", function() {
         beforeEach(async function() {
             await dbCtrl.execute("DELETE FROM usuarios");
             await dbCtrl.execute("DELETE FROM elementos");
-            await dbCtrl.execute("DELETE FROM entrenamientos");
+            await dbCtrl.execute("DELETE FROM dietas");
         });
         
         it("should return diet deleted correctly", async function() {
@@ -177,6 +177,78 @@ describe("dietModel script", function() {
             };
             res = (await dbCtrl.execute(query)).rows;
             assert.equal(res.length, 0);
+        });
+    });
+
+    describe("update function", function() {
+        beforeEach(async function() {
+            await dbCtrl.execute("DELETE FROM usuarios");
+            await dbCtrl.execute("DELETE FROM elementos");
+            await dbCtrl.execute("DELETE FROM dietas");
+        });
+        
+        it("should return diet update correctly", async function() {
+
+            //create user
+            let newUser = {
+                nombre: "Oriol",
+                password: "hash",
+                email: "oriol@example.com",
+            }
+            await user.create(newUser);
+
+            //select id from user in order to create a diet (we need it for the foreign key of element)
+            let query = {
+                text: "SELECT id \
+                        FROM usuarios \
+                        WHERE nombre = $1",
+                values: ["Oriol"],
+            };
+            let res = (await dbCtrl.execute(query)).rows[0];
+            idTest = res.id; 
+
+            //create diet (and element)
+            let newDiet = {
+                nombre: "DietTest",
+                descripcion: "DietTest",
+                idUser: idTest,
+            }
+            await diet.create(newDiet);
+            
+
+            //get the automatically generated id for the diet in order to access it
+            let queryGetID = {
+                text: "SELECT idElemento \
+                        FROM elementos \
+                        WHERE nombre = $1 and idUsuario = $2",
+                values: [newDiet.nombre, idTest],
+            };
+            res = (await dbCtrl.execute(queryGetID)).rows[0];
+            idElem = res.idelemento;
+
+
+            let modifiedDiet = {
+                nombre: "DietTest2",
+                descripcion: "DietTest2",
+                idElemento: idElem,
+            }
+
+            //update diet
+            await diet.update(modifiedDiet);
+
+            //get the modified diet
+            query = {
+                text: "SELECT nombre, descripcion, idUsuario \
+                        FROM elementos \
+                        WHERE idElemento = $1",
+                values: [idElem],
+            };
+            res = (await dbCtrl.execute(query)).rows[0];    
+
+            //make sure the modifications have been made
+            assert.equal(modifiedDiet.nombre, res.nombre);
+            assert.equal(modifiedDiet.descripcion, res.descripcion);
+            assert.equal(newDiet.idUser, res.idusuario);
         });
     });
     after(async function() {

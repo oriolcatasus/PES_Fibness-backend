@@ -34,6 +34,14 @@ async function del(idElemento) {
     await dbCtrl.execute(query);
 }
 
+async function update(elemento) {
+    let query = {
+        text: "UPDATE elementos SET nombre = $2 ,descripcion = $3 WHERE idElemento = $1",
+        values: [elemento.idElemento, elemento.nombre, elemento.descripcion]
+    }
+    await dbCtrl.execute(query);
+}
+
 module.exports = {
-    create,del
+    create, del, update
 }

@@ -27,5 +27,16 @@ router.delete('/:idElemento', async (req, res) => {
     }
 });
 
+//update element (aka name and/or description)
+router.put('/', async (req, res) => {
+    try {
+        await diet.update(req.body);
+        res.sendStatus(200);
+    } catch (e) {
+        //console.error(e.message);
+        res.status(400).send(e.message);
+    }
+});
+
 
 module.exports = router;

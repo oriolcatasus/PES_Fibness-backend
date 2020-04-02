@@ -213,14 +213,6 @@ describe("trainingModel script", function() {
             }
             await training.create(newTraining);
             
-            let modifiedTraining = {
-                nombre: "TrainingTest",
-                descripcion: "TrainingDescription",
-                idUsuario: idTest,
-            }
-
-            //update training
-            await training.update(modifiedTraining);
             //get the automatically generated id for the training in order to access it
             let queryGetID = {
                 text: "SELECT idElemento \
@@ -230,6 +222,15 @@ describe("trainingModel script", function() {
             };
             res = (await dbCtrl.execute(queryGetID)).rows[0];
             idElem = res.idelemento;
+            
+            let modifiedTraining = {
+                nombre: "TrainingTest",
+                descripcion: "TrainingDescription",
+                idElemento: idElem,
+            }
+
+            //update training
+            await training.update(modifiedTraining);
 
             //get the modified training
             query = {
@@ -243,7 +244,7 @@ describe("trainingModel script", function() {
             //make sure the modifications have been made
             assert.equal(modifiedTraining.nombre, res.nombre);
             assert.equal(modifiedTraining.descripcion, res.descripcion);
-            assert.equal(modifiedTraining.idUsuario, res.idusuario);
+            assert.equal(newTraining.idUser, res.idusuario);
         });
     });
 
