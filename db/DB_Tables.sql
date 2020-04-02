@@ -58,4 +58,28 @@ create table ejercicios (
 	idElemento int,
 	primary key (idElemento, nombreActividad),
 	foreign key (idElemento, nombreActividad ) references actividades (idElemento, nombre) on delete cascade
-	);
+);
+
+create table dietas (
+	idElemento int,
+	primary key (idElemento),
+	foreign key (idElemento) references elementos (idElemento) on delete cascade
+);
+
+create table comidas (
+	nombre varchar(50),
+	horaComida time,
+	idElemento int,
+	primary key (nombre, idElemento),
+	foreign key (idElemento) references dietas (idElemento) on delete cascade
+);
+
+create table alimentos (
+	nombre varchar(50),
+	descripción varchar(300),
+	calorías Integer,
+	nombreComida varchar(50),
+	idElemento int,
+	primary key (nombre, nombreComida, idElemento),
+	foreign key (nombreComida, idElemento) references comidas (nombre, idElemento) on delete cascade
+);
