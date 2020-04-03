@@ -34,10 +34,10 @@ async function del(idElemento) {
     await dbCtrl.execute(query);
 }
 
-async function update(elemento) {
+async function update(elemento, idElemento) {
     let query = {
         text: "UPDATE elementos SET nombre = $2 ,descripcion = $3 WHERE idElemento = $1",
-        values: [elemento.idElemento, elemento.nombre, elemento.descripcion]
+        values: [idElemento, elemento.nombre, elemento.descripcion]
     }
     await dbCtrl.execute(query);
 }

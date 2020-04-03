@@ -230,11 +230,10 @@ describe("dietModel script", function() {
             let modifiedDiet = {
                 nombre: "DietTest2",
                 descripcion: "DietTest2",
-                idElemento: idElem,
             }
 
             //update diet
-            await diet.update(modifiedDiet);
+            await diet.update(modifiedDiet, idElem);
 
             //get the modified diet
             query = {

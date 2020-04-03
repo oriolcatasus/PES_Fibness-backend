@@ -28,9 +28,9 @@ router.delete('/:idElemento', async (req, res) => {
 });
 
 //update element (aka name and/or description)
-router.put('/', async (req, res) => {
+router.put('/:idElemento', async (req, res) => {
     try {
-        await diet.update(req.body);
+        await diet.update(req.body, req.params.idElemento);
         res.sendStatus(200);
     } catch (e) {
         //console.error(e.message);

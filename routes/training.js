@@ -30,7 +30,7 @@ router.post('/', async (req, res) => {
 //update element (aka name and/or description)
 router.put('/', async (req, res) => {
     try {
-        await training.update(req.body);
+        await training.update(req.body, req.param.idElemento);
         res.sendStatus(200);
     } catch (e) {
         //console.error(e.message);
