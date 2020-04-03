@@ -226,11 +226,10 @@ describe("trainingModel script", function() {
             let modifiedTraining = {
                 nombre: "TrainingTest",
                 descripcion: "TrainingDescription",
-                idElemento: idElem,
             }
 
             //update training
-            await training.update(modifiedTraining);
+            await training.update(modifiedTraining, idElem);
 
             //get the modified training
             query = {
