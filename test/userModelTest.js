@@ -3,12 +3,9 @@ const assert = require("assert");
 const user = require("../src/models/userModel");
 const dbCtrl = require("../src/ctrls/dbCtrl");
 
-const dbConfig = require("../db/config/integrationdb_config");
+require("./rootHooks");
 
 describe("userModel script", function() {
-    before(async function() {
-        dbCtrl.connect(dbConfig);
-    });
 
     describe("create function", function() {
 
@@ -150,9 +147,5 @@ describe("userModel script", function() {
                 values: [fakeUser.nombre]
             });
         });
-    });
-
-    after(async function() {
-        await dbCtrl.disconnect();
     });
 });

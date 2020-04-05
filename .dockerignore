@@ -1,0 +1,13 @@
+.envs
+
+.vscode
+coverage
+
+node_modules
+.nyc_output
+
+.git
+.gitignore
+
+docs
+README.md

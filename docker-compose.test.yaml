@@ -1,0 +1,17 @@
+version: "3.7"
+
+services:
+  api:
+    depends_on:
+      - pg-test
+    environment:
+      NODE_ENV: test
+      PORT: 3002
+    network_mode: host
+  
+  pg-test:
+    image: postgres:12
+    env_file:
+      - .envs/.pg.env
+    ports:
+      - "54322:5432"
