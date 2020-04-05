@@ -5,8 +5,7 @@ FROM node:12-slim
 WORKDIR /home/api
 
 # Copy the file from your host to your current location.
-COPY package.json .
-COPY package-lock.json .
+COPY package*.json ./
 COPY scripts ./scripts
 
 # Run the command inside your image filesystem.

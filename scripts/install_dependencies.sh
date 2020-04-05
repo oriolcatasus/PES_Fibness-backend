@@ -3,7 +3,7 @@
 
 if [ "$NODE_ENV" == "production" ] || [ "$NODE_ENV" == "stage" ]
 then
-    npm install --production=true;
+    npm ci --only=production;
 else
-    npm install --production=false;
+    npm ci;
 fi
