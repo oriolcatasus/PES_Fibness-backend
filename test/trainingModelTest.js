@@ -65,6 +65,16 @@ describe("trainingModel script", function() {
             assert.equal(newTraining.nombre, res.nombre);
             assert.equal(newTraining.descripcion, res.descripcion);
             assert.equal(idTest, res.idusuario);
+
+            //same as above but with training
+            query = {
+                text: "SELECT idElemento \
+                        FROM entrenamientos \
+                        WHERE idElemento = $1",
+                values: [idElem],
+            };
+            res = (await dbCtrl.execute(query)).rows[0]; 
+            assert.equal(idElem, res.idelemento);
         });
 
         it("should return unique constraint violation", async function() {
@@ -100,7 +110,7 @@ describe("trainingModel script", function() {
                 descripcion: "TrainingDescription2",
                 idUser: idTest,
             }
-            assert.rejects(() => training.create(newUser), Error);
+            assert.rejects(() => training.create(newTraining), Error);
         });
     });
     describe("delete function", function() {
@@ -201,14 +211,6 @@ describe("trainingModel script", function() {
             }
             await training.create(newTraining);
             
-            let modifiedTraining = {
-                nombre: "TrainingTest",
-                descripcion: "TrainingDescription",
-                idUsuario: idTest,
-            }
-
-            //update training
-            await training.update(modifiedTraining);
             //get the automatically generated id for the training in order to access it
             let queryGetID = {
                 text: "SELECT idElemento \
@@ -218,6 +220,14 @@ describe("trainingModel script", function() {
             };
             res = (await dbCtrl.execute(queryGetID)).rows[0];
             idElem = res.idelemento;
+            
+            let modifiedTraining = {
+                nombre: "TrainingTest",
+                descripcion: "TrainingDescription",
+            }
+
+            //update training
+            await training.update(modifiedTraining, idElem);
 
             //get the modified training
             query = {
@@ -231,7 +241,7 @@ describe("trainingModel script", function() {
             //make sure the modifications have been made
             assert.equal(modifiedTraining.nombre, res.nombre);
             assert.equal(modifiedTraining.descripcion, res.descripcion);
-            assert.equal(modifiedTraining.idUsuario, res.idusuario);
+            assert.equal(newTraining.idUser, res.idusuario);
         });
     });
 });
