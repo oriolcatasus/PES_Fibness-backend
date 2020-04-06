@@ -10,7 +10,7 @@ pipeline {
                 }
             }
             post {
-                unsuccesful {
+                unsuccessful {
                     echo 'Unsuccesful build of docker image'
                 }
             }
