@@ -6,19 +6,19 @@ WORKDIR /home/api
 
 # Copy the file from your host to your current location.
 COPY package*.json ./
-COPY scripts ./scripts
+#COPY scripts ./scripts
 
 # Run the command inside your image filesystem.
 #RUN chmod a+x scripts/*
 #RUN bash ./scripts/install_dependencies.sh
 RUN npm install
-RUN ls -a
 
 # Inform Docker that the container is listening on the specified port at runtime.
 EXPOSE 3000
 
 # Run the specified command within the container.
-CMD bash ./scripts/start.sh
+#CMD bash ./scripts/start.sh
+CMD npm run dev
 
 # Copy the rest of your app's source code from your host to your image filesystem.
 COPY . .
