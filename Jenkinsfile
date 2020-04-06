@@ -24,14 +24,13 @@ pipeline {
             steps {
                 echo 'Starting test stage'
                 script {
-                    docker.image('postgres:12').withRun('-e POSTGRES_PASSWORD -e POSTGRES_USER -e POSTGRES_DB --name pg') {
-                        docker.image("fibness/api:${env.BUILD_ID}").inside {
-                            sh 'npm test'
-                        }
-                    }
+                    sh 'docker-compose -f docker-compose.yaml -f docker-compose.test.yaml up --build'
                 }
             }
             post {
+                always {
+                    sh 'docker-compose down'
+                }
                 unsuccessful {
                     echo 'Tests failed'
                 }
