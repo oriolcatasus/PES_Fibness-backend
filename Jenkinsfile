@@ -5,7 +5,7 @@ pipeline {
             steps {
                 echo 'Building docker image'
                 script {
-                    docker.build("fibness/api:${env.BUILD_ID}")
+                    docker.build("fibness/api:${env.BUILD_ID}", "--build-arg NODE_ENV=test .")
                 }
             }
             post {
@@ -24,8 +24,11 @@ pipeline {
             steps {
                 echo 'Starting test stage'
                 script {
-                    def pgc = docker.image('postgres:12').withRun('-e POSTGRES_PASSWORD -e POSTGRES_USER -e POSTGRES_DB')
-                    docker.image("fibness/api:${env.BUILD_ID}").inside('-e NODE_ENV --link ${pgc.id}:pg')
+                    docker.image('postgres:12').withRun('-e POSTGRES_PASSWORD -e POSTGRES_USER -e POSTGRES_DB --name pg') {
+                        docker.image("fibness/api:${env.BUILD_ID}").inside {
+                            sh 'npm test'
+                        }
+                    }
                 }
             }
             post {
