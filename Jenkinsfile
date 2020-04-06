@@ -17,9 +17,9 @@ pipeline {
         }
         stage('Test') {
             environment: {
-                POSTGRES_PASSWORD = "fibness"
-                POSTGRES_USER = "fibness"
-                POSTGRES_DB = "test"
+                POSTGRES_PASSWORD = 'fibness'
+                POSTGRES_USER = 'fibness'
+                POSTGRES_DB = 'test'
             }
             steps {
                 sh 'echo "Starting test stage"'
@@ -32,7 +32,7 @@ pipeline {
                 }
             }
             post {
-                unsuccesful {
+                unsuccessful {
                     echo 'Tests failed'
                 }
             }
