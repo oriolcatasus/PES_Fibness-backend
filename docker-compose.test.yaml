@@ -17,7 +17,7 @@ services:
     environment:
       POSTGRES_USER: fibness
       POSTGRES_PASSWORD: fibness
-      POSTGRES_DB: fibness
+      POSTGRES_DB: test
     #ports:
     #  - "5432:5432"
     volumes:

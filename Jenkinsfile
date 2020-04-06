@@ -11,7 +11,7 @@ pipeline {
             steps {
                 echo 'Starting test stage'
                 script {
-                    sh 'docker-compose -f docker-compose.yaml -f docker-compose.test.yaml up --build'
+                    sh 'docker-compose -f docker-compose.yaml -f docker-compose.test.yaml up --build api'
                 }
             }
             post {
