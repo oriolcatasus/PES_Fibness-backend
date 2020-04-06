@@ -16,7 +16,7 @@ pipeline {
             }
         }
         stage('Test') {
-            environment: {
+            environment {
                 POSTGRES_PASSWORD = 'fibness'
                 POSTGRES_USER = 'fibness'
                 POSTGRES_DB = 'test'
