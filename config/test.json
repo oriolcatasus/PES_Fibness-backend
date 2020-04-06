@@ -1,7 +1,7 @@
 {
     "db": {
         "user": "fibness",
-        "host": "localhost",
+        "host": "pg",
         "database": "fibness",
         "password": "fibness",
         "port": 5432
