@@ -18,8 +18,8 @@ services:
   
   pg:
     image: postgres:12
-    env_file:
-      - .envs/.pg.env
+    #env_file:
+    #  - .envs/.pg.env
     ports:
       - "5432:5432"
     volumes:

@@ -14,8 +14,8 @@ services:
   
   pg-stage:
     image: postgres:12
-    env_file:
-      - .envs/.pg.env
+    #env_file:
+    #  - .envs/.pg.env
     volumes:
       - pg-db-stage:/var/lib/postgresql/data
     ports:
