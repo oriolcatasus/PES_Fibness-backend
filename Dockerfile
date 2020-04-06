@@ -11,7 +11,8 @@ COPY scripts ./scripts
 # Run the command inside your image filesystem.
 #RUN chmod a+x scripts/*
 #RUN bash ./scripts/install_dependencies.sh
-RUN npm ci
+RUN npm install
+RUN ls -a
 
 # Inform Docker that the container is listening on the specified port at runtime.
 EXPOSE 3000
