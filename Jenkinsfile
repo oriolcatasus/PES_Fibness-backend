@@ -6,7 +6,7 @@ pipeline {
                 echo 'Building docker image'
                 sh "echo $env.BUILD_ID"
                 script {
-                    docker.build("fibness/api:1.0.0")
+                    docker.build("fibness/api:${env.BUILD_ID}")
                 }
             }
             post {
@@ -25,7 +25,7 @@ pipeline {
                 sh 'echo "Starting test stage"'
                 script {
                     docker.image('postgres:12').withRun('-e POSTGRES_PASSWORD -e POSTGRES_USER -e POSTGRES_DB') { pcg
-                        docker.image("fibness/api:1.0.0").inside {
+                        docker.image("fibness/api:${env.BUILD_ID}").inside {
                             npm test
                         }
                     }
