@@ -6,8 +6,9 @@ services:
       - pg-test
     environment:
       NODE_ENV: test
-      PORT: 3002
-    network_mode: host
+    #network_mode: host
+    ports:
+      - "3002:3000"
   
   pg-test:
     image: postgres:12

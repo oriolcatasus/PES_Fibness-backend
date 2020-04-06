@@ -1,19 +1,6 @@
 pipeline {
     agent any
     stages {
-        stage('Build') {
-            steps {
-                echo 'Building docker image'
-                script {
-                    docker.build("fibness/api:${env.BUILD_ID}")
-                }
-            }
-            post {
-                unsuccessful {
-                    echo 'Unsuccesful build of docker image'
-                }
-            }
-        }
         stage('Test') {
             environment {
                 POSTGRES_PASSWORD = 'fibness'

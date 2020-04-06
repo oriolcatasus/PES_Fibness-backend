@@ -1,8 +1,8 @@
 {
     "db": {
         "user": "fibness",
-        "host": "pg",
-        "database": "fibness",
+        "host": "pg-test",
+        "database": "test",
         "password": "fibness",
         "port": 5432
     }
