@@ -7,8 +7,8 @@ services:
     environment:
       NODE_ENV: test
     #network_mode: host
-    ports:
-      - "3002:3000"
+    #ports:
+    #  - "3002:3000"
   
   pg-test:
     image: postgres:12
@@ -18,7 +18,7 @@ services:
       POSTGRES_USER: fibness
       POSTGRES_PASSWORD: fibness
       POSTGRES_DB: fibness
-    ports:
-      - "5432:5432"
+    #ports:
+    #  - "5432:5432"
     volumes:
       - ./scripts/postgres:/docker-entrypoint-initdb.d/
