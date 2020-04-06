@@ -24,9 +24,8 @@ pipeline {
             steps {
                 echo 'Starting test stage'
                 script {
-                    docker.image('postgres:12').withRun('-e POSTGRES_PASSWORD -e POSTGRES_USER -e POSTGRES_DB') { pgc ->
-                        docker.image("fibness/api:${env.BUILD_ID}").inside('-e NODE_ENV --link ${pgc.id}:pg')
-                    }
+                    def pgc = docker.image('postgres:12').withRun('-e POSTGRES_PASSWORD -e POSTGRES_USER -e POSTGRES_DB')
+                    docker.image("fibness/api:${env.BUILD_ID}").inside('-e NODE_ENV --link ${pgc.id}:pg')
                 }
             }
             post {
