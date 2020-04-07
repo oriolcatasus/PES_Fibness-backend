@@ -9,14 +9,23 @@ async function create(user) {
 }
 
 async function validate({email, password}) {
-    let query = {
-        text: "SELECT * \
+    const query = {
+        text: "SELECT id \
                 FROM usuarios \
                 WHERE email = $1 AND password = $2",
         values: [email, password],
     };
-    let res = await dbCtrl.execute(query);
-    return (res.rows.length == 1);
+    const res = await dbCtrl.execute(query);
+    if (res.rows.length === 1) {
+        return {
+            result: true,
+            id: res.rows[0].id
+        }
+    } else {
+        return { 
+            result: false
+        }
+    }
 }
 
 async function del(id) {
