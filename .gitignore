@@ -76,7 +76,7 @@ typings/
 /config/local*
 
 # docker environment files
-/.envs
+/.envs/*
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache

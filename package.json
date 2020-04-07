@@ -6,9 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "mocha",
-    "migrate": "node-pg-migrate -j=sql",
-    "test-docker": "./scripts/test.sh"
+    "test": "mocha --color",
+    "migrate": "node-pg-migrate -j=sql"
   },
   "repository": {
     "type": "git",

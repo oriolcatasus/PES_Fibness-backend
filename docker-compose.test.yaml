@@ -1,24 +1,24 @@
 version: "3.7"
 
+networks:
+  fibness-backend_test:
+
 services:
-  api:
+  api-test:
+    build: .
     depends_on:
       - pg-test
     environment:
       NODE_ENV: test
-    #network_mode: host
-    #ports:
-    #  - "3002:3000"
+      NODE_CONFIG_ENV: jenkins
+    networks:
+      - fibness-backend_test
   
   pg-test:
     image: postgres:12
-    #env_file:
-    #  - .envs/.pg.env
     environment:
       POSTGRES_USER: fibness
       POSTGRES_PASSWORD: fibness
       POSTGRES_DB: test
-    #ports:
-    #  - "5432:5432"
-    volumes:
-      - ./scripts/postgres:/docker-entrypoint-initdb.d/
+    networks:
+      - fibness-backend_test

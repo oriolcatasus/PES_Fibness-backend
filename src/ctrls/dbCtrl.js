@@ -3,15 +3,16 @@ const pgMigrate = require("node-pg-migrate").default;
 
 let pool;
 
-async function connect(config, migrate=true) {
-    if (migrate) {
-        await pgMigrate({
-            databaseUrl: config,
-            direction: "up",
-            dir: "./migrations",
-        });
-    }
+function connect(config) {
     pool = new Pool(config);
+}
+
+async function migrate(config) {
+    await pgMigrate({
+        databaseUrl: config,
+        direction: "up",
+        dir: "./migrations",
+    });
 }
 
 async function execute(query) {
@@ -23,6 +24,7 @@ async function disconnect() {
 }
 
 module.exports = {
+    migrate,
     connect,
     execute,
     disconnect

@@ -1,9 +1,0 @@
-version: "3.7"
-
-services:
-  pg-test:
-    image: postgres:12
-    ports:
-      - "54322:5432"
-    env_file:
-      - .envs/.pg.env

@@ -32,7 +32,7 @@ app.use(errorHandler.def);
 
 
 (async function start() {
-    await dbCtrl.connect(config.db);
+    dbCtrl.connect(config.db);
     app.listen(port, () => {    
         console.log("Server started at port " + port);
     });

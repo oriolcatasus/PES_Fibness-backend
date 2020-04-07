@@ -1,16 +1,17 @@
 #!/bin/sh
 #filename:start.sh
 
-if [ "$NODE_ENV" == "development" ]
+if [ "$NODE_ENV" == "test" ]
 then
-    sleep 2
-    npm run dev
+    sleep 5;
+    node node_modules/mocha/bin/mocha;
 elif [ "$NODE_ENV" == "production" ] || [ "$NODE_ENV" == "stage" ]
 then
     sleep 5;
+    npm run migrate up;
     npm start;
-elif [ "$NODE_ENV" == "test" ]
-then
-    sleep 5;
-    npm test;
+else
+    sleep 2;
+    npm run migrate up;
+    npm run dev;
 fi

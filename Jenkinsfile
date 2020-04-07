@@ -1,25 +1,41 @@
 pipeline {
     agent any
     stages {
-        stage('Test') {
-            environment {
-                POSTGRES_PASSWORD = 'fibness'
-                POSTGRES_USER = 'fibness'
-                POSTGRES_DB = 'test'
-                NODE_ENV = 'test'
+        stage('Build') {
+            steps {
+                echo 'Starting build stage'
+                script {
+                    sh 'docker-compose -f docker-compose.test.yaml build \
+                        --build-arg NODE_ENV=test --force-rm --no-cache --parallel --pull'
+                }
             }
+            post {
+                success {
+                    echo 'Build stage: SUCCESS'
+                }
+                unsuccessful {
+                    echo 'Build stage: FAILURE'
+                }
+            }
+        }
+        stage('Test') {
             steps {
                 echo 'Starting test stage'
                 script {
-                    sh 'docker-compose -f docker-compose.yaml -f docker-compose.test.yaml up --build api'
+                    sh 'docker-compose -f docker-compose.test.yaml down -v'
+                    sh 'docker-compose -f docker-compose.test.yaml up \
+                        --force-recreate -V --no-color api-test'
                 }
             }
             post {
                 always {
-                    sh 'docker-compose down'
+                    sh 'docker-compose -f docker-compose.test.yaml down -v'
+                }
+                success {
+                    echo 'Test stage: SUCCESS'
                 }
                 unsuccessful {
-                    echo 'Tests failed'
+                    echo 'Test stage: FAILURE'
                 }
             }
         }

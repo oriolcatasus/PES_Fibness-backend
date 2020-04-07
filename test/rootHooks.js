@@ -1,12 +1,12 @@
 process.env.NODE_ENV = "test";
-process.env.PORT = 3002;
 
-const config = require("config");
+const { db } = require("config");
 
 const dbCtrl = require("../src/ctrls/dbCtrl");
 
 before(async function() {
-    await dbCtrl.connect(config.db);
+    await dbCtrl.migrate(db)
+    dbCtrl.connect(db);
 });
 
 after(async function() {
