@@ -39,5 +39,30 @@ pipeline {
                 }
             }
         }
+        stage('Deploy') {
+            parallel {
+                stage('Stage') {
+                    when {
+                        branch 'development'
+                    }
+                    steps {
+                        echo 'Deploying to Stage'
+                    }
+                }
+                stage('Production') {
+                    when {
+                        branch 'master'
+                    }
+                    steps {
+                        echo 'Deploying to production'
+                    }
+                }
+            }
+            when {
+              expression {
+                currentBuild.result == null || currentBuild.result == 'SUCCESS' 
+              }
+            }
+        }
     }
 }
