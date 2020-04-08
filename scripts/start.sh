@@ -4,7 +4,7 @@
 if [ "$NODE_ENV" == "test" ]
 then
     sleep 5;
-    node node_modules/mocha/bin/mocha --reporter tap;
+    node node_modules/mocha/bin/mocha --color --reporter tap;
 elif [ "$NODE_ENV" == "production" ] || [ "$NODE_ENV" == "stage" ]
 then
     sleep 5;

@@ -22,8 +22,7 @@ pipeline {
                 echo 'Starting tests'
                 script {
                     sh 'docker-compose -f docker-compose.test.yaml down -v'
-                    sh 'docker-compose -f docker-compose.test.yaml up \
-                        --force-recreate -V --no-color api-test'
+                    sh 'docker-compose -f docker-compose.test.yaml up -V api-test'
                 }
             }
             post {
@@ -51,7 +50,7 @@ pipeline {
                                 sh 'rm -f config/local-*'
                                 sh 'cp /home/alumne/config/local-stage.json ./config'
                                 script {
-                                    docker.build('fibness/api-stage:latest', '--build-arg NODE_ENV=stage --pull .')
+                                    docker.build('fibness/api-stage:latest', '--build-arg NODE_ENV=stage .')
                                 }
                             }
                             post {
@@ -89,7 +88,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Production') {
+                stage('Prod') {
                     when {
                         branch 'master'
                     }
@@ -100,7 +99,7 @@ pipeline {
                                 sh 'rm -f config/local-*'
                                 sh 'cp /home/alumne/config/local-production.json ./config'
                                 script {
-                                    docker.build('fibness/api-stage:latest', '--build-arg NODE_ENV=production .')
+                                    docker.build('fibness/api-prod:latest', '--build-arg NODE_ENV=production .')
                                 }
                             }
                             post {
