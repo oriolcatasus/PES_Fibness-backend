@@ -41,7 +41,7 @@ pipeline {
             parallel {
                 stage('Stage') {
                     when {
-                        branch 'docker'
+                        branch 'development'
                     }
                     stages {
                         stage('Build stage image') {
