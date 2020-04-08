@@ -1,24 +1,14 @@
 const express = require("express");
 
-const training = require("../src/models/trainingModel");
+const diet = require("../src/models/dietModel");
 
 const router = express.Router();
 
-//delete
-router.delete('/:idElemento', async (req, res) => {
-    try {
-        await training.del(req.params.idElemento);
-        res.sendStatus(200);
-    } catch (e) {
-        console.error(e.message);
-        res.status(400).send(e.message);
-    }
-});
 
 //create
 router.post('/', async (req, res) => {
     try {
-        await training.create(req.body);
+        await diet.create(req.body);
         res.sendStatus(200);
     } catch (e) {
         console.error(e.message);
@@ -26,24 +16,27 @@ router.post('/', async (req, res) => {
     }
 });
 
+//delete
+router.delete('/:idElemento', async (req, res) => {
+    try {
+        await diet.del(req.params.idElemento);
+        res.sendStatus(200);
+    } catch (e) {
+        console.error(e.message);
+        res.status(400).send(e.message);
+    }
+});
 
 //update element (aka name and/or description)
-<<<<<<< HEAD
 router.put('/:idElemento', async (req, res) => {
     try {
-        await training.update(req.body, req.params.idElemento);
-=======
-router.put('/', async (req, res) => {
-    try {
-        await training.update(req.body, req.param.idElemento);
->>>>>>> create_diet
+        await diet.update(req.body, req.params.idElemento);
         res.sendStatus(200);
     } catch (e) {
         //console.error(e.message);
         res.status(400).send(e.message);
     }
 });
-
 
 
 module.exports = router;
