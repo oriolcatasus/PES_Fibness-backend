@@ -4,6 +4,8 @@ const user = require("../src/models/userModel");
 const diet = require("../src/models/dietModel");
 const dbCtrl = require("../src/ctrls/dbCtrl");
 
+require("./rootHooks");
+
 describe("dietModel script", function() {
     describe("create function", function() {
         beforeEach(async function() {

@@ -108,16 +108,23 @@ pipeline {
                                 script {
                                     docker.build('fibness/api-prod:latest', '--build-arg NODE_ENV=production .')
                                 }
+                                echo 'Registering production docker image'
+                                script {
+                                    docker.withRegistry('http://localhost:5000') {
+                                        image = docker.image('fibness/api-prod:latest')
+                                        image.push('latest')
+                                    }
+                                }
                             }
                             post {
                                 always {
                                     sh 'rm -f config/local-*'
                                 }
                                 success {
-                                    echo 'Production docker image built successfully'
+                                    echo 'Stage docker image built successfully'
                                 }
                                 unsuccessful {
-                                    echo 'Failed to build production docker image'
+                                    echo 'Failed to build stage docker image'
                                 }
                             }
                         }
@@ -135,10 +142,10 @@ pipeline {
                                     sh 'rm -f prod.yaml'
                                 }
                                 success {
-                                    echo 'Deployed to production succesfully'
+                                    echo 'Deployed to prod succesfully'
                                 }
                                 unsuccessful {
-                                    echo 'Failed to deploy to production'
+                                    echo 'Failed to deploy to prod'
                                 }
                             }
                         }
