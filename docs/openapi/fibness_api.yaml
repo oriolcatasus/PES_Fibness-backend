@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
   title: Fibness API
-  version: "1.0.0-oas3"
+  version: '1.0.0-alpha'
 servers:
   - url: 'http://10.4.41.146'
-    description: 'FIB server, UPC VPN required to connect'
+    description: FIB server, UPC VPN required to connect
 tags:
   - name: user
     description: Operations about users
@@ -32,19 +32,19 @@ paths:
                 password:
                   type: string
                   description: Hashed user password
-                  example: 5f4dcc3b5aa765d61d8327deb882cf99
+                  example: '5f4dcc3b5aa765d61d8327deb882cf99'
               required:
                 - nombre
                 - password
                 - email
       responses:
-        '201':
+        201:
           description: Created
-        '400':
+        400:
           description: >-
             Some required parameters are missing or with an incorrect type or a
             user with the given email already exists
-  '/user/{id}':
+  /user/{id}:
     delete:
       summary: Deletes a user by id
       tags:
@@ -58,7 +58,7 @@ paths:
             type: integer
             minimum: 1
       responses:
-        '200':
+        200:
           description: Ok
   /user/validate:
     post:
@@ -79,34 +79,19 @@ paths:
                 password:
                   type: string
                   description: Hashed user password
-                  example: 5f4dcc3b5aa765d61d8327deb882cf99
+                  example: '5f4dcc3b5aa765d61d8327deb882cf99'
               required:
                 - email
                 - password
       responses:
-        '200':
+        200:
           description: Result from the validation
           content:
             application/json:
               schema:
                 type: boolean
                 example: 'true'
-  '/training/{id}':
-    delete:
-      summary: Deletes a training by id
-      tags:
-        - training
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: The id of the training to delete
-          schema:
-            type: integer
-            minimum: 1
-      responses:
-        '200':
-          description: Ok
+  /training/{id}:
     put:
       summary: Update a training by id
       tags:
@@ -136,5 +121,20 @@ paths:
                 - name
                 - description
       responses:
-            '200':
+            200:
               description: Ok
+    delete:
+      summary: Deletes a training by id
+      tags:
+        - training
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the training to delete
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: Ok

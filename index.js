@@ -1,8 +1,8 @@
 const express = require("express");
+const config = require("config")
 
 //db
 const dbCtrl = require("./src/ctrls/dbCtrl");
-const dbConfig = require("./db/config/fibnessdb_config");
 
 //Routes
 const user = require("./routes/user");
@@ -11,7 +11,7 @@ const training = require("./routes/training")
 //Middleware
 const errorHandler = require("./middleware/errorHandlers");
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 const app = express();
 
@@ -31,7 +31,9 @@ app.use(errorHandler.validation);
 app.use(errorHandler.def);
 
 
-app.listen(port, () => {
-    dbCtrl.connect(dbConfig);
-    console.log("Server started at port " + port);
-});
+(async function start() {
+    dbCtrl.connect(config.db);
+    app.listen(port, () => {    
+        console.log("Server started at port " + port);
+    });
+})()

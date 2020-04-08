@@ -1,0 +1,14 @@
+.envs
+
+.vscode
+coverage
+
+node_modules
+npm-debug.log
+.nyc_output
+
+.git
+.gitignore
+
+docs
+README.md
