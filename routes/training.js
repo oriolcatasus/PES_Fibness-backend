@@ -28,15 +28,9 @@ router.post('/', async (req, res) => {
 
 
 //update element (aka name and/or description)
-<<<<<<< HEAD
 router.put('/:idElemento', async (req, res) => {
     try {
         await training.update(req.body, req.params.idElemento);
-=======
-router.put('/', async (req, res) => {
-    try {
-        await training.update(req.body, req.param.idElemento);
->>>>>>> create_diet
         res.sendStatus(200);
     } catch (e) {
         //console.error(e.message);
