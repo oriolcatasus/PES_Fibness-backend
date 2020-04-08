@@ -8,7 +8,7 @@ volumes:
 
 services:
   api-prod:
-    image: fibness/api-prod:latest
+    image: localhost:5000/fibness/api-prod:latest
     depends_on:
       - pg-prod
     environment:

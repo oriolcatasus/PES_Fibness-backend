@@ -8,7 +8,7 @@ networks:
 
 services:
   api-stage:
-    image: fibness/api-stage:latest
+    image: localhost:5000/fibness/api-stage:latest
     depends_on:
       - pg-stage
     environment:

@@ -52,6 +52,13 @@ pipeline {
                                 script {
                                     docker.build('fibness/api-stage:latest', '--build-arg NODE_ENV=stage .')
                                 }
+                                echo 'Registering stage docker image'
+                                script {
+                                    docker.withRegistry('http://localhost:5000') {
+                                        image = docker.image('fibness/api-stage:latest')
+                                        image.push('latest')
+                                    }   
+                                }
                             }
                             post {
                                 always {
