@@ -36,14 +36,6 @@ async function del(id) {
     await dbCtrl.execute(query);
 }
 
-async function del(id) {
-    let query = {
-        text: "DELETE FROM usuarios where id = $1",
-        values: [id]
-    }
-    await dbCtrl.execute(query);
-}
-
 
 module.exports = {
     create,
