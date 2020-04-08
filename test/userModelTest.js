@@ -111,37 +111,47 @@ describe("userModel script", function() {
 
 
         it("should validate email & password", async function(){
-            const result = await user.validate({
+            const validation = await user.validate({
                 email: fakeUser.email,
                 password: fakeUser.password
             });
 
-            assert.equal(result, true);
+            const query = {
+                text: 'SELECT id FROM usuarios \
+                        WHERE email = $1',
+                values: [fakeUser.email]
+            }
+            const id = (await dbCtrl.execute(query)).rows[0].id;
+            assert.strictEqual(validation.result, true);
+            assert.strictEqual(validation.id, id);
         });
 
         it("should NOT validate email & password", async function() {
-            const result = await user.validate({
+            const validation = await user.validate({
                 email: "another@example.com",
                 password: "anotherHash"
             });
 
-            assert.equal(result, false);
+            assert.strictEqual(validation.result, false);
+            assert.strictEqual(validation.id, undefined);
         });
 
         it("should NOT validate just email", async function() {
-            const result = await user.validate({
+            const validation = await user.validate({
                 email: fakeUser.email
             });
 
-            assert.equal(result, false);
+            assert.strictEqual(validation.result, false);
+            assert.strictEqual(validation.id, undefined);
         });
 
         it("should NOT validate just password", async function() {
-            const result = await user.validate({
+            const validation = await user.validate({
                 password: fakeUser.password
             });
 
-            assert.equal(result, false);
+            assert.strictEqual(validation.result, false);
+            assert.strictEqual(validation.id, undefined);
         });
 
         after(async function() {
