@@ -4,12 +4,7 @@ const user = require("../src/models/userModel");
 const diet = require("../src/models/dietModel");
 const dbCtrl = require("../src/ctrls/dbCtrl");
 
-const dbConfig = require("../db/config/integrationdb_config");
-
 describe("dietModel script", function() {
-    before(async function() {
-        dbCtrl.connect(dbConfig);
-    });
     describe("create function", function() {
         beforeEach(async function() {
             await dbCtrl.execute("DELETE FROM usuarios");
@@ -249,8 +244,5 @@ describe("dietModel script", function() {
             assert.equal(modifiedDiet.descripcion, res.descripcion);
             assert.equal(newDiet.idUser, res.idusuario);
         });
-    });
-    after(async function() {
-        await dbCtrl.disconnect();
     });
 });
