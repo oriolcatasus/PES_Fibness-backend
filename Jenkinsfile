@@ -48,7 +48,7 @@ pipeline {
                     steps {
                         echo 'Building stage docker image'
                         script {
-                            docker.image('fibness/api-stage:latest', '--build-arg NODE_ENV=stage')
+                            docker.build('fibness/api-stage:latest', '--build-arg NODE_ENV=stage .')
                         }
                         echo 'Deploying stage docker image'
                         sh 'docker-compose -f docker-compose.stage.yaml config > stage.yaml'
