@@ -45,14 +45,17 @@ pipeline {
                     when {
                         branch 'docker'
                     }
+                    environment {
+                        DB_STAGE = credentials('db-stage')
+                    }
                     steps {
                         echo 'Building stage docker image'
+                        sh 'cp /home/alumne/config/local-stage.json ./config'
                         script {
                             docker.build('fibness/api-stage:latest', '--build-arg NODE_ENV=stage .')
                         }
                         echo 'Deploying stage docker image'
                         sh 'docker-compose -f docker-compose.stage.yaml config > stage.yaml'
-                        sh 'docker stack deploy -c stage.yaml pg-stage'
                         sh 'docker stack deploy -c stage.yaml api-stage'
                     }
                     post {
@@ -71,8 +74,12 @@ pipeline {
                     when {
                         branch 'master'
                     }
+                    environment {
+                        DB_PROD = credentials('db-prod')
+                    }
                     steps {
                         echo 'Deploying to production'
+                        sh 'cp /home/alumne/config/local-stage.json ./config'
                     }
                 }
             }

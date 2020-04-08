@@ -21,8 +21,8 @@ services:
   pg-prod:
     image: postgres:12
     environment:
-      POSTGRES_USER: fibness
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_PROD}
+      POSTGRES_USER: ${DB_PROD_USR}
+      POSTGRES_PASSWORD: ${DB_PROD_PSW}
       POSTGRES_DB: fibness
     networks:
       - fibness-backend_prod
