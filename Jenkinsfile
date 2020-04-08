@@ -1,7 +1,7 @@
 pipeline {
     agent any
     stages {
-        stage('Build') {
+        stage('Build test image') {
             steps {
                 echo 'Starting build stage'
                 script {
@@ -43,10 +43,41 @@ pipeline {
             parallel {
                 stage('Stage') {
                     when {
-                        branch 'development'
+                        branch 'docker'
                     }
-                    steps {
-                        echo 'Deploying to Stage'
+                    stage('Build docker image') {
+                        steps {
+                            echo 'Building stage docker image'
+                            docker.image('fibness/api-stage:latest', '--build-arg NODE_ENV=stage')
+                        }
+                        post {
+                            success {
+                                echo 'Stage docker image successfully built'
+                            }
+                            unsuccessful {
+                                echo 'Failed to build stage docker image'
+                            }
+                        }
+                    }
+                    stage('Deploy docker image') {
+                        steps {
+                            echo 'Deploying stage docker image'
+                            sh 'docker-compose -f docker-compose.stage.yaml config > stage.yaml'
+                            sh 'docker stack deploy -c stage.yaml pg-stage'
+                            sh 'docker stack deploy -c stage.yaml api-stage'
+                        }
+                        post {
+                            always {
+                                sh 'rm -f stage.yaml'
+                            }
+                            success {
+                                echo 'Stage deployed succesfully'
+                            }
+                            unsuccessful {
+                                echo 'Failed to deploy stage'
+                            }
+
+                        }
                     }
                 }
                 stage('Production') {
