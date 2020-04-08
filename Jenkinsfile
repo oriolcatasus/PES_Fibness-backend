@@ -45,38 +45,23 @@ pipeline {
                     when {
                         branch 'docker'
                     }
-                    stage('Build docker image') {
-                        steps {
-                            echo 'Building stage docker image'
-                            docker.image('fibness/api-stage:latest', '--build-arg NODE_ENV=stage')
-                        }
-                        post {
-                            success {
-                                echo 'Stage docker image successfully built'
-                            }
-                            unsuccessful {
-                                echo 'Failed to build stage docker image'
-                            }
-                        }
+                    steps {
+                        echo 'Building stage docker image'
+                        docker.image('fibness/api-stage:latest', '--build-arg NODE_ENV=stage')
+                        echo 'Deploying stage docker image'
+                        sh 'docker-compose -f docker-compose.stage.yaml config > stage.yaml'
+                        sh 'docker stack deploy -c stage.yaml pg-stage'
+                        sh 'docker stack deploy -c stage.yaml api-stage'
                     }
-                    stage('Deploy docker image') {
-                        steps {
-                            echo 'Deploying stage docker image'
-                            sh 'docker-compose -f docker-compose.stage.yaml config > stage.yaml'
-                            sh 'docker stack deploy -c stage.yaml pg-stage'
-                            sh 'docker stack deploy -c stage.yaml api-stage'
+                    post {
+                        always {
+                            sh 'rm -f stage.yaml'
                         }
-                        post {
-                            always {
-                                sh 'rm -f stage.yaml'
-                            }
-                            success {
-                                echo 'Stage deployed succesfully'
-                            }
-                            unsuccessful {
-                                echo 'Failed to deploy stage'
-                            }
-
+                        success {
+                            echo 'Stage deployed succesfully'
+                        }
+                        unsuccessful {
+                            echo 'Failed to deploy stage'
                         }
                     }
                 }
