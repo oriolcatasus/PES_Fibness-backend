@@ -3,7 +3,7 @@ info:
   title: Fibness API
   version: '1.0.0-alpha'
 servers:
-  - url: 'http://10.4.41.146'
+  - url: 'http://10.4.41.146:3001'
     description: FIB server, UPC VPN required to connect
 tags:
   - name: user
