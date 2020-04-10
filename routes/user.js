@@ -36,4 +36,13 @@ router.post('/validate', async function(req, res, next) {
     }
 });
 
+router.get('/:id/trainings', async function(req, res, next) {
+    try {
+        const trainingSet = await user.trainings(req.params.id);
+        res.send(trainingSet);
+    } catch (err) {
+        next(err);
+    }
+})
+
 module.exports = router;

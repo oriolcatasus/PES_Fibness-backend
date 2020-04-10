@@ -1,15 +1,17 @@
 openapi: 3.0.0
 info:
   title: Fibness API
-  version: "1.0.0-oas3"
+  version: '1.0.0-alpha'
 servers:
-  - url: 'http://10.4.41.146'
-    description: 'FIB server, UPC VPN required to connect'
+  - url: 'http://10.4.41.146:3001'
+    description: FIB server, UPC VPN required to connect
 tags:
   - name: user
     description: Operations about users
   - name: training
     description: Operations about trainings
+  - name: diet
+    description: Operations about diets
 paths:
   /user:
     post:
@@ -32,19 +34,19 @@ paths:
                 password:
                   type: string
                   description: Hashed user password
-                  example: 5f4dcc3b5aa765d61d8327deb882cf99
+                  example: '5f4dcc3b5aa765d61d8327deb882cf99'
               required:
                 - nombre
                 - password
                 - email
       responses:
-        '201':
+        201:
           description: Created
-        '400':
+        400:
           description: >-
             Some required parameters are missing or with an incorrect type or a
             user with the given email already exists
-  '/user/{id}':
+  /user/{id}:
     delete:
       summary: Deletes a user by id
       tags:
@@ -58,7 +60,7 @@ paths:
             type: integer
             minimum: 1
       responses:
-        '200':
+        200:
           description: Ok
   /user/validate:
     post:
@@ -79,18 +81,59 @@ paths:
                 password:
                   type: string
                   description: Hashed user password
-                  example: 5f4dcc3b5aa765d61d8327deb882cf99
+                  example: '5f4dcc3b5aa765d61d8327deb882cf99'
               required:
                 - email
                 - password
       responses:
-        '200':
+        200:
           description: Result from the validation
           content:
             application/json:
               schema:
-                type: boolean
-                example: 'true'
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                    example: true
+                  id:
+                    type: integer
+                    example: 1234
+                required:
+                  - result
+  '/training':
+    post:
+      summary: Creates a training
+      description: Creates a training with the given description and name associated with the given user
+      tags:
+        - training
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: TrainingTest
+                descripcion:
+                  type: string
+                  example: TrainingDescriptionTest
+                idUser:
+                  type: integer
+                  description: id of the user
+                  example: 2
+              required:
+                - nombre
+                - descripcion
+                - idUser
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: >-
+            Some required parameters are missing or with an incorrect type
   '/training/{id}':
     delete:
       summary: Deletes a training by id
@@ -131,10 +174,90 @@ paths:
                   example: weekends training
                 description:
                   type: string
-                  example: This training has vareity of exerices. 
+                  example: This training has vareity of exercices. 
               required:
                 - name
                 - description
       responses:
             '200':
+              description: Ok
+  '/diet':
+    post:
+      summary: Creates a diet
+      description: Creates a diet with the given description and name associated with the given user
+      tags:
+        - diet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: Hypertrophy diet
+                descripcion:
+                  type: string
+                  example: Gain muscle
+                idUser:
+                  type: integer
+                  description: id of the user
+                  example: 2
+              required:
+                - nombre
+                - descripcion
+                - idUser
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: >-
+            Some required parameters are missing or with an incorrect type
+  '/diet/{id}':
+    delete:
+      summary: Deletes a diet by id
+      tags:
+        - diet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the diet to delete
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Ok
+    put:
+      summary: Update a diet by id
+      tags:
+        - diet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the diet to update
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: weekends training
+                description:
+                  type: string
+                  example: This training has vareity of exercices. 
+              required:
+                - name
+                - description
+      responses:
+            200:
               description: Ok

@@ -1,0 +1,9 @@
+{
+    "db": {
+        "user": "fibness",
+        "host": "pg-test",
+        "database": "test",
+        "password": "fibness",
+        "port": 5432
+    }
+}

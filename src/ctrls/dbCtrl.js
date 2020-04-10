@@ -1,9 +1,18 @@
 const { Pool } = require('pg');
+const pgMigrate = require("node-pg-migrate").default;
 
 let pool;
 
 function connect(config) {
-   pool = new Pool(config);
+    pool = new Pool(config);
+}
+
+async function migrate(config) {
+    await pgMigrate({
+        databaseUrl: config,
+        direction: "up",
+        dir: "./migrations",
+    });
 }
 
 async function execute(query) {
@@ -15,6 +24,7 @@ async function disconnect() {
 }
 
 module.exports = {
+    migrate,
     connect,
     execute,
     disconnect

@@ -1,0 +1,31 @@
+version: "3.7"
+
+volumes:
+  pg-db:
+
+services:
+  api:
+    build: .
+    depends_on:
+      - pg
+    environment:
+      NODE_ENV: development
+    network_mode: host
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/home/api
+      - /home/app/node_modules
+  
+  pg:
+    image: postgres:12
+    environment:
+      POSTGRES_USER: fibness
+      POSTGRES_PASSWORD: fibness
+      POSTGRES_DB: fibness
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-db:/var/lib/postgresql/data
+      - ./scripts/postgres:/docker-entrypoint-initdb.d/
+      

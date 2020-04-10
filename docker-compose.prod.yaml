@@ -1,0 +1,32 @@
+version: "3.7"
+
+networks:
+  fibness-backend_prod:
+
+volumes:
+  pg-db-prod:
+
+services:
+  api-prod:
+    image: localhost:5000/fibness/api-prod:latest
+    depends_on:
+      - pg-prod
+    environment:
+      NODE_ENV: production
+    networks:
+      - fibness-backend_prod
+    ports:
+      - "3000:3000"
+  
+  pg-prod:
+    image: postgres:12
+    environment:
+      POSTGRES_USER: ${DB_PROD_USR}
+      POSTGRES_PASSWORD: ${DB_PROD_PSW}
+      POSTGRES_DB: fibness
+    networks:
+      - fibness-backend_prod
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-db-prod:/var/lib/postgresql/data

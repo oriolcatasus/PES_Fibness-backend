@@ -36,17 +36,24 @@ async function del(id) {
     await dbCtrl.execute(query);
 }
 
-async function del(id) {
+
+async function trainings(id) {
     let query = {
-        text: "DELETE FROM usuarios where id = $1",
+        text: "SELECT e.idElemento, e.nombre, e.descripcion \
+               FROM elementos e\
+               WHERE e.idUsuario = $1 AND EXISTS \
+                                        (SELECT * \
+                                         FROM entrenamientos \
+                                         WHERE idUsuario = $1)",
         values: [id]
     }
-    await dbCtrl.execute(query);
+    return (await dbCtrl.execute(query));
 }
 
 
 module.exports = {
     create,
     validate,
-    del    
+    del,
+    trainings    
 }

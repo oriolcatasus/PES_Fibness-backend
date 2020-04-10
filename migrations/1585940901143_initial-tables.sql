@@ -1,3 +1,4 @@
+-- Up Migration
 
 create table provincias(
 	nombre varchar(50),
@@ -83,3 +84,4 @@ create table alimentos (
 	primary key (nombre, nombreComida, idElemento),
 	foreign key (nombreComida, idElemento) references comidas (nombre, idElemento) on delete cascade
 );
+-- Down Migration

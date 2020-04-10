@@ -1,0 +1,24 @@
+version: "3.7"
+
+networks:
+  fibness-backend_test:
+
+services:
+  api-test:
+    build: .
+    depends_on:
+      - pg-test
+    environment:
+      NODE_ENV: test
+      NODE_CONFIG_ENV: jenkins
+    networks:
+      - fibness-backend_test
+  
+  pg-test:
+    image: postgres:12
+    environment:
+      POSTGRES_USER: fibness
+      POSTGRES_PASSWORD: fibness
+      POSTGRES_DB: test
+    networks:
+      - fibness-backend_test
