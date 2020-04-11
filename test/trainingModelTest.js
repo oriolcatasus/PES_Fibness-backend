@@ -9,11 +9,6 @@ require("./rootHooks");
 describe("trainingModel script", function() {
     
     describe("create function", function() {
-        beforeEach(async function() {
-            await dbCtrl.execute("DELETE FROM usuarios");
-            await dbCtrl.execute("DELETE FROM elementos");
-            await dbCtrl.execute("DELETE FROM entrenamientos");
-        });
 
         it("should return training created correctly", async function() {
             //create user
@@ -114,11 +109,6 @@ describe("trainingModel script", function() {
         });
     });
     describe("delete function", function() {
-        beforeEach(async function() {
-            await dbCtrl.execute("DELETE FROM usuarios");
-            await dbCtrl.execute("DELETE FROM elementos");
-            await dbCtrl.execute("DELETE FROM entrenamientos");
-        });
         
         it("should return training deleted correctly", async function() {
             //create user
@@ -177,11 +167,6 @@ describe("trainingModel script", function() {
         });
     });
     describe("update function", function() {
-        beforeEach(async function() {
-            await dbCtrl.execute("DELETE FROM usuarios");
-            await dbCtrl.execute("DELETE FROM elementos");
-            await dbCtrl.execute("DELETE FROM entrenamientos");
-        });
         
         it("should return training update correctly", async function() {
 

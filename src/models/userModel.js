@@ -1,11 +1,41 @@
 const dbCtrl = require("../ctrls/dbCtrl");
 
 async function create(user) {
-    let query = {
-        text: "INSERT INTO usuarios(nombre, password, email) values($1, $2, $3)",
-        values: [user.nombre, user.password, user.email]
-    };
-    await dbCtrl.execute(query);        
+    let result; 
+    try {
+        let query = {
+            text: "INSERT INTO usuarios(nombre, password, email) values($1, $2, $3)",
+            values: [user.nombre, user.password, user.email]
+        };
+        await dbCtrl.execute(query); 
+        query = {
+            text: "SELECT id \
+                FROM usuarios \
+                WHERE email = $1",
+            values: [user.email]
+        }
+        const { id } = (await dbCtrl.execute(query)).rows[0];
+        result = {
+            created: true,
+            id
+        }
+    } catch(err) {
+        result = {
+            created: false,
+            error: err.message
+        }
+    }
+    return result;    
+}
+
+async function getUserByEmail(email) {
+    const query = {
+        text: "SELECT * \
+            FROM usuarios \
+            WHERE email = $1",
+        values: [email]
+    }
+    return await dbCtrl.execute(query)
 }
 
 async function validate({email, password}) {

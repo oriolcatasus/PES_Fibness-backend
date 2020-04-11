@@ -8,76 +8,65 @@ const dbCtrl = require("../src/ctrls/dbCtrl");
 require("./rootHooks");
 
 describe("userModel script", function() {
-
     describe("create function", function() {
-
-        beforeEach(async function() {
-            await dbCtrl.execute("DELETE FROM usuarios");
-        });
-
-
-        it("should create a new user", async function() {
+        it("should return user created correctly", async function() {
             const fakeUser = {
-                nombre: "FakeName",
+                nombre: "Fake",
                 password: "fakeHash",
                 email: "fake@example.com",
             }
-            await user.create(fakeUser);
+            const creation = await user.create(fakeUser);
 
             const query = {
-                text: "SELECT nombre, password, email \
+                text: "SELECT id, nombre, password, email \
                         FROM usuarios \
                         WHERE email = $1",
                 values: [fakeUser.email],
             };
-            const res = (await dbCtrl.execute(query)).rows[0];            
-            assert.equal(fakeUser.nombre, res.nombre);
-            assert.equal(fakeUser.password, res.password);
-            assert.equal(fakeUser.email, res.email);
-
-            dbCtrl.execute({
-                text: "DELETE FROM usuarios WHERE email = $1",
-                values: [fakeUser.email]
-            });
+            const userdb = (await dbCtrl.execute(query)).rows[0];
+            assert.strictEqual(creation.created, true);
+            assert.strictEqual(creation.id, userdb.id);
+            assert.strictEqual(creation.error, undefined);
+            assert.strictEqual(fakeUser.nombre, userdb.nombre);
+            assert.strictEqual(fakeUser.password, userdb.password);
+            assert.strictEqual(fakeUser.email, userdb.email);
         });
 
-        it("should return unique constraint violation", async function() {
-            const fakeUser = {
-                nombre: "FakeName",
+        it("should NOT create a new user when email already exists", async function() {
+            const fakeUser1 = {
+                nombre: "Fake",
                 password: "fakeHash",
                 email: "fake@example.com",
             }
-            await user.create(fakeUser);
-            
+            const creation1 = await user.create(fakeUser1);
             const fakeUser2 = {
-                nombre: "FakeName2",
+                nombre: "Fake2",
                 password: "fakeHash2",
-                email: fakeUser.email
-            };
-            await assert.rejects(() => user.create(fakeUser2), Error);
+                email: "fake@example.com",
+            }
+            const creation2 = await user.create(fakeUser2);
 
-            dbCtrl.execute({
-                text: "DELETE FROM usuarios WHERE email = $1",
-                values: [fakeUser.email]
-            });
+            assert.strictEqual(creation1.created, true);
+            assert.strictEqual(creation2.created, false);
+            assert.strictEqual(creation2.id, undefined);
+            assert.notStrictEqual(creation2.error, undefined);  
         });
 
-        it("should NOT insert a user without a password", async function() {
+        it("should NOT create a new user when password isn't provided", async function() {
             const fakeUser = {
                 nombre: "Fake",
                 email: "fake@example.com",
             }
+            const creation = await user.create(fakeUser);
 
-            await assert.rejects(async () => user.create(fakeUser), Error);
+            assert.strictEqual(creation.created, false);
+            assert.strictEqual(creation.id, undefined);
+            assert.notStrictEqual(creation.error, undefined);            
         });
     });
 
 
-    describe("delete user", function() {
-        beforeEach(async function() {
-            await dbCtrl.execute("DELETE FROM usuarios");
-        });
-        
+    describe("delete user", function() {        
         it ("should return deleted correctly", async function() {
             let newUser = {
                 nombre: "Oriol",
@@ -118,13 +107,8 @@ describe("userModel script", function() {
             email: "fake@example.com",
         };
 
-        before(async function() {
-            await dbCtrl.execute("DELETE FROM usuarios");            
-            await user.create(fakeUser);
-        });
-
-
         it("should validate email & password", async function(){
+            await user.create(fakeUser);
             const validation = await user.validate({
                 email: fakeUser.email,
                 password: fakeUser.password
@@ -141,6 +125,7 @@ describe("userModel script", function() {
         });
 
         it("should NOT validate email & password", async function() {
+            await user.create(fakeUser);
             const validation = await user.validate({
                 email: "another@example.com",
                 password: "anotherHash"
@@ -151,6 +136,7 @@ describe("userModel script", function() {
         });
 
         it("should NOT validate just email", async function() {
+            await user.create(fakeUser);
             const validation = await user.validate({
                 email: fakeUser.email
             });
@@ -160,6 +146,7 @@ describe("userModel script", function() {
         });
 
         it("should NOT validate just password", async function() {
+            await user.create(fakeUser);
             const validation = await user.validate({
                 password: fakeUser.password
             });
@@ -167,19 +154,8 @@ describe("userModel script", function() {
             assert.strictEqual(validation.result, false);
             assert.strictEqual(validation.id, undefined);
         });
-
-        after(async function() {
-            await dbCtrl.execute({
-                text: "DELETE FROM usuarios WHERE nombre=$1",
-                values: [fakeUser.nombre]
-            });
-        });
     });
     describe("get operation", function() {
-
-        beforeEach(async function() {
-            await dbCtrl.execute("DELETE FROM usuarios");
-        });
 
         it("should return set of trainings correctly", async function(){
             //create user

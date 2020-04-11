@@ -8,8 +8,13 @@ const router = express.Router();
 router.post('/', async function(req, res, next) {
     console.log(req.body);
     try {
-        await user.create(req.body);
-        res.sendStatus(201);
+        const result = await user.create(req.body);
+        if (result.created) {
+            res.status(201);
+        } else {
+            res.status(400);
+        }
+        res.send(result);
     } catch (err) {
         next(err);
     }
