@@ -44,7 +44,7 @@ pipeline {
         stage('Deploy') {
             when {
                 expression {
-                    currentBuild.result == 'SUCCESS' 
+                    currentBuild.result == null || currentBuild.result == 'SUCCESS' 
                 }
             }
             parallel {
