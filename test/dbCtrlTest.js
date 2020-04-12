@@ -67,6 +67,10 @@ describe("dbCtrl", async function() {
         
         it("should fail for testing purpouses", function() {
             assert.strictEqual(true, false);
+        });
+
+        it("should fail again for testing purpouses", function() {
+            assert.strictEqual(true, false);
         })
     });
 });
