@@ -32,9 +32,12 @@ pipeline {
                     archiveArtifacts 'reports/mocha.xml, reports/cobertura-coverage.xml'
                     junit(testResults: 'reports/mocha.xml', allowEmptyResults:false)
                     cobertura(
+                        autoUpdateHealth: true,
+                        autoUpdateStability: true,
                         coberturaReportFile: 'reports/cobertura-coverage.xml',
+                        failNoReports: true,
                         failUnhealthy: false,
-                        failUnstable: false,
+                        failUnstable: false,                        
                         onlyStable: false,
                         enableNewApi: true,
                         maxNumberOfBuilds: 0,
