@@ -31,6 +31,13 @@ pipeline {
                     sh 'docker-compose -f docker-compose.test.yaml down -v --rmi local'
                     archiveArtifacts 'reports/mocha.xml, reports/cobertura-coverage.xml'
                     junit(testResults: 'reports/mocha.xml', allowEmptyResults:false)
+                    cobertura(
+                        coberturaReportFile: 'reports/cobertura-coverage.xml',
+                        failUnhealthy: false,
+                        failUnstable: false,
+                        onlyStable: false,
+                        enableNewApi: true
+                    )
                     sh 'rm -rf reports'
                 }
                 success {
@@ -65,6 +72,7 @@ pipeline {
                                 script {
                                     docker.withRegistry('http://localhost:5000') {
                                         image = docker.image('fibness/api-stage:latest')
+                                        echo 'Pushing docker image to docker registry'
                                         image.push('latest')
                                     }   
                                 }
@@ -121,6 +129,7 @@ pipeline {
                                 script {
                                     docker.withRegistry('http://localhost:5000') {
                                         image = docker.image('fibness/api-prod:latest')
+                                        echo 'Pushing docker image to docker registry'
                                         image.push('latest')
                                     }
                                 }
