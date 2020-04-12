@@ -19,8 +19,9 @@ pipeline {
         }
         stage('Test') {
             steps {
-                echo 'Starting tests'
+                echo 'Starting tests'                
                 script {
+                    sh 'mkdir -p reports'
                     sh 'docker-compose -f docker-compose.test.yaml down -v'
                     sh 'docker-compose -f docker-compose.test.yaml up -V api-test'
                 }
@@ -30,6 +31,7 @@ pipeline {
                     sh 'docker-compose -f docker-compose.test.yaml down -v --rmi local'
                     archiveArtifacts 'reports/mocha.xml'
                     junit(testResults: 'reports/mocha.xml', allowEmptyResults:false)
+                    sh 'rm -rf reports'
                 }
                 success {
                     echo 'Tests executed succesfully'
@@ -40,6 +42,11 @@ pipeline {
             }
         }
         stage('Deploy') {
+            when {
+                expression {
+                    currentBuild.result == 'SUCCESS' 
+                }
+            }
             parallel {
                 stage('Stage') {
                     when {
