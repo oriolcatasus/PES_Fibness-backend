@@ -4,7 +4,7 @@
 if [ "$NODE_ENV" == "test" ]
 then
     sleep 5;
-    node node_modules/mocha/bin/mocha --color --reporter tap;
+    npm run test-jenkins
 elif [ "$NODE_ENV" == "production" ] || [ "$NODE_ENV" == "stage" ]
 then
     sleep 5;

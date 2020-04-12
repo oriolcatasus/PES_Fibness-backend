@@ -13,6 +13,8 @@ services:
       NODE_CONFIG_ENV: jenkins
     networks:
       - fibness-backend_test
+    volumes:
+      ./reports:/home/api/reports
   
   pg-test:
     image: postgres:12
