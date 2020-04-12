@@ -14,7 +14,7 @@ services:
     networks:
       - fibness-backend_test
     volumes:
-      ./reports:/home/api/reports
+      - ./reports:/home/api/reports
   
   pg-test:
     image: postgres:12
