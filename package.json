@@ -8,7 +8,7 @@
     "dev": "nodemon index.js",
     "test": "mocha",
     "coverage": "nyc --reporter text --reporter text-summary npm test",
-    "coverage-jenkins": "nyc --reporter cobertura --reporter text --reporter text-summary mocha -R mocha-jenkins-reporter -O junit_report_stack=1,junit_report_path=./reports/mocha.xml,jenkins_reporter_enable_sonar=1",
+    "coverage-jenkins": "nyc --reporter cobertura --reporter clover --reporter text --reporter text-summary mocha -R mocha-jenkins-reporter -O junit_report_stack=1,junit_report_path=./reports/mocha.xml,jenkins_reporter_enable_sonar=1",
     "migrate": "node-pg-migrate -j=sql"
   },
   "repository": {

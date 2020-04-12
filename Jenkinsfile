@@ -29,7 +29,7 @@ pipeline {
             post {
                 always {
                     sh 'docker-compose -f docker-compose.test.yaml down -v --rmi local'
-                    archiveArtifacts 'reports/mocha.xml, reports/cobertura-coverage.xml'
+                    archiveArtifacts 'reports/mocha.xml, reports/cobertura-coverage.xml reports/clover.xml'
                     junit(testResults: 'reports/mocha.xml', allowEmptyResults:false)
                     cobertura(
                         autoUpdateHealth: true,
@@ -42,12 +42,19 @@ pipeline {
                         enableNewApi: true,
                         maxNumberOfBuilds: 0,
                         classCoverageTargets: '80, 0, 0',
-                        conditionalCoverageTargets: '70, 0, 0',
+                        conditionalCoverageTargets: '80, 0, 0',
                         fileCoverageTargets: '80, 0, 0',
                         lineCoverageTargets: '80, 0, 0',
-                        methodCoverageTargets: '80, 0, 0',
+                        methodCoverageTargets: '70, 0, 0',
                         packageCoverageTargets: '80, 0, 0'
                     )
+                    step([
+                        $class: 'CloverPublisher',
+                        cloverReportDir: 'reports',
+                        cloverReportFileName: 'clover.xml',
+                        healthyTarget: [methodCoverage: 70, conditionalCoverage: 80, statementCoverage: 80],
+                        unhealthyTarget: [methodCoverage: 0, conditionalCoverage: 0, statementCoverage: 0] //50,50,50
+                    ])
                     sh 'rm -rf reports'
                 }
                 success {
