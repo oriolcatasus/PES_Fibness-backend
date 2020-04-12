@@ -36,7 +36,14 @@ pipeline {
                         failUnhealthy: false,
                         failUnstable: false,
                         onlyStable: false,
-                        enableNewApi: true
+                        enableNewApi: true,
+                        maxNumberOfBuilds: 0,
+                        classCoverageTargets: '80, 0, 0',
+                        conditionalCoverageTargets: '70, 0, 0',
+                        fileCoverageTargets: '80, 0, 0',
+                        lineCoverageTargets: '80, 0, 0',
+                        methodCoverageTargets: '80, 0, 0',
+                        packageCoverageTargets: '80, 0, 0'
                     )
                     sh 'rm -rf reports'
                 }
