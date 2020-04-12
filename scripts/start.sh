@@ -4,7 +4,7 @@
 if [ "$NODE_ENV" == "test" ]
 then
     sleep 5;
-    npm run test-jenkins
+    npm run coverage-jenkins
 elif [ "$NODE_ENV" == "production" ] || [ "$NODE_ENV" == "stage" ]
 then
     sleep 5;

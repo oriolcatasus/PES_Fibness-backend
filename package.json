@@ -6,8 +6,9 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "mocha --color",
-    "test-jenkins": "mocha -c -R mocha-jenkins-reporter -O junit_report_stack=1,junit_report_path=./reports/mocha.xml,jenkins_reporter_enable_sonar=1",
+    "test": "mocha",
+    "coverage": "nyc --reporter text --reporter text-summary npm test",
+    "coverage-jenkins": "nyc --reporter cobertura --reporter text --reporter text-summary mocha -R mocha-jenkins-reporter -O junit_report_stack=1,junit_report_path=./reports/mocha.xml,jenkins_reporter_enable_sonar=1",
     "migrate": "node-pg-migrate -j=sql"
   },
   "repository": {

@@ -29,7 +29,7 @@ pipeline {
             post {
                 always {
                     sh 'docker-compose -f docker-compose.test.yaml down -v --rmi local'
-                    archiveArtifacts 'reports/mocha.xml'
+                    archiveArtifacts 'reports/mocha.xml, reports/cobertura-coverage.xml'
                     junit(testResults: 'reports/mocha.xml', allowEmptyResults:false)
                     sh 'rm -rf reports'
                 }
