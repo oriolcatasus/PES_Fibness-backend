@@ -29,7 +29,7 @@ pipeline {
             post {
                 always {
                     sh 'docker-compose -f docker-compose.test.yaml down -v --rmi local'
-                    archiveArtifacts 'reports/mocha.xml, reports/cobertura-coverage.xml reports/clover.xml'
+                    archiveArtifacts 'reports/mocha.xml, reports/cobertura-coverage.xml, reports/clover.xml'
                     junit(testResults: 'reports/mocha.xml', allowEmptyResults:false)
                     cobertura(
                         autoUpdateHealth: true,
@@ -41,19 +41,20 @@ pipeline {
                         onlyStable: false,
                         enableNewApi: true,
                         maxNumberOfBuilds: 0,
-                        classCoverageTargets: '80, 0, 0',
-                        conditionalCoverageTargets: '80, 0, 0',
-                        fileCoverageTargets: '80, 0, 0',
-                        lineCoverageTargets: '80, 0, 0',
-                        methodCoverageTargets: '70, 0, 0',
-                        packageCoverageTargets: '80, 0, 0'
+                        classCoverageTargets: '90, 0, 0',       //90,0,80
+                        conditionalCoverageTargets: '90, 0, 0', //90,0,80
+                        fileCoverageTargets: '90, 0, 0',        //90,0,80
+                        lineCoverageTargets: '90, 0, 0',        //90,0,80
+                        methodCoverageTargets: '90, 0, 0',      //90,0,80
+                        packageCoverageTargets: '90, 0, 0'      //90,0,80
                     )
                     step([
                         $class: 'CloverPublisher',
                         cloverReportDir: 'reports',
                         cloverReportFileName: 'clover.xml',
-                        healthyTarget: [methodCoverage: 70, conditionalCoverage: 80, statementCoverage: 80],
-                        unhealthyTarget: [methodCoverage: 0, conditionalCoverage: 0, statementCoverage: 0] //50,50,50
+                        healthyTarget: [methodCoverage: 90, conditionalCoverage: 90, statementCoverage: 90],
+                        unhealthyTarget: [methodCoverage: 80, conditionalCoverage: 80, statementCoverage: 80],
+                        failingTarget: [methodCoverage: 0, conditionalCoverage: 0, statementCoverage: 0] //80,80,80
                     ])
                     sh 'rm -rf reports'
                 }
