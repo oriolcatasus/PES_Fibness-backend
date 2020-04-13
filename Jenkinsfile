@@ -41,20 +41,20 @@ pipeline {
                         onlyStable: false,
                         enableNewApi: true,
                         maxNumberOfBuilds: 0,
-                        classCoverageTargets: '90, 0, 0',       //90,0,80
-                        conditionalCoverageTargets: '90, 0, 0', //90,0,80
-                        fileCoverageTargets: '90, 0, 0',        //90,0,80
-                        lineCoverageTargets: '90, 0, 0',        //90,0,80
-                        methodCoverageTargets: '90, 0, 0',      //90,0,80
-                        packageCoverageTargets: '90, 0, 0'      //90,0,80
+                        classCoverageTargets: '90, 0, 0',       //90,80,70
+                        conditionalCoverageTargets: '90, 0, 0', //90,80,70
+                        fileCoverageTargets: '90, 0, 0',        //90,80,70
+                        lineCoverageTargets: '90, 0, 0',        //90,80,70
+                        methodCoverageTargets: '90, 0, 0',      //90,80,70
+                        packageCoverageTargets: '90, 0, 0'      //90,80,70
                     )
                     step([
                         $class: 'CloverPublisher',
                         cloverReportDir: 'reports',
                         cloverReportFileName: 'clover.xml',
                         healthyTarget: [methodCoverage: 90, conditionalCoverage: 90, statementCoverage: 90],
-                        unhealthyTarget: [methodCoverage: 80, conditionalCoverage: 80, statementCoverage: 80],
-                        failingTarget: [methodCoverage: 0, conditionalCoverage: 0, statementCoverage: 0] //80,80,80
+                        unhealthyTarget: [methodCoverage: 0, conditionalCoverage: 0, statementCoverage: 0], //80,80,80
+                        failingTarget: [methodCoverage: 0, conditionalCoverage: 0, statementCoverage: 0]    //70,70,70
                     ])
                     sh 'rm -rf reports'
                 }
