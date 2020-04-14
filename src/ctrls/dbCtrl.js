@@ -23,9 +23,25 @@ async function disconnect() {
     await pool.end();
 }
 
+async function delAll() {
+    const queryTables = {
+        text: "SELECT table_name \
+            FROM information_schema.tables \
+            WHERE table_schema=$1 and table_name<>$2",
+        values: ["public", "undefined"]
+    }
+    const tables = (await execute(queryTables)).rows;
+    let queryTruncate = "";
+    tables.forEach(({table_name}) => {
+        queryTruncate += "DELETE FROM " + table_name + " CASCADE;";
+    });
+    await execute(queryTruncate);
+}
+
 module.exports = {
     migrate,
     connect,
     execute,
+    delAll,
     disconnect
 }

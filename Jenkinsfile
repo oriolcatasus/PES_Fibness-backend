@@ -19,8 +19,9 @@ pipeline {
         }
         stage('Test') {
             steps {
-                echo 'Starting tests'
+                echo 'Starting tests'                
                 script {
+                    sh 'mkdir -p reports'
                     sh 'docker-compose -f docker-compose.test.yaml down -v'
                     sh 'docker-compose -f docker-compose.test.yaml up -V api-test'
                 }
@@ -28,6 +29,34 @@ pipeline {
             post {
                 always {
                     sh 'docker-compose -f docker-compose.test.yaml down -v --rmi local'
+                    archiveArtifacts 'reports/mocha.xml, reports/cobertura-coverage.xml, reports/clover.xml'
+                    junit(testResults: 'reports/mocha.xml', allowEmptyResults:false)
+                    cobertura(
+                        autoUpdateHealth: true,
+                        autoUpdateStability: true,
+                        coberturaReportFile: 'reports/cobertura-coverage.xml',
+                        failNoReports: true,
+                        failUnhealthy: false,
+                        failUnstable: false,                        
+                        onlyStable: false,
+                        enableNewApi: true,
+                        maxNumberOfBuilds: 0
+                        //classCoverageTargets: '90, 80, 70',
+                        //conditionalCoverageTargets: '90, 80, 70',
+                        //fileCoverageTargets: '90, 80, 70',
+                        //lineCoverageTargets: '90, 80, 70',
+                        //methodCoverageTargets: '90, 80, 70',
+                        //packageCoverageTargets: '90, 80, 70'
+                    )
+                    step([
+                        $class: 'CloverPublisher',
+                        cloverReportDir: 'reports',
+                        cloverReportFileName: 'clover.xml'
+                        //healthyTarget: [methodCoverage: 90, conditionalCoverage: 90, statementCoverage: 90],
+                        //unhealthyTarget: [methodCoverage: 80, conditionalCoverage: 80, statementCoverage: 80],
+                        //failingTarget: [methodCoverage: 70, conditionalCoverage: 70, statementCoverage: 70]
+                    ])
+                    sh 'rm -rf reports'
                 }
                 success {
                     echo 'Tests executed succesfully'
@@ -38,6 +67,11 @@ pipeline {
             }
         }
         stage('Deploy') {
+            when {
+                expression {
+                    currentBuild.result == null || currentBuild.result == 'SUCCESS' 
+                }
+            }
             parallel {
                 stage('Stage') {
                     when {
@@ -56,6 +90,7 @@ pipeline {
                                 script {
                                     docker.withRegistry('http://localhost:5000') {
                                         image = docker.image('fibness/api-stage:latest')
+                                        echo 'Pushing docker image to docker registry'
                                         image.push('latest')
                                     }   
                                 }
@@ -112,6 +147,7 @@ pipeline {
                                 script {
                                     docker.withRegistry('http://localhost:5000') {
                                         image = docker.image('fibness/api-prod:latest')
+                                        echo 'Pushing docker image to docker registry'
                                         image.push('latest')
                                     }
                                 }

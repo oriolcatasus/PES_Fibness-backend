@@ -1,6 +1,8 @@
 # Use the official image as a parent image.
 FROM node:12-slim
 
+ARG NODE_ENV=development
+
 # Set the working directory.
 WORKDIR /home/api
 

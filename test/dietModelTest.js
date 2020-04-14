@@ -8,12 +8,6 @@ require("./rootHooks");
 
 describe("dietModel script", function() {
     describe("create function", function() {
-        beforeEach(async function() {
-            await dbCtrl.execute("DELETE FROM usuarios");
-            await dbCtrl.execute("DELETE FROM elementos");
-            await dbCtrl.execute("DELETE FROM dietas");
-        });
-
         it("should return diet created correctly", async function() {
             //create user
             let newUser = {
@@ -123,13 +117,7 @@ describe("dietModel script", function() {
         });
     });
 
-    describe("delete function", function() {
-        beforeEach(async function() {
-            await dbCtrl.execute("DELETE FROM usuarios");
-            await dbCtrl.execute("DELETE FROM elementos");
-            await dbCtrl.execute("DELETE FROM dietas");
-        });
-        
+    describe("delete function", function() {        
         it("should return diet deleted correctly", async function() {
             //create user
             let newUser = {
@@ -187,13 +175,7 @@ describe("dietModel script", function() {
         });
     });
 
-    describe("update function", function() {
-        beforeEach(async function() {
-            await dbCtrl.execute("DELETE FROM usuarios");
-            await dbCtrl.execute("DELETE FROM elementos");
-            await dbCtrl.execute("DELETE FROM dietas");
-        });
-        
+    describe("update function", function() {        
         it("should return diet update correctly", async function() {
 
             //create user

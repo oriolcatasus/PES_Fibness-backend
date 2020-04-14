@@ -41,11 +41,39 @@ paths:
                 - email
       responses:
         201:
-          description: Created
+          description: User created succesfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created:
+                    type: boolean
+                    enum: [true]
+                  id:
+                    type: integer
+                    example: 12345
+                required:
+                  - created
+                  - id
         400:
           description: >-
             Some required parameters are missing or with an incorrect type or a
             user with the given email already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created:
+                    type: boolean
+                    enum: [false]
+                  error:
+                    type: string
+                    example: null value in column 'email' violates constraint
+                required:
+                  - created
+                  - error
   /user/{id}:
     delete:
       summary: Deletes a user by id
