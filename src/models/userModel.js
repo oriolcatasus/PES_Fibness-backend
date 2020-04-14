@@ -80,10 +80,24 @@ async function trainings(id) {
     return (await dbCtrl.execute(query));
 }
 
+async function diets(id) {
+    let query = {
+        text: "SELECT e.idElemento, e.nombre, e.descripcion \
+               FROM elementos e\
+               WHERE e.idUsuario = $1 AND EXISTS \
+                                        (SELECT * \
+                                         FROM dietas \
+                                         WHERE idUsuario = $1)",
+        values: [id]
+    }
+    return (await dbCtrl.execute(query));
+}
+
 
 module.exports = {
     create,
     validate,
     del,
-    trainings    
+    trainings,
+    diets    
 }
