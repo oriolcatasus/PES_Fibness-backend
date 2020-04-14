@@ -39,7 +39,7 @@ describe("dietModel script", function() {
                 descripcion: "DietDescription",
                 idUser: idTest,
             }
-            await diet.create(newDiet);
+            idDiet = await diet.create(newDiet);
 
             //get the automatically generated id for the diet in order to access it
             let queryGetID = {
@@ -74,6 +74,16 @@ describe("dietModel script", function() {
             };
             res = (await dbCtrl.execute(query)).rows[0]; 
             assert.equal(idElem, res.idelemento);
+
+            let queryCheckDays = {
+                text: "SELECT count(*) \
+                        FROM diasDieta \
+                        WHERE idElemento = $1",
+                values: [idElem],
+            };
+            ndays = (await dbCtrl.execute(queryCheckDays)).rows[0].count; 
+
+            assert.equal(ndays, 7);
         });
 
         it("should return unique constraint violation", async function() {

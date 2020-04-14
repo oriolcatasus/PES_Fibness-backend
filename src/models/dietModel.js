@@ -24,6 +24,19 @@ async function create(diet) {
         values: [idElem],
     }
     await dbCtrl.execute(query);
+
+
+    let days = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+    for (i = 0; i < 7; i++) {
+        let queryCreateDietDays = {
+            text: "INSERT INTO diasDieta(idElemento, tipoDia) values ($1, $2)",
+            values: [idElem, days[i]],
+        }
+        await dbCtrl.execute(queryCreateDietDays);
+    }
+    
+    return idElem;
+
 }
 
 async function del(idElemento) {
