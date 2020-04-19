@@ -207,8 +207,8 @@ describe("trainingModel script", function() {
             idElem = res.idelemento;
             
             let modifiedTraining = {
-                nombre: "TrainingTest",
-                descripcion: "TrainingDescription",
+                nombre: "Training_Test",
+                descripcion: "Training_Description",
             }
 
             //update training

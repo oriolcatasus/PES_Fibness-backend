@@ -29,6 +29,7 @@
     "migrate": "^1.6.2",
     "mocha": "^7.1.1",
     "node-pg-migrate": "^4.5.1",
+    "nvm": "0.0.4",
     "pg": "^7.18.2"
   },
   "devDependencies": {
