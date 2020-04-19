@@ -1,0 +1,39 @@
+version: "3.7"
+
+networks:
+  sonarqube_network:
+
+volumes:
+  sonarqube_data:
+  sonarqube_logs:
+  sonarqube_extensions:
+  pg_data:
+
+services:
+  sonarqube:
+    image: sonarqube:latest
+    depends_on:
+      - pg
+    environment:
+      SONAR_JDBC_USERNAME: ${SONAR_JDBC_USERNAME}
+      SONAR_JDBC_PASSWORD: ${SONAR_JDBC_PASSWORD}
+      SONAR_JDBC_URL: ${SONAR_JDBC_URL}
+    networks:
+      - sonarqube_network
+    ports:
+      - "9000:9000"
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_logs:/opt/sonarqube/logs
+      - sonarqube_extensions:/opt/sonarqube/extensions
+
+  pg:
+    image: postgres:latest
+    networks:
+      - sonarqube_network
+    environment:
+      POSTGRES_USER: ${SONAR_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${SONAR_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${SONAR_POSTGRES_DB}
+    volumes:
+      - pg_data:/var/lib/postgresql/data

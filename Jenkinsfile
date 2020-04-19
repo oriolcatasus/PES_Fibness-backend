@@ -41,12 +41,10 @@ pipeline {
                         onlyStable: false,
                         enableNewApi: true,
                         maxNumberOfBuilds: 0
-                        //classCoverageTargets: '90, 80, 70',
                         //conditionalCoverageTargets: '90, 80, 70',
                         //fileCoverageTargets: '90, 80, 70',
                         //lineCoverageTargets: '90, 80, 70',
-                        //methodCoverageTargets: '90, 80, 70',
-                        //packageCoverageTargets: '90, 80, 70'
+                        //methodCoverageTargets: '90, 80, 70'
                     )
                     step([
                         $class: 'CloverPublisher',
@@ -66,6 +64,36 @@ pipeline {
                 }
             }
         }
+        stage('SonarQube analysis') {
+            environment {
+                scannerHome = tool 'SonarScanner'
+            }
+            steps {
+                nodejs(nodeJSInstallationName: 'node12') {
+                    withSonarQubeEnv('SonarQube') {
+                        sh "${scannerHome}/bin/sonar-scanner \
+                            -Dsonar.projectKey=PES_fibness-backend-$BRANCH_NAME \
+                            -Dsonar.testExecutionReportPaths=reports/mocha.xml \
+                            -Dsonar.javascript.lcov.reportPaths=reports/lcov.info"
+                    }
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: true                
+                }
+            }
+            post {
+                success {
+                    echo 'Quality gate passed'
+                }
+                unsuccessful {
+                    echo 'Quality gate failed'
+                }
+            }
+        }
         stage('Deploy') {
             when {
                 expression {
@@ -81,10 +109,10 @@ pipeline {
                         stage('Build stage image') {
                             steps {
                                 echo 'Building stage docker image'
-                                sh 'rm -f config/local-*'
                                 sh 'cp /home/alumne/config/local-stage.json ./config'
                                 script {
-                                    docker.build('fibness/api-stage:latest', '--build-arg NODE_ENV=stage .')
+                                    docker.build('fibness/api-stage:latest', '--pull --force-rm \
+                                        --build-arg NODE_ENV=stage .')
                                 }
                                 echo 'Registering stage docker image'
                                 script {
