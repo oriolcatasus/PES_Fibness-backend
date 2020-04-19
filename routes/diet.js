@@ -38,6 +38,15 @@ router.put('/:idElemento', async (req, res) => {
     }
 });
 
+router.get('/:idElemento/:dia', async function(req, res, next) {
+    try {
+        const dayMealSet = await diet.dayMeals(req.params.idElemento, req.params.dia);
+        res.send(dayMealSet);
+    } catch (err) {
+        next(err);
+    }
+})
+
 
 
 module.exports = router;

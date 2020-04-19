@@ -3,6 +3,7 @@ const assert = require("assert");
 const user = require("../src/models/userModel");
 const diet = require("../src/models/dietModel");
 const dbCtrl = require("../src/ctrls/dbCtrl");
+const meal = require("../src/models/mealModel")
 
 require("./rootHooks");
 
@@ -69,6 +70,7 @@ describe("dietModel script", function() {
             res = (await dbCtrl.execute(query)).rows[0]; 
             assert.equal(idElem, res.idelemento);
 
+            //check the 7 days have been created
             let queryCheckDays = {
                 text: "SELECT count(*) \
                         FROM diasDieta \
@@ -239,4 +241,78 @@ describe("dietModel script", function() {
             assert.equal(newDiet.idUser, res.idusuario);
         });
     });
+    describe("get function", function() {
+        it("should return meals of a day correctly", async function() {
+            let newUser = {
+                nombre: "Oriol",
+                password: "hash",
+                email: "oriol@example.com",
+            }
+            await user.create(newUser);
+
+            //select id from user in order to create a diet (we need it for the foreign key of element)
+            let query = {
+                text: "SELECT id \
+                        FROM usuarios \
+                        WHERE nombre = $1",
+                values: ["Oriol"],
+            };
+            let res = (await dbCtrl.execute(query)).rows[0];
+            idTest = res.id; 
+
+            //create diet (and element)
+            let newDiet = {
+                nombre: "DietTest",
+                descripcion: "DietTest",
+                idUser: idTest,
+            }
+            await diet.create(newDiet);
+            
+
+            //get the automatically generated id for the diet in order to access it
+            let queryGetID = {
+                text: "SELECT idElemento \
+                        FROM elementos \
+                        WHERE nombre = $1 and idUsuario = $2",
+                values: [newDiet.nombre, idTest],
+            };
+            res = (await dbCtrl.execute(queryGetID)).rows[0];
+            idElem = res.idelemento;
+
+            //create a meal
+            let newMeal = {
+                nombre: "MealTest",
+                horaComida: '22:00:00',
+                idElemento: idElem,
+                tipoDia: "miercoles",
+            };
+
+            await meal.create(newMeal);
+
+            //create a meal 2
+            let newMeal2 = {
+                nombre: "MealTest2",
+                horaComida: '15:00:00',
+                idElemento: idElem,
+                tipoDia: "miercoles",
+            };
+
+            await meal.create(newMeal2);
+
+            //create a meal for another day
+            let newMeal3 = {
+                nombre: "MealTest2",
+                horaComida: '15:00:00',
+                idElemento: idElem,
+                tipoDia: "sabado",
+            };
+
+            await meal.create(newMeal3);
+
+            res = await diet.dayMeals(idElem, "miercoles");
+            assert.equal(res.rows.length, 2);
+            assert.equal(res.rows[0].nombre, newMeal.nombre);
+            assert.equal(res.rows[1].nombre, newMeal2.nombre);
+        })
+    })
 });
