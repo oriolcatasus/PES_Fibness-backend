@@ -27,6 +27,16 @@ async function update(newComida, idComida) {
     await dbCtrl.execute(query);
 }
 
+async function aliments(idComida) {
+    let query = {
+        text: "SELECT idAlimento, nombre, descripcion, calorias \
+               FROM alimentos\
+               WHERE idComida = $1",
+        values: [idComida]
+    }
+    return (await dbCtrl.execute(query));
+}
+
 module.exports = {
-    create, del, update
+    create, del, update, aliments
 }

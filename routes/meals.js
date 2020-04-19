@@ -38,6 +38,15 @@ router.put('/:idComida', async (req, res) => {
     }
 });
 
+router.get('/:idComida/aliments', async function(req, res, next) {
+    try {
+        const alimentsSet = await meal.aliments(req.params.idComida);
+        res.send(alimentsSet);
+    } catch (err) {
+        next(err);
+    }
+})
+
 
 
 module.exports = router;
