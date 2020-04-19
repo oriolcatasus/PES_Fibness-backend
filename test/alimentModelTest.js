@@ -4,12 +4,13 @@ const user = require("../src/models/userModel");
 const diet = require("../src/models/dietModel");
 const dbCtrl = require("../src/ctrls/dbCtrl");
 const meal = require("../src/models/mealModel");
+const aliment = require("../src/models/alimentModel")
 
 require("./rootHooks");
 
-describe("mealModel script", function() {
+describe("alimentModel script", function() {
     describe("create function", function() {
-        it("should return meal created correctly", async function() {
+        it("should return aliment created correctly", async function() {
             //create user
             let newUser = {
                 nombre: "Oriol",
@@ -56,24 +57,34 @@ describe("mealModel script", function() {
 
             idMeal = (await meal.create(newMeal)).rows[0].idcomida;
 
-            //make sure it really is the meal we created
+            //create a aliment
+            let newAliment = {
+                nombre: "AlimentTest",
+                descripcion: "descriptionTest",
+                calorias: '300',
+                idComida: idMeal,
+            };
+
+            idAliment = (await aliment.create(newAliment)).rows[0].idalimento;
+
+            //make sure it really is the aliment we created
             query = {
-                text: "SELECT nombre, horaComida, idElemento, tipoDia \
-                        FROM comidas \
-                        WHERE idComida = $1",
-                values: [idMeal],
+                text: "SELECT nombre, descripcion, calorias, idComida \
+                        FROM alimentos \
+                        WHERE idAlimento = $1",
+                values: [idAliment],
             };
             res = (await dbCtrl.execute(query)).rows[0];
-            assert.equal(newMeal.nombre, res.nombre);            
-            assert.equal(newMeal.horaComida, res.horacomida);
-            assert.equal(newMeal.idElemento, res.idelemento);
-            assert.equal(newMeal.tipoDia, res.tipodia);
+            assert.equal(newAliment.nombre, res.nombre);            
+            assert.equal(newAliment.descripcion, res.descripcion);
+            assert.equal(newAliment.calorias, res.calorias);
+            assert.equal(newAliment.idComida, res.idcomida);
 
         });
     });
 
     describe("delete function", function() {        
-        it("should return meal deleted correctly", async function() {
+        it("should return aliment deleted correctly", async function() {
             //create user
             let newUser = {
                 nombre: "Oriol",
@@ -119,13 +130,23 @@ describe("mealModel script", function() {
             };
             idMeal = (await meal.create(newMeal)).rows[0].idcomida;
 
-            //deletion of the meal
-            await meal.del(idMeal);
+            //create a aliment
+            let newAliment = {
+                nombre: "AlimentTest",
+                descripcion: "descriptionTest",
+                calorias: '300',
+                idComida: idMeal,
+            };
 
-            //making sure the meal does not exist
+            idAliment = (await aliment.create(newAliment)).rows[0].idalimento;
+
+            //deletion of the aliment
+            await aliment.del(idAliment);
+
+            //making sure the aliment does not exist
             query = {
                 text: "SELECT * \
-                        FROM comidas" ,
+                        FROM alimentos" ,
             };
             res = (await dbCtrl.execute(query)).rows;
             assert.equal(res.length, 0);
@@ -133,7 +154,7 @@ describe("mealModel script", function() {
     });
 
     describe("update function", function() {        
-        it("should return diet update correctly", async function() {
+        it("should return aliment update correctly", async function() {
 
             //create user
             let newUser = {
@@ -181,27 +202,37 @@ describe("mealModel script", function() {
             };
             idMeal = (await meal.create(newMeal)).rows[0].idcomida;
 
+            //create a aliment
+            let newAliment = {
+                nombre: "AlimentTest",
+                descripcion: "descriptionTest",
+                calorias: '300',
+                idComida: idMeal,
+            };
+            idAliment = (await aliment.create(newAliment)).rows[0].idalimento;
 
-            let modifiedMeal = {
-                nombre: "MealTest2",
-                horaComida: "10:00:00",
+            let modifiedAliment = {
+                nombre: "AlimentTest2",
+                descripcion: "descriptionTest2",
+                calorias: '100',
             }
 
-            //update meal
-            await meal.update(modifiedMeal, idMeal);
+            //update aliment
+            await aliment.update(modifiedAliment, idAliment);
 
-            //get the modified meal
+            //get the modified aliment
             query = {
-                text: "SELECT nombre, horaComida \
-                        FROM comidas \
-                        WHERE idComida = $1",
-                values: [idMeal],
+                text: "SELECT nombre, descripcion, calorias \
+                        FROM alimentos \
+                        WHERE idAlimento = $1",
+                values: [idAliment],
             };
             res = (await dbCtrl.execute(query)).rows[0];    
 
             //make sure the modifications have been made
-            assert.equal(modifiedMeal.nombre, res.nombre);
-            assert.equal(modifiedMeal.horaComida, res.horacomida);
+            assert.equal(modifiedAliment.nombre, res.nombre);
+            assert.equal(modifiedAliment.descripcion, res.descripcion);
+            assert.equal(modifiedAliment.calorias, res.calorias);
         });
     });
 });

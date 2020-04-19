@@ -311,8 +311,8 @@ describe("dietModel script", function() {
 
             res = await diet.dayMeals(idElem, "miercoles");
             assert.equal(res.rows.length, 2);
-            assert.equal(res.rows[0].nombre, newMeal.nombre);
-            assert.equal(res.rows[1].nombre, newMeal2.nombre);
+            assert.equal(res.rows[0].nombre, newMeal2.nombre);
+            assert.equal(res.rows[1].nombre, newMeal.nombre);
         })
     })
 });
