@@ -1,0 +1,10 @@
+{
+    "reporterEnabled": "mocha-jenkins-reporter,mocha-sonarqube-reporter",
+    "mochaJenkinsReporterReporterOptions": {
+        "junit_report_stack": 1,
+        "junit_report_path": "reports/junit.xml"
+    },
+    "mochaSonarqubeReporterReporterOptions": {
+        "output": "reports/generic-execution-data.xml"
+    }
+}
