@@ -80,7 +80,10 @@ pipeline {
                         sh "${scannerHome}/bin/sonar-scanner \
                             -Dsonar.projectKey=PES_fibness-backend-$BRANCH_NAME \
                             -Dsonar.testExecutionReportPaths=reports/generic-execution-data.xml \
-                            -Dsonar.javascript.lcov.reportPaths=reports/lcov.info"
+                            -Dsonar.javascript.lcov.reportPaths=reports/lcov.info \
+                            -Dsonar.sources=. \
+                            -Dsonar.exclusions=test/**/*, \
+                            -Dsonar.tests=test"
                     }
                 }
             }
