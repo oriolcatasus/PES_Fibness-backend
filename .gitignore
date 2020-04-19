@@ -111,3 +111,6 @@ dist
 
 # Jenkins report files
 reports/
+
+#VSCode config files
+.vscode/

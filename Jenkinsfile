@@ -29,8 +29,15 @@ pipeline {
             post {
                 always {
                     sh 'docker-compose -f docker-compose.test.yaml down -v --rmi local'
-                    archiveArtifacts 'reports/mocha.xml, reports/cobertura-coverage.xml, reports/clover.xml'
-                    junit(testResults: 'reports/mocha.xml', allowEmptyResults:false)
+                    archiveArtifacts 'reports/junit.xml, \
+                        reports/generic-execution-data.xml \
+                        reports/cobertura-coverage.xml, \
+                        reports/clover.xml \
+                        reports/lcov.info'
+                    junit(testResults: 'reports/junit.xml',
+                        allowEmptyResults:false,
+                        healthScaleFactor: 2.0,
+                        keepLongStdio: true)
                     cobertura(
                         autoUpdateHealth: true,
                         autoUpdateStability: true,
@@ -41,12 +48,10 @@ pipeline {
                         onlyStable: false,
                         enableNewApi: true,
                         maxNumberOfBuilds: 0
-                        //classCoverageTargets: '90, 80, 70',
                         //conditionalCoverageTargets: '90, 80, 70',
                         //fileCoverageTargets: '90, 80, 70',
                         //lineCoverageTargets: '90, 80, 70',
-                        //methodCoverageTargets: '90, 80, 70',
-                        //packageCoverageTargets: '90, 80, 70'
+                        //methodCoverageTargets: '90, 80, 70'
                     )
                     step([
                         $class: 'CloverPublisher',
@@ -56,13 +61,45 @@ pipeline {
                         //unhealthyTarget: [methodCoverage: 80, conditionalCoverage: 80, statementCoverage: 80],
                         //failingTarget: [methodCoverage: 70, conditionalCoverage: 70, statementCoverage: 70]
                     ])
-                    sh 'rm -rf reports'
                 }
                 success {
                     echo 'Tests executed succesfully'
                 }
                 unsuccessful {
                     echo 'Tests failed'
+                }
+            }
+        }
+        stage('SonarQube analysis') {
+            environment {
+                scannerHome = tool 'SonarScanner'
+            }
+            steps {
+                nodejs(nodeJSInstallationName: 'node12') {
+                    withSonarQubeEnv('SonarQube') {
+                        sh "${scannerHome}/bin/sonar-scanner \
+                            -Dsonar.projectKey=PES_fibness-backend-$BRANCH_NAME \
+                            -Dsonar.testExecutionReportPaths=reports/generic-execution-data.xml \
+                            -Dsonar.javascript.lcov.reportPaths=reports/lcov.info \
+                            -Dsonar.sources=. \
+                            -Dsonar.exclusions=test/**/*, \
+                            -Dsonar.tests=test"
+                    }
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: true                
+                }
+            }
+            post {
+                success {
+                    echo 'Quality gate passed'
+                }
+                unsuccessful {
+                    echo 'Quality gate failed'
                 }
             }
         }
@@ -81,10 +118,10 @@ pipeline {
                         stage('Build stage image') {
                             steps {
                                 echo 'Building stage docker image'
-                                sh 'rm -f config/local-*'
                                 sh 'cp /home/alumne/config/local-stage.json ./config'
                                 script {
-                                    docker.build('fibness/api-stage:latest', '--build-arg NODE_ENV=stage .')
+                                    docker.build('fibness/api-stage:latest', '--force-rm \
+                                        --build-arg NODE_ENV=stage .')
                                 }
                                 echo 'Registering stage docker image'
                                 script {
@@ -96,9 +133,6 @@ pipeline {
                                 }
                             }
                             post {
-                                always {
-                                    sh 'rm -f config/local-*'
-                                }
                                 success {
                                     echo 'Stage docker image built successfully'
                                 }
@@ -117,9 +151,6 @@ pipeline {
                                 sh 'docker stack deploy -c stage.yaml api-stage'
                             }
                             post {
-                                always {
-                                    sh 'rm -f stage.yaml'
-                                }
                                 success {
                                     echo 'Deployed to stage succesfully'
                                 }
@@ -138,7 +169,6 @@ pipeline {
                         stage('Build production image') {
                             steps {
                                 echo 'Building production docker image'
-                                sh 'rm -f config/local-*'
                                 sh 'cp /home/alumne/config/local-production.json ./config'
                                 script {
                                     docker.build('fibness/api-prod:latest', '--build-arg NODE_ENV=production .')
@@ -153,9 +183,6 @@ pipeline {
                                 }
                             }
                             post {
-                                always {
-                                    sh 'rm -f config/local-*'
-                                }
                                 success {
                                     echo 'Stage docker image built successfully'
                                 }
@@ -174,9 +201,6 @@ pipeline {
                                 sh 'docker stack deploy -c prod.yaml api-prod'
                             }
                             post {
-                                always {
-                                    sh 'rm -f prod.yaml'
-                                }
                                 success {
                                     echo 'Deployed to prod succesfully'
                                 }
