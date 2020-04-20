@@ -9,14 +9,14 @@ async function create(diet) {
     await dbCtrl.execute(query);
 
     //get the automatically generated id of the element (that will be referred from diet)
-    let queryGetID = {
+    const queryGetID = {
         text: "SELECT idElemento \
                 FROM elementos \
                 WHERE nombre = $1 and idUsuario = $2",
         values: [diet.nombre, diet.idUser],
     };
-    let res = (await dbCtrl.execute(queryGetID)).rows;
-    let idElem = res[0].idelemento;
+    const res = (await dbCtrl.execute(queryGetID)).rows;
+    const idElem = res[0].idelemento;
 
     //create diet
     query = {
@@ -26,15 +26,15 @@ async function create(diet) {
     await dbCtrl.execute(query);
 
 
-    let days = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
-    for (i = 0; i < 7; i++) {
-        let queryCreateDietDays = {
+    const days = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+    for (let i = 0; i < 7; i++) {
+        const queryCreateDietDays = {
             text: "INSERT INTO diasDieta(idElemento, tipoDia) values ($1, $2)",
             values: [idElem, days[i]],
         }
         await dbCtrl.execute(queryCreateDietDays);
     }
-    let ret = {
+    const ret = {
         idElemento: idElem,
     }
     return ret;
@@ -42,7 +42,7 @@ async function create(diet) {
 }
 
 async function del(idElemento) {
-    let query = {
+    const query = {
         text: "DELETE FROM elementos WHERE idElemento = $1",
         values: [idElemento]
     }
@@ -50,7 +50,7 @@ async function del(idElemento) {
 }
 
 async function update(elemento, idElemento) {
-    let query = {
+    const query = {
         text: "UPDATE elementos SET nombre = $2 ,descripcion = $3 WHERE idElemento = $1",
         values: [idElemento, elemento.nombre, elemento.descripcion]
     }
@@ -58,7 +58,7 @@ async function update(elemento, idElemento) {
 }
 
 async function dayMeals(idElemento, day) {
-    let query = {
+    const query = {
         text: "SELECT idComida, nombre, horaComida \
                FROM comidas\
                WHERE idElemento = $1 AND tipoDia = $2 \
