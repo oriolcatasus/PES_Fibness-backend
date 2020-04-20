@@ -82,7 +82,7 @@ pipeline {
                             -Dsonar.testExecutionReportPaths=reports/generic-execution-data.xml \
                             -Dsonar.javascript.lcov.reportPaths=reports/lcov.info \
                             -Dsonar.sources=. \
-                            -Dsonar.exclusions=test/**/*, \
+                            -Dsonar.exclusions=test/**/*,routes/**/*, \
                             -Dsonar.tests=test"
                     }
                 }
