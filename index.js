@@ -28,7 +28,7 @@ app.use("/diet", diet);
 
 app.use("/meal", meal);
 
-app.use("/aliment, aliment");
+app.use("/aliment", aliment);
 
 app.get("/test", (req, res) => {
     console.log("Hello");
