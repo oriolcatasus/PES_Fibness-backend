@@ -81,7 +81,7 @@ pipeline {
                             -Dsonar.projectKey=PES_fibness-backend-$BRANCH_NAME \
                             -Dsonar.testExecutionReportPaths=reports/generic-execution-data.xml \
                             -Dsonar.javascript.lcov.reportPaths=reports/lcov.info \
-                            -Dsonar.sources=src/**/* \
+                            -Dsonar.sources=src \
                             -Dsonar.tests=test"
                     }
                 }
