@@ -57,7 +57,7 @@ describe("alimentModel script", function() {
 
             idMeal = (await meal.create(newMeal)).rows[0].idcomida;
 
-            //create a aliment
+            //create an aliment
             let newAliment = {
                 nombre: "AlimentTest",
                 descripcion: "descriptionTest",
