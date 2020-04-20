@@ -1,8 +1,8 @@
 const assert = require("assert");
 
-const dbCtrl = require("../src/ctrls/dbCtrl");
+const dbCtrl = require("../../src/ctrls/dbCtrl");
 
-require("./rootHooks");
+require("../rootHooks");
 
 describe("dbCtrl", async function() {
     describe("cleanTables", async function() {

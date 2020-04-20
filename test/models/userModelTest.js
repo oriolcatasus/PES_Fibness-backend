@@ -1,11 +1,11 @@
 const assert = require("assert");
 
-const user = require("../src/models/userModel");
-const training = require("../src/models/trainingModel");
-const diet = require("../src/models/dietModel")
-const dbCtrl = require("../src/ctrls/dbCtrl");
+const user = require("../../src/models/userModel");
+const training = require("../../src/models/trainingModel");
+const diet = require("../../src/models/dietModel")
+const dbCtrl = require("../../src/ctrls/dbCtrl");
 
-require("./rootHooks");
+require("../rootHooks");
 
 describe("userModel script", function() {
     describe("create function", function() {

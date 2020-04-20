@@ -1,16 +1,15 @@
 const assert = require("assert");
 
-const user = require("../src/models/userModel");
-const diet = require("../src/models/dietModel");
-const dbCtrl = require("../src/ctrls/dbCtrl");
-const meal = require("../src/models/mealModel");
-const aliment = require("../src/models/alimentModel");
+const user = require("../../src/models/userModel");
+const diet = require("../../src/models/dietModel");
+const dbCtrl = require("../../src/ctrls/dbCtrl");
+const meal = require("../../src/models/mealModel")
 
-require("./rootHooks");
+require("../rootHooks");
 
-describe("mealModel script", function() {
+describe("dietModel script", function() {
     describe("create function", function() {
-        it("should return meal created correctly", async function() {
+        it("should return diet created correctly", async function() {
             //create user
             let newUser = {
                 nombre: "Oriol",
@@ -47,34 +46,43 @@ describe("mealModel script", function() {
             res = (await dbCtrl.execute(queryGetID)).rows[0];
             idElem = res.idelemento;
 
-            //create a meal
-            let newMeal = {
-                nombre: "MealTest",
-                horaComida: '22:00:00',
-                idElemento: idElem,
-                tipoDia: "miercoles",
-            };
-
-            idMeal = (await meal.create(newMeal)).idComida;
-
-            //make sure it really is the meal we created
+            //get the diet that we have created
             query = {
-                text: "SELECT nombre, horaComida, idElemento, tipoDia \
-                        FROM comidas \
-                        WHERE idComida = $1",
-                values: [idMeal],
+                text: "SELECT nombre, descripcion, idUsuario \
+                        FROM elementos \
+                        WHERE idElemento = $1",
+                values: [idElem],
             };
-            res = (await dbCtrl.execute(query)).rows[0];
-            assert.equal(newMeal.nombre, res.nombre);            
-            assert.equal(newMeal.horaComida, res.horacomida);
-            assert.equal(newMeal.idElemento, res.idelemento);
-            assert.equal(newMeal.tipoDia, res.tipodia);
 
+            //make sure it really is the element we created
+            res = (await dbCtrl.execute(query)).rows[0];            
+            assert.equal(newDiet.nombre, res.nombre);
+            assert.equal(newDiet.descripcion, res.descripcion);
+            assert.equal(idTest, res.idusuario);
+
+            //same as above but with diet
+            query = {
+                text: "SELECT idElemento \
+                        FROM dietas \
+                        WHERE idElemento = $1",
+                values: [idElem],
+            };
+            res = (await dbCtrl.execute(query)).rows[0]; 
+            assert.equal(idElem, res.idelemento);
+
+            //check the 7 days have been created
+            let queryCheckDays = {
+                text: "SELECT count(*) \
+                        FROM diasDieta \
+                        WHERE idElemento = $1",
+                values: [idElem],
+            };
+            ndays = (await dbCtrl.execute(queryCheckDays)).rows[0].count; 
+
+            assert.equal(ndays, 7);
         });
-    });
 
-    describe("delete function", function() {        
-        it("should return meal deleted correctly", async function() {
+        it("should return unique constraint violation", async function() {
             //create user
             let newUser = {
                 nombre: "Oriol",
@@ -101,7 +109,45 @@ describe("mealModel script", function() {
             }
             await diet.create(newDiet);
 
-            //get the automatically generated id for the diet in order to create a meal
+            //create diet (and element) with same name and idUser, which violates unique constraint
+            newDiet = {
+                nombre: "DietTest",
+                descripcion: "DietDescription2",
+                idUser: idTest,
+            }
+            assert.rejects(() => diet.create(newDiet), Error);
+        });
+    });
+
+    describe("delete function", function() {        
+        it("should return diet deleted correctly", async function() {
+            //create user
+            let newUser = {
+                nombre: "Oriol",
+                password: "hash",
+                email: "oriol@example.com",
+            }
+            await user.create(newUser);
+
+            //select id from user in order to create a diet (we need it for the foreign key of element)
+            let query = {
+                text: "SELECT id \
+                        FROM usuarios \
+                        WHERE nombre = $1",
+                values: ["Oriol"],
+            };
+            let res = (await dbCtrl.execute(query)).rows[0];
+            idTest = res.id; 
+
+            //create diet (and element)
+            let newDiet = {
+                nombre: "DietTest",
+                descripcion: "DietDescription",
+                idUser: idTest,
+            }
+            await diet.create(newDiet);
+
+            //get the automatically generated id for the diet in order to access it
             let queryGetID = {
                 text: "SELECT idElemento \
                         FROM elementos \
@@ -111,22 +157,20 @@ describe("mealModel script", function() {
             res = (await dbCtrl.execute(queryGetID)).rows[0];
             idElem = res.idelemento;
 
-            //create a meal
-            let newMeal = {
-                nombre: "MealTest",
-                horaComida: '22:00:00',
-                idElemento: idElem,
-                tipoDia: "miercoles",
-            };
-            idMeal = (await meal.create(newMeal)).idComida;
+            //deletion of the diet
+            await diet.del(idElem);
 
-            //deletion of the meal
-            await meal.del(idMeal);
-
-            //making sure the meal does not exist
+            //making sure neither the diet nor the element exist
             query = {
                 text: "SELECT * \
-                        FROM comidas" ,
+                        FROM dietas" ,
+            };
+            res = (await dbCtrl.execute(query)).rows;
+            assert.equal(res.length, 0);
+
+            query = {
+                text: "SELECT * \
+                        FROM elementos" ,
             };
             res = (await dbCtrl.execute(query)).rows;
             assert.equal(res.length, 0);
@@ -163,7 +207,7 @@ describe("mealModel script", function() {
             await diet.create(newDiet);
             
 
-            //get the automatically generated id for the diet in order to create a meal
+            //get the automatically generated id for the diet in order to access it
             let queryGetID = {
                 text: "SELECT idElemento \
                         FROM elementos \
@@ -173,41 +217,32 @@ describe("mealModel script", function() {
             res = (await dbCtrl.execute(queryGetID)).rows[0];
             idElem = res.idelemento;
 
-            //create a meal
-            let newMeal = {
-                nombre: "MealTest",
-                horaComida: '22:00:00',
-                idElemento: idElem,
-                tipoDia: "miercoles",
-            };
-            idMeal = (await meal.create(newMeal)).idComida;
 
-
-            let modifiedMeal = {
-                nombre: "MealTest2",
-                horaComida: "10:00:00",
+            let modifiedDiet = {
+                nombre: "DietTest2",
+                descripcion: "DietTest2",
             }
 
-            //update meal
-            await meal.update(modifiedMeal, idMeal);
+            //update diet
+            await diet.update(modifiedDiet, idElem);
 
-            //get the modified meal
+            //get the modified diet
             query = {
-                text: "SELECT nombre, horaComida \
-                        FROM comidas \
-                        WHERE idComida = $1",
-                values: [idMeal],
+                text: "SELECT nombre, descripcion, idUsuario \
+                        FROM elementos \
+                        WHERE idElemento = $1",
+                values: [idElem],
             };
             res = (await dbCtrl.execute(query)).rows[0];    
 
             //make sure the modifications have been made
-            assert.equal(modifiedMeal.nombre, res.nombre);
-            assert.equal(modifiedMeal.horaComida, res.horacomida);
+            assert.equal(modifiedDiet.nombre, res.nombre);
+            assert.equal(modifiedDiet.descripcion, res.descripcion);
+            assert.equal(newDiet.idUser, res.idusuario);
         });
     });
-    describe("get operation", function() {
-        it("should return set of aliments correctly", async function() {
-            //create user
+    describe("get function", function() {
+        it("should return meals of a day correctly", async function() {
             let newUser = {
                 nombre: "Oriol",
                 password: "hash",
@@ -234,7 +269,7 @@ describe("mealModel script", function() {
             await diet.create(newDiet);
             
 
-            //get the automatically generated id for the diet in order to create a meal
+            //get the automatically generated id for the diet in order to access it
             let queryGetID = {
                 text: "SELECT idElemento \
                         FROM elementos \
@@ -251,36 +286,33 @@ describe("mealModel script", function() {
                 idElemento: idElem,
                 tipoDia: "miercoles",
             };
-            idMeal = (await meal.create(newMeal)).idComida;
 
-            //create an aliment
-            let newAliment = {
-                nombre: "AlimentTest",
-                descripcion: "descriptionTest2",
-                calorias: '100',
-                idComida: idMeal,
+            await meal.create(newMeal);
+
+            //create a meal 2
+            let newMeal2 = {
+                nombre: "MealTest2",
+                horaComida: '15:00:00',
+                idElemento: idElem,
+                tipoDia: "miercoles",
             };
-            await aliment.create(newAliment);
 
-            //create an aliment 2
-            let newAliment2 = {
-                nombre: "AlimentTest2",
-                descripcion: "descriptionTest2",
-                calorias: '500',
-                idComida: idMeal,
+            await meal.create(newMeal2);
+
+            //create a meal for another day
+            let newMeal3 = {
+                nombre: "MealTest2",
+                horaComida: '15:00:00',
+                idElemento: idElem,
+                tipoDia: "sabado",
             };
-            await aliment.create(newAliment2)
 
-            let alimentSet = await meal.aliments(idMeal);
+            await meal.create(newMeal3);
 
-            assert.equal(alimentSet.rows[0].nombre, newAliment.nombre);
-            assert.equal(alimentSet.rows[0].descripcion, newAliment.descripcion);
-            assert.equal(alimentSet.rows[0].calorias, newAliment.calorias);
-            assert.equal(alimentSet.rows[0].idAlimento, newAliment.idAlimento);
-            assert.equal(alimentSet.rows[1].nombre, newAliment2.nombre);
-            assert.equal(alimentSet.rows[1].descripcion, newAliment2.descripcion);
-            assert.equal(alimentSet.rows[1].calorias, newAliment2.calorias);
-            assert.equal(alimentSet.rows[1].idAlimento, newAliment2.idAlimento);
-        });
-    });
+            res = await diet.dayMeals(idElem, "miercoles");
+            assert.equal(res.rows.length, 2);
+            assert.equal(res.rows[0].nombre, newMeal2.nombre);
+            assert.equal(res.rows[1].nombre, newMeal.nombre);
+        })
+    })
 });

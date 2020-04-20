@@ -1,4 +1,5 @@
 {
     "timeout": 900000,
-    "color": true
+    "color": true,
+    "recursive": true
 }
