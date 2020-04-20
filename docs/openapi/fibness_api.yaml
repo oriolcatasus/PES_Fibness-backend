@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Fibness API
-  version: '1.0.0-alpha'
+  version: "1.0.0"
 servers:
   - url: 'http://10.4.41.146:3001'
     description: FIB server, UPC VPN required to connect
@@ -240,7 +240,17 @@ paths:
                 - idUser
       responses:
         '201':
-          description: Created
+          description: User created succesfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  idElemento:
+                    type: integer
+                    example: 12345
+                required:
+                  - idElemento
         '400':
           description: >-
             Some required parameters are missing or with an incorrect type
@@ -321,6 +331,16 @@ paths:
       responses:
         '201':
           description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  idElemento:
+                    type: integer
+                    example: 12345
+                required:
+                  - idElemento
         '400':
           description: >-
             Some required parameters are missing or with an incorrect type

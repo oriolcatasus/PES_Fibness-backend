@@ -34,8 +34,10 @@ async function create(diet) {
         }
         await dbCtrl.execute(queryCreateDietDays);
     }
-    
-    return idElem;
+    let ret = {
+        idElemento: idElem,
+    }
+    return ret;
 
 }
 

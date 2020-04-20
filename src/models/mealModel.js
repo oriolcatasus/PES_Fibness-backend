@@ -6,8 +6,11 @@ async function create(meal) {
         text: "INSERT INTO comidas(nombre, horaComida, idElemento, tipoDia) values($1, $2, $3, $4) RETURNING idComida",
         values: [meal.nombre, meal.horaComida, meal.idElemento, meal.tipoDia]
     }
-    idMeal = await dbCtrl.execute(query);
-    return idMeal;
+    idMeal = (await dbCtrl.execute(query)).rows[0].idcomida;
+    let ret = {
+        idComida: idMeal,
+    }
+    return ret;
 
 }
 

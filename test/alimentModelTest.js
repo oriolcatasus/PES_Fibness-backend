@@ -55,7 +55,7 @@ describe("alimentModel script", function() {
                 tipoDia: "miercoles",
             };
 
-            idMeal = (await meal.create(newMeal)).rows[0].idcomida;
+            idMeal = (await meal.create(newMeal)).idComida;
 
             //create an aliment
             let newAliment = {
@@ -128,7 +128,7 @@ describe("alimentModel script", function() {
                 idElemento: idElem,
                 tipoDia: "miercoles",
             };
-            idMeal = (await meal.create(newMeal)).rows[0].idcomida;
+            idMeal = (await meal.create(newMeal)).idComida;
 
             //create a aliment
             let newAliment = {
@@ -200,7 +200,7 @@ describe("alimentModel script", function() {
                 idElemento: idElem,
                 tipoDia: "miercoles",
             };
-            idMeal = (await meal.create(newMeal)).rows[0].idcomida;
+            idMeal = (await meal.create(newMeal)).idComida;
 
             //create a aliment
             let newAliment = {

@@ -55,7 +55,7 @@ describe("mealModel script", function() {
                 tipoDia: "miercoles",
             };
 
-            idMeal = (await meal.create(newMeal)).rows[0].idcomida;
+            idMeal = (await meal.create(newMeal)).idComida;
 
             //make sure it really is the meal we created
             query = {
@@ -118,7 +118,7 @@ describe("mealModel script", function() {
                 idElemento: idElem,
                 tipoDia: "miercoles",
             };
-            idMeal = (await meal.create(newMeal)).rows[0].idcomida;
+            idMeal = (await meal.create(newMeal)).idComida;
 
             //deletion of the meal
             await meal.del(idMeal);
@@ -180,7 +180,7 @@ describe("mealModel script", function() {
                 idElemento: idElem,
                 tipoDia: "miercoles",
             };
-            idMeal = (await meal.create(newMeal)).rows[0].idcomida;
+            idMeal = (await meal.create(newMeal)).idComida;
 
 
             let modifiedMeal = {
@@ -251,7 +251,7 @@ describe("mealModel script", function() {
                 idElemento: idElem,
                 tipoDia: "miercoles",
             };
-            idMeal = (await meal.create(newMeal)).rows[0].idcomida;
+            idMeal = (await meal.create(newMeal)).idComida;
 
             //create an aliment
             let newAliment = {
