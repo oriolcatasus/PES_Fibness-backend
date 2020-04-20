@@ -47,7 +47,7 @@ async function start() {
     });
 }
 
-function stop() {
+async function stop() {
     dbCtrl.disconnect();
     app.close();
 }
