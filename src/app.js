@@ -1,8 +1,8 @@
 const express = require("express");
-const config = require("config")
+const { db } = require("config")
 
 //db
-const dbCtrl = require("./src/ctrls/dbCtrl");
+const dbCtrl = require("./ctrls/dbCtrl");
 
 //Routes
 const user = require("./routes/user");
@@ -12,11 +12,12 @@ const meal = require("./routes/meal")
 const aliment = require("./routes/aliment")
 
 //Middleware
-const errorHandler = require("./middleware/errorHandlers");
+const errorHandler = require("../middleware/errorHandlers");
 
 const port = process.env.PORT || 3000;
 
 const app = express();
+let server;
 
 app.use(express.json());
 
@@ -41,19 +42,20 @@ app.use(errorHandler.def);
 
 
 async function start() {
-    dbCtrl.connect(config.db);
-    app.listen(port, () => {    
+    dbCtrl.connect(db);
+    server = app.listen(port, () => {    
         console.log("Server started at port " + port);
     });
 }
 
 async function stop() {
     dbCtrl.disconnect();
-    app.close();
+    server.close();
 }
 
 module.exports = {
     start,
-    stop
+    stop,
+    app
 }
 

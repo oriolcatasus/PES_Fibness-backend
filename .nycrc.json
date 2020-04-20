@@ -1,9 +1,7 @@
 {
     "all": true,
     "report-dir": "reports",
-    "exclude": [
-        "reports/**/*",
-        "coverage/**/*",
-        "docs/**/*"
+    "include": [
+        "src/**/*.js"
     ]
 }

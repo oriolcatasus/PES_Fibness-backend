@@ -81,8 +81,7 @@ pipeline {
                             -Dsonar.projectKey=PES_fibness-backend-$BRANCH_NAME \
                             -Dsonar.testExecutionReportPaths=reports/generic-execution-data.xml \
                             -Dsonar.javascript.lcov.reportPaths=reports/lcov.info \
-                            -Dsonar.sources=. \
-                            -Dsonar.exclusions=test/**/*,routes/**/*,app.js,index.js \
+                            -Dsonar.sources=src/**/* \
                             -Dsonar.tests=test"
                     }
                 }
@@ -91,7 +90,7 @@ pipeline {
         stage('Quality Gate') {
             steps {
                 timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate abortPipeline: true                
+                    waitForQualityGate abortPipeline: false                
                 }
             }
             post {
