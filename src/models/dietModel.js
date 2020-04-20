@@ -55,6 +55,17 @@ async function update(elemento, idElemento) {
     await dbCtrl.execute(query);
 }
 
+async function dayMeals(idElemento, day) {
+    let query = {
+        text: "SELECT idComida, nombre, horaComida \
+               FROM comidas\
+               WHERE idElemento = $1 AND tipoDia = $2 \
+               ORDER BY horaComida",
+        values: [idElemento, day]
+    }
+    return (await dbCtrl.execute(query));
+}
+
 module.exports = {
-    create, del, update
+    create, del, update, dayMeals
 }

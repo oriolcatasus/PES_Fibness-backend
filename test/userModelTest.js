@@ -310,5 +310,159 @@ describe("userModel script", function() {
             let trainingSet = await user.trainings(idUser);
             assert.equal(trainingSet.rows.length, 0);
         });
+
+        it("should return set of diets correctly", async function(){
+            //create user
+            let newUser = {
+                nombre: "Oriol",
+                password: "hash",
+                email: "oriol@example.com",
+            }
+            await user.create(newUser);
+
+            //select id from user in order to create a diet (we need it for the foreign key of element)
+            let query = {
+                text: "SELECT id \
+                        FROM usuarios \
+                        WHERE nombre = $1",
+                values: ["Oriol"],
+            };
+            let res = (await dbCtrl.execute(query)).rows[0];
+            idTest = res.id; 
+
+            //create diet 1 (and element)
+            let newDiet = {
+                nombre: "DietTest",
+                descripcion: "DietDescription",
+                idUser: idTest,
+            }
+            await diet.create(newDiet);
+
+            //create diet 2 (and element)
+            let newDiet2 = {
+                nombre: "DietTest2",
+                descripcion: "DietDescription",
+                idUser: idTest,
+            }
+            await diet.create(newDiet2);
+
+            let dietSet = await user.diets(idTest);
+
+            assert.equal(dietSet.rows[0].nombre, newDiet.nombre);
+            assert.equal(dietSet.rows[0].descripcion, newDiet.descripcion);
+            assert.equal(dietSet.rows[1].nombre, newDiet2.nombre);
+            assert.equal(dietSet.rows[1].descripcion, newDiet2.descripcion);
+        });
+
+        it("should NOT return diets from other users", async function(){
+
+            //create user
+            let newUser = {
+                nombre: "Oriol",
+                password: "hash",
+                email: "oriol@example.com",
+            }
+            await user.create(newUser);
+
+            //create user 2
+            let newUser2 = {
+                nombre: "Oriol2",
+                password: "hash",
+                email: "oriol2@example.com",
+            }
+            await user.create(newUser2);
+
+             //select id from user 1 in order to test that nothing is returned
+            let query = {
+                text: "SELECT id \
+                        FROM usuarios \
+                        WHERE nombre = $1",
+                values: ["Oriol"],
+            };
+            let res = (await dbCtrl.execute(query)).rows[0];
+            idUser = res.id; 
+
+            //select id from user 2 in order to create a diet (we need it for the foreign key of element)
+            query = {
+                text: "SELECT id \
+                        FROM usuarios \
+                        WHERE nombre = $1",
+                values: ["Oriol2"],
+            };
+            res = (await dbCtrl.execute(query)).rows[0];
+            idUser2 = res.id; 
+
+            //create diet for user2 (and element)
+            let newDiet = {
+                nombre: "DietTest",
+                descripcion: "DietDescription",
+                idUser: idUser2,
+            }
+            await diet.create(newDiet);
+
+
+            //getting diets of user1 and making sure there is none
+            let dietSet = await user.diets(idUser);
+            assert.equal(dietSet.rows.length, 0);
+
+        });
+
+        it("should NOT return other things (trainings) both from the same user and others", async function() {
+            //create user
+            let newUser = {
+                nombre: "Oriol",
+                password: "hash",
+                email: "oriol@example.com",
+            }
+            await user.create(newUser);
+
+            //create user 2
+            let newUser2 = {
+                nombre: "Oriol2",
+                password: "hash",
+                email: "oriol2@example.com",
+            }
+            await user.create(newUser2);
+
+             //select id from user 1 in order to create training1
+             let query = {
+                text: "SELECT id \
+                        FROM usuarios \
+                        WHERE nombre = $1",
+                values: ["Oriol"],
+            };
+            let res = (await dbCtrl.execute(query)).rows[0];
+            idUser = res.id; 
+
+            //select id from user 2 in order to create training2
+            query = {
+                text: "SELECT id \
+                        FROM usuarios \
+                        WHERE nombre = $1",
+                values: ["Oriol2"],
+            };
+            res = (await dbCtrl.execute(query)).rows[0];
+            idUser2 = res.id; 
+
+            //create training for user1
+            let newDiet = {
+                nombre: "TrainingTest",
+                descripcion: "TrainingDescription",
+                idUser: idUser,
+            }
+            await training.create(newDiet);
+
+            //create training for user2
+            let newDiet2 = {
+                nombre: "TrainingTest2",
+                descripcion: "TrainingDescription",
+                idUser: idUser2,
+            }
+            await training.create(newDiet2);
+
+            //getting trainings of user1 and making sure there is none
+            let dietSet = await user.diets(idUser);
+            assert.equal(dietSet.rows.length, 0);
+        });
     });
 });

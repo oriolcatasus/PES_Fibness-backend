@@ -8,6 +8,8 @@ const dbCtrl = require("./src/ctrls/dbCtrl");
 const user = require("./routes/user");
 const training = require("./routes/training")
 const diet = require("./routes/diet")
+const meal = require("./routes/meal")
+const aliment = require("./routes/aliment")
 
 //Middleware
 const errorHandler = require("./middleware/errorHandlers");
@@ -23,6 +25,10 @@ app.use("/user", user);
 app.use("/training", training);
 
 app.use("/diet", diet);
+
+app.use("/meal", meal);
+
+app.use("/aliment, aliment");
 
 app.get("/test", (req, res) => {
     console.log("Hello");

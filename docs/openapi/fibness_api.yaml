@@ -12,6 +12,10 @@ tags:
     description: Operations about trainings
   - name: diet
     description: Operations about diets
+  - name: meal
+    description: Operations about meals
+  - name: aliment
+    description: Operations about aliments
 paths:
   /user:
     post:
@@ -129,6 +133,84 @@ paths:
                     example: 1234
                 required:
                   - result
+  /user/{id}/trainings:
+    get:
+      summary: Gives the trainings of a user
+      description: Returns all the trainings of the user with the given id
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user to get the trainigs from
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: Set of the ids, names and descriptions of the requested trainings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    idElemento:
+                      type: integer
+                    nombre:
+                      type: string
+                    descripcion:
+                      type: string
+                example:
+                  - idElemento: 28
+                    nombre: TrainingTest
+                    descripcion: DescriptionTest
+                  - idElemento: 40
+                    nombre: TrainingTest2
+                    descripcion: DescriptionTest2
+                required:
+                - result
+  /user/{id}/diets:
+    get:
+      summary: Gives the diets of a user
+      description: Returns all the diets of the user with the given id
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user to get the diets from
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: Set of the ids, names and descriptions of the requested diets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    idElemento:
+                      type: integer
+                    nombre:
+                      type: string
+                    descripcion:
+                      type: string
+                example:
+                  - idElemento: 23
+                    nombre: DietTest
+                    descripcion: DescriptionTest
+                  - idElemento: 69
+                    nombre: DietTest2
+                    descripcion: DescriptionTest2
+                required:
+                - result
   '/training':
     post:
       summary: Creates a training
@@ -286,6 +368,268 @@ paths:
               required:
                 - name
                 - description
+      responses:
+            200:
+              description: Ok
+  /diet/{idElemento}/{dia}:
+    get:
+      summary: Gives the meals of a certain day for a certain diet
+      description: Returns all the meals of the diet with the given id for the specified day
+      tags:
+        - diet
+      parameters:
+        - name: idElemento
+          in: path
+          required: true
+          description: The id of the diet to get the trainigs from
+          schema:
+            type: integer
+            minimum: 1
+        - name: dia
+          in: path
+          required: true
+          description: day of the week
+          schema:
+            type: string
+            enum: [lunes, martes, miercoles, jueves, viernes, sabado, domingo]
+      responses:
+        200:
+          description: Set of the ids, names and timeToEat of the requested meals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    idComida:
+                      type: integer
+                    nombre:
+                      type: string
+                    horaComida:
+                      type: string
+                example:
+                  - idComida: 56
+                    nombre: MealTest
+                    horaComida: '10:00'
+                  - idComida: 100
+                    nombre: MealTest2
+                    horaComida: '18:00'
+                required:
+                - result
+  '/meal':
+    post:
+      summary: Creates a meal
+      description: Creates a meal with the given parameters and associated to the given day and diet
+      tags:
+        - meal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: MealTest
+                horaComida:
+                  type: string
+                  example: DescriptionTest
+                idElemento:
+                  type: integer
+                  description: id of the diet
+                  example: 10
+                tipoDia:
+                  type: string
+                  description: day of the week
+                  enum: [lunes, martes, miercoles, jueves, viernes, sabado, domingo]
+              required:
+                - nombre
+                - descripcion
+                - idUser
+                - tipoDia
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: >-
+            Some required parameters are missing or with an incorrect type
+  '/meal/{id}':
+    delete:
+      summary: Deletes a meal by id
+      tags:
+        - meal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the meal to delete
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Ok
+    put:
+      summary: Update a meal by id
+      tags:
+        - meal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the meal to update
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: MealTest2
+                horaComida:
+                  type: string
+                  example: DescriptionTest2
+              required:
+                - name
+                - horaComida
+      responses:
+            200:
+              description: Ok
+  /meal/{idComida}/aliments:
+    get:
+      summary: Gives the aliments of a certain meal for a certain day of a certain diet
+      description: Returns all the aliments of the day of the diet with the given id for the specified meal
+      tags:
+        - meal
+      parameters:
+        - name: idComida
+          in: path
+          required: true
+          description: The id of the meal to get the aliments from
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: Set of the ids, names, descriptions and calories of the requested aliments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    idAlimento:
+                      type: integer
+                    nombre:
+                      type: string
+                    descripcion:
+                      type: string
+                    calorias:
+                      type: integer
+                example:
+                  - idAlimento: 56
+                    nombre: AlimentTest
+                    descripcion: DescriptionTest
+                    calorias: 300
+                  - idAlimento: 78
+                    nombre: AlimentTest2
+                    descripcion: DescriptionTest2
+                    calorias: 400
+                required:
+                - result
+  '/aliment':
+    post:
+      summary: Creates an aliment
+      description: Creates an aliment with the given parameters and associated to the given meal
+      tags:
+        - aliment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: AlimentTest
+                descripcion:
+                  type: string
+                  example: DescriptionTest
+                calorias:
+                  type: integer
+                  example: 100
+                idComida:
+                  type: string
+                  description: id of the meal
+                  example: 34
+              required:
+                - nombre
+                - descripcion
+                - calorias
+                - idComida
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: >-
+            Some required parameters are missing or with an incorrect type
+  '/aliment/{id}':
+    delete:
+      summary: Deletes an aliment by id
+      tags:
+        - aliment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the aliment to delete
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Ok
+    put:
+      summary: Updates an aliment by id
+      tags:
+        - aliment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the aliment to update
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: AlimentTest2
+                descripcion:
+                  type: string
+                  example: DescriptionTest2324324234
+                calorias:
+                  type: integer
+                  example: 200
+              required:
+                - name
+                - descripcion
+                - calorias
       responses:
             200:
               description: Ok

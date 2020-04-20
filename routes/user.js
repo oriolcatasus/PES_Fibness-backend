@@ -50,4 +50,13 @@ router.get('/:id/trainings', async function(req, res, next) {
     }
 })
 
+router.get('/:id/diets', async function(req, res, next) {
+    try {
+        const dietSet = await user.diets(req.params.id);
+        res.send(dietSet);
+    } catch (err) {
+        next(err);
+    }
+})
+
 module.exports = router;

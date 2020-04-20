@@ -1,6 +1,6 @@
 const express = require("express");
 
-const diet = require("../src/models/dietModel");
+const meal = require("../src/models/mealModel");
 
 const router = express.Router();
 
@@ -8,7 +8,7 @@ const router = express.Router();
 //create
 router.post('/', async (req, res) => {
     try {
-        await diet.create(req.body);
+        await meal.create(req.body);
         res.sendStatus(200);
     } catch (e) {
         console.error(e.message);
@@ -17,9 +17,9 @@ router.post('/', async (req, res) => {
 });
 
 //delete
-router.delete('/:idElemento', async (req, res) => {
+router.delete('/:idComida', async (req, res) => {
     try {
-        await diet.del(req.params.idElemento);
+        await meal.del(req.params.idElemento);
         res.sendStatus(200);
     } catch (e) {
         console.error(e.message);
@@ -28,9 +28,9 @@ router.delete('/:idElemento', async (req, res) => {
 });
 
 //update element (aka name and/or description)
-router.put('/:idElemento', async (req, res) => {
+router.put('/:idComida', async (req, res) => {
     try {
-        await diet.update(req.body, req.params.idElemento);
+        await meal.update(req.body, req.params.idElemento);
         res.sendStatus(200);
     } catch (e) {
         //console.error(e.message);
@@ -38,10 +38,10 @@ router.put('/:idElemento', async (req, res) => {
     }
 });
 
-router.get('/:idElemento/:dia', async function(req, res, next) {
+router.get('/:idComida/aliments', async function(req, res, next) {
     try {
-        const dayMealSet = await diet.dayMeals(req.params.idElemento, req.params.dia);
-        res.send(dayMealSet);
+        const alimentsSet = await meal.aliments(req.params.idComida);
+        res.send(alimentsSet);
     } catch (err) {
         next(err);
     }
