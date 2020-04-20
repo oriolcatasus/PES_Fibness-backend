@@ -1,4 +1,9 @@
 {
     "all": true,
-    "report-dir": "./reports"
+    "report-dir": "reports",
+    "exclude": [
+        "reports/**/*",
+        "coverage/**/*",
+        "docs/**/*"
+    ]
 }
