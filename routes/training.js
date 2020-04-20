@@ -18,8 +18,8 @@ router.delete('/:idElemento', async (req, res) => {
 //create
 router.post('/', async (req, res) => {
     try {
-        await training.create(req.body);
-        res.sendStatus(200);
+        const result = await training.create(req.body);
+        res.send(result);
     } catch (e) {
         console.error(e.message);
         res.status(400).send(e.message);
