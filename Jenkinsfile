@@ -84,11 +84,18 @@ pipeline {
                             -Dsonar.tests=test"
                     }
                 }
-                timeout(15) {
-                    qg = waitFotQualityGate()
-                    if (qg != "OK") {
-                        currentBuild.result = "UNSTABLE"
-                    }
+            }
+            post {
+                failure {
+                    echo 'SonarQube analysis failed'
+                }
+            }
+        }
+        stage('Quality Gate') {
+            timeout(15) {
+                def qg = waitFotQualityGate()
+                if (qg != "OK") {
+                    currentBuild.result = "UNSTABLE"
                 }
             }
             post {
@@ -100,7 +107,7 @@ pipeline {
                     echo 'Build marked as unstable'
                 }
                 failure {
-                    echo 'SonarQube analysis failed'
+                    echo 'Quality gate not received'
                 }
             }
         }
