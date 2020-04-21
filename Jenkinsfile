@@ -10,10 +10,10 @@ pipeline {
             }
             post {
                 success {
-                    echo 'Build stage: SUCCESS'
+                    echo 'Image successfully build'
                 }
-                unsuccessful {
-                    echo 'Build stage: FAILURE'
+                failure {
+                    echo 'Failed to build image'
                 }
             }
         }
@@ -29,11 +29,6 @@ pipeline {
             post {
                 always {
                     sh 'docker-compose -f docker-compose.test.yaml down -v --rmi local'
-                    archiveArtifacts 'reports/junit.xml, \
-                        reports/generic-execution-data.xml \
-                        reports/cobertura-coverage.xml, \
-                        reports/clover.xml \
-                        reports/lcov.info'
                     junit(testResults: 'reports/junit.xml',
                         allowEmptyResults:false,
                         healthScaleFactor: 2.0,
@@ -63,10 +58,14 @@ pipeline {
                     ])
                 }
                 success {
-                    echo 'Tests executed succesfully'
+                    echo 'Tests succesfully executed'
                 }
-                unsuccessful {
-                    echo 'Tests failed'
+                unstable {
+                    echo 'One or more tests failed'
+                    echo 'Build marked as unstable'
+                }
+                failure {
+                    echo 'Test execution failed'
                 }
             }
         }
@@ -85,20 +84,23 @@ pipeline {
                             -Dsonar.tests=test"
                     }
                 }
-            }
-        }
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate abortPipeline: false                
+                timeout(15) {
+                    qg = waitFotQualityGate()
+                    if (qg != "OK") {
+                        currentBuild.result = "UNSTABLE"
+                    }
                 }
             }
             post {
                 success {
-                    echo 'Quality gate passed'
+                    echo 'SonarQube quality gate passed'
                 }
-                unsuccessful {
-                    echo 'Quality gate failed'
+                unstable {
+                    echo 'SonarQube quality gate failed'
+                    echo 'Build marked as unstable'
+                }
+                failure {
+                    echo 'SonarQube analysis failed'
                 }
             }
         }
@@ -122,21 +124,21 @@ pipeline {
                                     docker.build('fibness/api-stage:latest', '--force-rm \
                                         --build-arg NODE_ENV=stage .')
                                 }
-                                echo 'Registering stage docker image'
+                                echo 'Registering stage image'
                                 script {
                                     docker.withRegistry('http://localhost:5000') {
                                         image = docker.image('fibness/api-stage:latest')
-                                        echo 'Pushing docker image to docker registry'
+                                        echo 'Pushing image to registry'
                                         image.push('latest')
                                     }   
                                 }
                             }
                             post {
                                 success {
-                                    echo 'Stage docker image built successfully'
+                                    echo 'Stage image successfully built'
                                 }
-                                unsuccessful {
-                                    echo 'Failed to build stage docker image'
+                                failure {
+                                    echo 'Failed to build stage image'
                                 }
                             }
                         }
@@ -145,15 +147,15 @@ pipeline {
                                 DB_STAGE = credentials('db-stage')
                             }
                             steps {                        
-                                echo 'Deploying docker image to stage'
+                                echo 'Deploying image to stage'
                                 sh 'docker-compose -f docker-compose.stage.yaml config > stage.yaml'
                                 sh 'docker stack deploy -c stage.yaml api-stage'
                             }
                             post {
                                 success {
-                                    echo 'Deployed to stage succesfully'
+                                    echo 'Stage image succesfully deployed'
                                 }
-                                unsuccessful {
+                                failure {
                                     echo 'Failed to deploy to stage'
                                 }
                             }
@@ -167,26 +169,26 @@ pipeline {
                     stages {
                         stage('Build production image') {
                             steps {
-                                echo 'Building production docker image'
+                                echo 'Building production image'
                                 sh 'cp /home/alumne/config/local-production.json ./config'
                                 script {
                                     docker.build('fibness/api-prod:latest', '--build-arg NODE_ENV=production .')
                                 }
-                                echo 'Registering production docker image'
+                                echo 'Registering production image'
                                 script {
                                     docker.withRegistry('http://localhost:5000') {
                                         image = docker.image('fibness/api-prod:latest')
-                                        echo 'Pushing docker image to docker registry'
+                                        echo 'Pushing image to registry'
                                         image.push('latest')
                                     }
                                 }
                             }
                             post {
                                 success {
-                                    echo 'Stage docker image built successfully'
+                                    echo 'Production image successfully built'
                                 }
-                                unsuccessful {
-                                    echo 'Failed to build stage docker image'
+                                failure {
+                                    echo 'Failed to build production image'
                                 }
                             }
                         }
@@ -195,22 +197,37 @@ pipeline {
                                 DB_PROD = credentials('db-prod')
                             }
                             steps {                        
-                                echo 'Deploying docker image to production'
+                                echo 'Deploying image to production'
                                 sh 'docker-compose -f docker-compose.prod.yaml config > prod.yaml'
                                 sh 'docker stack deploy -c prod.yaml api-prod'
                             }
                             post {
                                 success {
-                                    echo 'Deployed to prod succesfully'
+                                    echo 'Production image successfully deployed'
                                 }
-                                unsuccessful {
-                                    echo 'Failed to deploy to prod'
+                                failure {
+                                    echo 'Failed to deploy to production'
                                 }
                             }
                         }
                     }
                 }
             }
+        }
+    }
+    post {
+        always {
+            echo 'Cleaning up docker leftovers'
+            sh 'docker system prune'
+        }
+        success {
+            echo 'Job successfully finished'
+        }
+        unstable {
+            echo 'Job marked as unstable'
+        }
+        failure {
+            echo 'Job failed'
         }
     }
 }
