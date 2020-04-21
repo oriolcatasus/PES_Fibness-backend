@@ -39,13 +39,13 @@ describe("exerciseModel script", function() {
             await training.create(newTraining);
 
             //get the automatically generated id for the training
-            let queryGetID = {
+            let queryGetElementID = {
                 text: "SELECT idElemento \
                         FROM elementos \
                         WHERE nombre = $1 and idUsuario = $2",
                 values: [newTraining.nombre, idTest],
             };
-            res = (await dbCtrl.execute(queryGetID)).rows[0];
+            res = (await dbCtrl.execute(queryGetElementID)).rows[0];
             idTrainigTest = res.idelemento;
 
             //create exercise( and activity)
@@ -102,8 +102,8 @@ describe("exerciseModel script", function() {
             assert.equal(newExercise.tiempoDescanso, resExer.tiempoDescanso);
             assert.equal(idActi,resExer.idActividad);
         });
-
-
+    });
+    /*   
     describe("delete function", function() {
         
         it("should return exercise deleted correctly", async function() {
@@ -189,7 +189,6 @@ describe("exerciseModel script", function() {
             assert.equal(res.length, 0);
         });
     });
-
     describe("update function", function() {
         
         it("should return exercise update correctly", async function() {
@@ -298,4 +297,5 @@ describe("exerciseModel script", function() {
             
         });
     });
+    */
 });
