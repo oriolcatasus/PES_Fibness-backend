@@ -240,7 +240,7 @@ paths:
                 - idUser
       responses:
         '201':
-          description: User created succesfully
+          description: Training created succesfully
           content:
             application/json:
               schema:
@@ -471,7 +471,17 @@ paths:
                 - tipoDia
       responses:
         '201':
-          description: Created
+          description: Meal created succesfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  idComida:
+                    type: integer
+                    example: 12345
+                required:
+                  - idComida
         '400':
           description: >-
             Some required parameters are missing or with an incorrect type
@@ -598,7 +608,17 @@ paths:
                 - idComida
       responses:
         '201':
-          description: Created
+          description: Aliment created succesfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  idAlimento:
+                    type: integer
+                    example: 12345
+                required:
+                  - idAlimento
         '400':
           description: >-
             Some required parameters are missing or with an incorrect type
