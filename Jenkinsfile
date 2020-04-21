@@ -92,10 +92,12 @@ pipeline {
             }
         }
         stage('Quality Gate') {
-            timeout(15) {
-                def qg = waitFotQualityGate()
-                if (qg != "OK") {
-                    currentBuild.result = "UNSTABLE"
+            steps {
+                timeout(15) {
+                    def qg = waitFotQualityGate()
+                    if (qg != "OK") {
+                        currentBuild.result = "UNSTABLE"
+                    }
                 }
             }
             post {
