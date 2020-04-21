@@ -93,10 +93,13 @@ pipeline {
         }
         stage('Quality Gate') {
             steps {
-                timeout(15) {
-                    def qg = waitFotQualityGate()
-                    if (qg != "OK") {
-                        currentBuild.result = "UNSTABLE"
+                script {
+                    timeout(time: 15, units: 'MINUTES') {
+                        echo 'Waiting for SonarQube quality gate'
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            currentBuild.result = 'UNSTABLE'
+                        }
                     }
                 }
             }
@@ -222,21 +225,6 @@ pipeline {
                     }
                 }
             }
-        }
-    }
-    post {
-        always {
-            echo 'Cleaning up docker leftovers'
-            sh 'docker system prune'
-        }
-        success {
-            echo 'Job successfully finished'
-        }
-        unstable {
-            echo 'Job marked as unstable'
-        }
-        failure {
-            echo 'Job failed'
         }
     }
 }
