@@ -194,10 +194,10 @@ describe("userModel script", function() {
 
             let trainingSet = await user.trainings(idTest);
 
-            assert.equal(trainingSet.rows[0].nombre, newTraining.nombre);
-            assert.equal(trainingSet.rows[0].descripcion, newTraining.descripcion);
-            assert.equal(trainingSet.rows[1].nombre, newTraining2.nombre);
-            assert.equal(trainingSet.rows[1].descripcion, newTraining2.descripcion);
+            assert.equal(trainingSet[0].nombre, newTraining.nombre);
+            assert.equal(trainingSet[0].descripcion, newTraining.descripcion);
+            assert.equal(trainingSet[1].nombre, newTraining2.nombre);
+            assert.equal(trainingSet[1].descripcion, newTraining2.descripcion);
         });
 
         it("should NOT return trainings from other users", async function(){
@@ -249,7 +249,7 @@ describe("userModel script", function() {
 
             //getting trainings of user1 and making sure there is none
             let trainingSet = await user.trainings(idUser);
-            assert.equal(trainingSet.rows.length, 0);
+            assert.equal(trainingSet.length, 0);
 
         });
 
@@ -308,7 +308,7 @@ describe("userModel script", function() {
 
             //getting trainings of user1 and making sure there is none
             let trainingSet = await user.trainings(idUser);
-            assert.equal(trainingSet.rows.length, 0);
+            assert.equal(trainingSet.length, 0);
         });
 
         it("should return set of diets correctly", async function(){
@@ -348,10 +348,10 @@ describe("userModel script", function() {
 
             let dietSet = await user.diets(idTest);
 
-            assert.equal(dietSet.rows[0].nombre, newDiet.nombre);
-            assert.equal(dietSet.rows[0].descripcion, newDiet.descripcion);
-            assert.equal(dietSet.rows[1].nombre, newDiet2.nombre);
-            assert.equal(dietSet.rows[1].descripcion, newDiet2.descripcion);
+            assert.equal(dietSet[0].nombre, newDiet.nombre);
+            assert.equal(dietSet[0].descripcion, newDiet.descripcion);
+            assert.equal(dietSet[1].nombre, newDiet2.nombre);
+            assert.equal(dietSet[1].descripcion, newDiet2.descripcion);
         });
 
         it("should NOT return diets from other users", async function(){
@@ -403,7 +403,7 @@ describe("userModel script", function() {
 
             //getting diets of user1 and making sure there is none
             let dietSet = await user.diets(idUser);
-            assert.equal(dietSet.rows.length, 0);
+            assert.equal(dietSet.length, 0);
 
         });
 
@@ -462,7 +462,7 @@ describe("userModel script", function() {
 
             //getting trainings of user1 and making sure there is none
             let dietSet = await user.diets(idUser);
-            assert.equal(dietSet.rows.length, 0);
+            assert.equal(dietSet.length, 0);
         });
     });
 });

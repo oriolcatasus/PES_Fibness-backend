@@ -273,14 +273,14 @@ describe("mealModel script", function() {
 
             let alimentSet = await meal.aliments(idMeal);
 
-            assert.equal(alimentSet.rows[0].nombre, newAliment.nombre);
-            assert.equal(alimentSet.rows[0].descripcion, newAliment.descripcion);
-            assert.equal(alimentSet.rows[0].calorias, newAliment.calorias);
-            assert.equal(alimentSet.rows[0].idAlimento, newAliment.idAlimento);
-            assert.equal(alimentSet.rows[1].nombre, newAliment2.nombre);
-            assert.equal(alimentSet.rows[1].descripcion, newAliment2.descripcion);
-            assert.equal(alimentSet.rows[1].calorias, newAliment2.calorias);
-            assert.equal(alimentSet.rows[1].idAlimento, newAliment2.idAlimento);
+            assert.equal(alimentSet[0].nombre, newAliment.nombre);
+            assert.equal(alimentSet[0].descripcion, newAliment.descripcion);
+            assert.equal(alimentSet[0].calorias, newAliment.calorias);
+            assert.equal(alimentSet[0].idAlimento, newAliment.idAlimento);
+            assert.equal(alimentSet[1].nombre, newAliment2.nombre);
+            assert.equal(alimentSet[1].descripcion, newAliment2.descripcion);
+            assert.equal(alimentSet[1].calorias, newAliment2.calorias);
+            assert.equal(alimentSet[1].idAlimento, newAliment2.idAlimento);
         });
     });
 });

@@ -77,7 +77,12 @@ async function trainings(id) {
                                          WHERE idUsuario = $1)",
         values: [id]
     }
-    return (await dbCtrl.execute(query));
+    res = (await dbCtrl.execute(query));
+    let trainingSet = [];
+    for (i=0; i<res.rows.length; ++i) {
+        trainingSet.push(res.rows[i]);
+    }
+    return trainingSet;
 }
 
 async function diets(id) {
@@ -90,7 +95,12 @@ async function diets(id) {
                                          WHERE idUsuario = $1)",
         values: [id]
     }
-    return (await dbCtrl.execute(query));
+    res = (await dbCtrl.execute(query));
+    let dietSet = [];
+    for (i=0; i<res.rows.length; ++i) {
+        dietSet.push(res.rows[i]);
+    }
+    return dietSet;
 }
 
 

@@ -44,7 +44,7 @@ router.post('/validate', async function(req, res, next) {
 router.get('/:id/trainings', async function(req, res, next) {
     try {
         const trainingSet = await user.trainings(req.params.id);
-        res.send(trainingSet);
+        res.status(200).send(trainingSet);
     } catch (err) {
         next(err);
     }
@@ -53,7 +53,7 @@ router.get('/:id/trainings', async function(req, res, next) {
 router.get('/:id/diets', async function(req, res, next) {
     try {
         const dietSet = await user.diets(req.params.id);
-        res.send(dietSet);
+        res.status(200).send(dietSet);
     } catch (err) {
         next(err);
     }

@@ -37,7 +37,12 @@ async function aliments(idComida) {
                WHERE idComida = $1",
         values: [idComida]
     }
-    return (await dbCtrl.execute(query));
+    res = (await dbCtrl.execute(query));
+    let alimentsSet = [];
+    for (i=0; i<res.rows.length; ++i) {
+        alimentsSet.push(res.rows[i]);
+    }
+    return alimentsSet;
 }
 
 module.exports = {

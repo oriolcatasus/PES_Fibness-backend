@@ -65,7 +65,12 @@ async function dayMeals(idElemento, day) {
                ORDER BY horaComida",
         values: [idElemento, day]
     }
-    return (await dbCtrl.execute(query));
+    res = (await dbCtrl.execute(query));
+    let dayMealSet = [];
+    for (i=0; i<res.rows.length; ++i) {
+        dayMealSet.push(res.rows[i]);
+    }
+    return dayMealSet;
 }
 
 module.exports = {

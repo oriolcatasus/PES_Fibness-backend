@@ -8,8 +8,8 @@ const router = express.Router();
 //create
 router.post('/', async (req, res) => {
     try {
-        await diet.create(req.body);
-        res.sendStatus(200);
+        const result = await diet.create(req.body);
+        res.status(201).send(result);
     } catch (e) {
         console.error(e.message);
         res.status(400).send(e.message);
@@ -41,7 +41,7 @@ router.put('/:idElemento', async (req, res) => {
 router.get('/:idElemento/:dia', async function(req, res, next) {
     try {
         const dayMealSet = await diet.dayMeals(req.params.idElemento, req.params.dia);
-        res.send(dayMealSet);
+        res.status(200).send(dayMealSet);
     } catch (err) {
         next(err);
     }

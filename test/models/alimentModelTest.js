@@ -65,7 +65,7 @@ describe("alimentModel script", function() {
                 idComida: idMeal,
             };
 
-            idAliment = (await aliment.create(newAliment)).rows[0].idalimento;
+            idAliment = (await aliment.create(newAliment)).idAlimento;
 
             //make sure it really is the aliment we created
             query = {
@@ -138,7 +138,7 @@ describe("alimentModel script", function() {
                 idComida: idMeal,
             };
 
-            idAliment = (await aliment.create(newAliment)).rows[0].idalimento;
+            idAliment = (await aliment.create(newAliment)).idAlimento;
 
             //deletion of the aliment
             await aliment.del(idAliment);
@@ -209,7 +209,7 @@ describe("alimentModel script", function() {
                 calorias: '300',
                 idComida: idMeal,
             };
-            idAliment = (await aliment.create(newAliment)).rows[0].idalimento;
+            idAliment = (await aliment.create(newAliment)).idAlimento;
 
             let modifiedAliment = {
                 nombre: "AlimentTest2",

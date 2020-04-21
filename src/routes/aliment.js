@@ -8,8 +8,8 @@ const router = express.Router();
 //create
 router.post('/', async (req, res) => {
     try {
-        await aliment.create(req.body);
-        res.sendStatus(200);
+        const result = await aliment.create(req.body);
+        res.status(201).send(result);
     } catch (e) {
         console.error(e.message);
         res.status(400).send(e.message);
