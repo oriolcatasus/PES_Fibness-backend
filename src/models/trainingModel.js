@@ -45,9 +45,22 @@ async function update(elemento, idElemento) {
     }
     await dbCtrl.execute(query);
 }
+// For now just returns exercises but it should return also sports
+async function activities(idElemento) {
+    let query = {
+        text: "SELECT a.idActividad, a.nombre, a.descripcion,a.tiempoejecucion, \
+               FROM actividades a\
+               WHERE a.idElemento= $1 AND EXISTS \
+                                        (SELECT * \
+                                         FROM ejercicios \
+                                         WHERE idElemento = $1)",
+        values: [idElemento]
+    }
+    return (await dbCtrl.execute(query));
+}
 
 
 
 module.exports = {
-    create,update,del
+    create,update,del,activities
 }

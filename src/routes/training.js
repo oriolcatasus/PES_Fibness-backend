@@ -38,6 +38,15 @@ router.put('/:idElemento', async (req, res) => {
     }
 });
 
+//Get the activities of a training
+router.get('/:id/activities', async function(req, res, next) {
+    try {
+        const trainingSet = await training.activities(req.params.id);
+        res.send(trainingSet);
+    } catch (err) {
+        next(err);
+    }
+})
 
 
 module.exports = router;
