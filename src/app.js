@@ -42,7 +42,7 @@ app.use(errorHandler.def);
 
 
 async function start() {
-    dbCtrl.connect(db);
+    await dbCtrl.connect(db);
     server = app.listen(port, () => {    
         console.log("Server started at port " + port);
     });

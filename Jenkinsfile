@@ -34,7 +34,7 @@ pipeline {
                         healthScaleFactor: 10.0,
                         keepLongStdio: true)
                     cobertura(
-                        autoUpdateHealth: true,
+                        autoUpdateHealth: false,
                         autoUpdateStability: false,
                         coberturaReportFile: 'reports/cobertura-coverage.xml',
                         failNoReports: true,
@@ -44,8 +44,8 @@ pipeline {
                         enableNewApi: true,
                         zoomCoverageChart: true,
                         maxNumberOfBuilds: 0,
-                        conditionalCoverageTargets: '80, 0, 0',
-                        lineCoverageTargets: '80, 0, 0'
+                        conditionalCoverageTargets: '80, 50, 0',
+                        lineCoverageTargets: '80, 50, 0'
                     )
                 }
                 success {
@@ -68,11 +68,7 @@ pipeline {
                 nodejs(nodeJSInstallationName: 'node12') {
                     withSonarQubeEnv('SonarQube') {
                         sh "${scannerHome}/bin/sonar-scanner \
-                            -Dsonar.projectKey=PES_fibness-backend-$BRANCH_NAME \
-                            -Dsonar.testExecutionReportPaths=reports/generic-execution-data.xml \
-                            -Dsonar.javascript.lcov.reportPaths=reports/lcov.info \
-                            -Dsonar.sources=src \
-                            -Dsonar.tests=test"
+                            -Dsonar.projectKey=PES_fibness-backend-$BRANCH_NAME 
                     }
                 }
             }
@@ -138,10 +134,6 @@ pipeline {
                                 }
                             }
                             post {
-                                always {
-                                    echo 'Cleaning up docker leftovers'
-                                    sh 'docker image prune -f'
-                                }
                                 success {
                                     echo 'Stage image successfully built'
                                 }
@@ -157,7 +149,7 @@ pipeline {
                             steps {                        
                                 echo 'Deploying image to stage'
                                 sh 'docker-compose -f docker-compose.stage.yaml config > stage.yaml'
-                                sh 'docker stack deploy -c stage.yaml api-stage'
+                                sh 'docker stack deploy -c stage.yaml fibness-stage'
                             }
                             post {
                                 success {
@@ -207,7 +199,7 @@ pipeline {
                             steps {                        
                                 echo 'Deploying image to production'
                                 sh 'docker-compose -f docker-compose.prod.yaml config > prod.yaml'
-                                sh 'docker stack deploy -c prod.yaml api-prod'
+                                sh 'docker stack deploy -c prod.yaml fibness-prod'
                             }
                             post {
                                 success {
