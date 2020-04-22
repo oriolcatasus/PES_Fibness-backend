@@ -118,7 +118,7 @@ describe("user route", function() {
         });
     });
 
-    describe("GET /user/:id/userInfo", function(){
+    describe("GET /user/:id/info", function(){
         it("should return the information of a user", async function() {
             const fakeUser = {
                 nombre: "fakeName",
@@ -130,35 +130,19 @@ describe("user route", function() {
                 .send(fakeUser);
             const idUser = res.body.id;
 
-            res = await request.get(`/user/${idUser}/userInfo`)
+            res = await request.get(`/user/${idUser}/info`)
                 .expect('Content-Type', /json/)
                 .expect(200);
-            expect(res.body).to.not.equal(undefined);
-            expect(res.body.nseguidores).to.equal(0);
+
+            expect(res.body).to.have.property("nombre");
+            expect(res.body).to.have.property("rutaimagen");
+            expect(res.body).to.have.property("nseguidores");
+            expect(res.body).to.have.property("nseguidos");
+            expect(res.body).to.have.property("npost");
         });
     });
 
-    describe("GET /user/:id/userSettings", function(){
-        it("should return the settings of a user", async function() {
-            const fakeUser = {
-                nombre: "fakeName",
-                email: "fake@example.com",
-                password: "fakeHash"
-            }
-            let res = await request.post("/user")
-                .set("Accept", "application/json")
-                .send(fakeUser);
-            const idUser = res.body.id;
-
-            res = await request.get(`/user/${idUser}/userSettings`)
-                .expect('Content-Type', /json/)
-                .expect(200);
-            expect(res.body).to.not.equal(undefined);
-            expect(res.body.sedad).to.equal(true);
-        });
-    });
-
-    describe("POST /user/:id/userInfo", function(){
+    describe("PUT /user/:id/info", function(){
         it("should update the settings of a user", async function() {
             const fakeUser = {
                 nombre: "fakeName",
@@ -177,17 +161,32 @@ describe("user route", function() {
                 nMensaje: true,
             }
 
-            res = await request.put(`/user/${idUser}/userSettings`)
+            res = await request.put(`/user/${idUser}/settings`)
                 .send(newSettings)
                 .expect(200);
-
-            res = await request.get(`/user/${idUser}/userSettings`)
-                .expect('Content-Type', /json/)
-                .expect(200);
-            expect(res.body).to.not.equal(undefined);
-            expect(res.body.sedad).to.equal(false);
         });
     });
 
-    
+    describe("GET /user/:id/settings", function(){
+        it("should return the settings of a user", async function() {
+            const fakeUser = {
+                nombre: "fakeName",
+                email: "fake@example.com",
+                password: "fakeHash"
+            }
+            let res = await request.post("/user")
+                .set("Accept", "application/json")
+                .send(fakeUser);
+            const idUser = res.body.id;
+
+            res = await request.get(`/user/${idUser}/settings`)
+                .expect('Content-Type', /json/)
+                .expect(200);
+            expect(res.body).to.have.property("sedad");
+            expect(res.body).to.have.property("sdistancia");
+            expect(res.body).to.have.property("sinvitacion");
+            expect(res.body).to.have.property("sseguidor");
+            expect(res.body).to.have.property("nmensaje");
+        });
+    });    
 });

@@ -68,7 +68,7 @@ router.put('/resetPassword', async function(req, res, next) {
     }
 })
 
-router.get('/:id/userInfo', async function(req, res, next){
+router.get('/:id/info', async function(req, res, next){
     try {
         const info = await user.userInfo(req.params.id);
         res.status(200).send(info);
@@ -77,7 +77,7 @@ router.get('/:id/userInfo', async function(req, res, next){
     }
 })
 
-router.put('/:id/userSettings', async function(req, res, next){
+router.put('/:id/settings', async function(req, res, next){
     try {
         await user.putUserSettings(req.params.id, req.body);
         res.sendStatus(200);
@@ -86,7 +86,7 @@ router.put('/:id/userSettings', async function(req, res, next){
     }
 })
 
-router.get('/:id/userSettings', async function(req, res, next){
+router.get('/:id/settings', async function(req, res, next){
     try {
         const settings = await user.getUserSettings(req.params.id);
         res.status(200).send(settings);

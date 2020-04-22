@@ -542,13 +542,7 @@ describe("userModel script", function() {
                 values: ["Oriol"],
             };
             let res = (await dbCtrl.execute(query)).rows[0];
-            idUser = res.id; 
-
-            //make sure the settings are created correctly
-            let settings = (await user.getUserSettings(idUser));
-            assert.equal(settings.sedad, true);
-            assert.equal(settings.sinvitacion, true);
-            assert.equal(settings.nmensaje, true);
+            idUser = res.id;
 
             //insert new settings
             let newSettings = {

@@ -240,7 +240,7 @@ paths:
       responses:
         200:
           description: OK
-  /user/{id}/userInfo:
+  /user/{id}/info:
     get:
       summary: Gets the info of the user
       description: Returns the information of the given user
@@ -279,7 +279,7 @@ paths:
                     example: 100
                 required:
                   - info
-  /user/{id}/userSettings:
+  /user/{id}/settings:
     get:
       summary: Gets the settings of the user
       description: Returns the settings of the given user
