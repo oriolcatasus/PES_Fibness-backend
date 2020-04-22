@@ -34,7 +34,7 @@ pipeline {
                         healthScaleFactor: 10.0,
                         keepLongStdio: true)
                     cobertura(
-                        autoUpdateHealth: false,
+                        autoUpdateHealth: true,
                         autoUpdateStability: false,
                         coberturaReportFile: 'reports/cobertura-coverage.xml',
                         failNoReports: true,
@@ -44,14 +44,9 @@ pipeline {
                         enableNewApi: true,
                         zoomCoverageChart: true,
                         maxNumberOfBuilds: 0,
-                        conditionalCoverageTargets: '99, 80, 0',
-                        lineCoverageTargets: '99, 80, 0'
+                        conditionalCoverageTargets: '80, 0, 0',
+                        lineCoverageTargets: '80, 0, 0'
                     )
-                    step([
-                        $class: 'CloverPublisher',
-                        cloverReportDir: 'reports',
-                        cloverReportFileName: 'clover.xml'
-                    ])
                 }
                 success {
                     echo 'Tests succesfully executed'
