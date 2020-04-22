@@ -42,19 +42,18 @@ pipeline {
                         failUnstable: false,                        
                         onlyStable: false,
                         enableNewApi: true,
+                        zoomCoverageChart: true,
                         maxNumberOfBuilds: 0
-                        //conditionalCoverageTargets: '90, 80, 70',
-                        //fileCoverageTargets: '90, 80, 70',
-                        //lineCoverageTargets: '90, 80, 70',
-                        //methodCoverageTargets: '90, 80, 70'
+                        conditionalCoverageTargets: '80, 0, 0',
+                        fileCoverageTargets: '80, 0, 0',
+                        lineCoverageTargets: '80, 0, 0',
+                        methodCoverageTargets: '80, 0, 0'
                     )
                     step([
                         $class: 'CloverPublisher',
                         cloverReportDir: 'reports',
                         cloverReportFileName: 'clover.xml'
-                        //healthyTarget: [methodCoverage: 90, conditionalCoverage: 90, statementCoverage: 90],
-                        //unhealthyTarget: [methodCoverage: 80, conditionalCoverage: 80, statementCoverage: 80],
-                        //failingTarget: [methodCoverage: 70, conditionalCoverage: 70, statementCoverage: 70]
+                        healthyTarget: [methodCoverage: 80, conditionalCoverage: 80, statementCoverage: 80]
                     ])
                 }
                 success {
@@ -142,10 +141,15 @@ pipeline {
                                         image = docker.image('fibness/api-stage:latest')
                                         echo 'Pushing image to registry'
                                         image.push('latest')
-                                    }   
+                                    }
+                                    
                                 }
                             }
                             post {
+                                always {
+                                    echo 'Cleaning up docker leftovers'
+                                    sh 'docker image prune -f'
+                                }
                                 success {
                                     echo 'Stage image successfully built'
                                 }
