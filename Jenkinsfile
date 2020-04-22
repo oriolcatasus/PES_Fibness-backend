@@ -252,7 +252,7 @@ pipeline {
         always {
             script {
                 def msg = sh(
-                    script: 'git --no-pager show -s --format="[%an] **%s:**"',
+                    script: 'git --no-pager show -s --format="[%an] **%s**"',
                     returnStdout: true
                 ) + "\n"
                 def img;
