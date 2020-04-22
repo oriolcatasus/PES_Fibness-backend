@@ -23,7 +23,7 @@ pipeline {
                 script {
                     sh 'mkdir -p reports'
                     sh 'docker-compose -f docker-compose.test.yaml down -v'
-                    sh 'docker-compose -f docker-compose.test.yaml up -V api-test'
+                    sh 'docker-compose -f docker-compose.test.yaml up -V api'
                 }
             }
             post {
