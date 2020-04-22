@@ -112,7 +112,7 @@ describe("user route", function() {
                 password: "trueHash"
             };
 
-            await request.post(`/user/resetPassword`)
+            await request.put(`/user/resetPassword`)
                 .send(newPassword)
                 .expect(200);
         });
@@ -177,7 +177,7 @@ describe("user route", function() {
                 nMensaje: true,
             }
 
-            res = await request.post(`/user/${idUser}/userSettings`)
+            res = await request.put(`/user/${idUser}/userSettings`)
                 .send(newSettings)
                 .expect(200);
 

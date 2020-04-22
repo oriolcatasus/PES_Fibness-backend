@@ -558,7 +558,7 @@ describe("userModel script", function() {
                 sSeguidor: false,
                 nMensaje: true,
             }
-            await user.postUserSettings(idUser, newSettings);
+            await user.putUserSettings(idUser, newSettings);
             settings = (await user.getUserSettings(idUser));
 
             //make sure the settings have been updated

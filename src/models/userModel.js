@@ -125,7 +125,7 @@ async function userInfo(id) {
     return res;
 }
 
-async function postUserSettings(id, set) {
+async function putUserSettings(id, set) {
     let query = {
         text: "UPDATE usuarios set sEdad = $2, sDistancia =$3, sInvitacion = $4, \
                 sSeguidor = $5, nMensaje = $6 \
@@ -156,5 +156,5 @@ module.exports = {
     resetPassword,
     userInfo,   
     getUserSettings,
-    postUserSettings
+    putUserSettings
 }

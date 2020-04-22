@@ -3,6 +3,9 @@ info:
   title: Fibness API
   version: "1.0.0"
 servers:
+# Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/Minat99/FibnessDEf/1.0.0
   - url: 'http://10.4.41.146:3001'
     description: FIB server, UPC VPN required to connect
 tags:
@@ -157,21 +160,21 @@ paths:
                 items:
                   type: object
                   properties:
-                    idElemento:
+                    idelemento:
                       type: integer
                     nombre:
                       type: string
                     descripcion:
                       type: string
                 example:
-                  - idElemento: 28
+                  - idelemento: 28
                     nombre: TrainingTest
                     descripcion: DescriptionTest
-                  - idElemento: 40
+                  - idelemento: 40
                     nombre: TrainingTest2
                     descripcion: DescriptionTest2
                 required:
-                - result
+                - trainingSet
   /user/{id}/diets:
     get:
       summary: Gives the diets of a user
@@ -196,21 +199,169 @@ paths:
                 items:
                   type: object
                   properties:
-                    idElemento:
+                    idelemento:
                       type: integer
                     nombre:
                       type: string
                     descripcion:
                       type: string
                 example:
-                  - idElemento: 23
+                  - idelemento: 23
                     nombre: DietTest
                     descripcion: DescriptionTest
-                  - idElemento: 69
+                  - idelemento: 69
                     nombre: DietTest2
                     descripcion: DescriptionTest2
                 required:
-                - result
+                - dietSet
+  /user/resetPassword:
+    put:
+      summary: Replaces the current password of the user.
+      description: Changes the password of the given user by the new one given
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: oriol@example.com
+                password:
+                  type: string
+                  description: Hashed user password
+                  example: '5f4dcc3b5aa765d61d8327deb882cf99'
+              required:
+                - email
+                - password
+      responses:
+        200:
+          description: OK
+  /user/{id}/userInfo:
+    get:
+      summary: Gets the info of the user
+      description: Returns the information of the given user
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user to get the information from
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: Information about the user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nombre:
+                    type: string
+                    example: UserTest
+                  rutaimagen:
+                    type: string
+                    example: /home/marc/Escritorio/nodeTest
+                  nseguidores:
+                    type: integer
+                    example: 37
+                  nseguidos:
+                    type: integer
+                    example: 55
+                  npost:
+                    type: integer
+                    example: 100
+                required:
+                  - info
+  /user/{id}/userSettings:
+    get:
+      summary: Gets the settings of the user
+      description: Returns the settings of the given user
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user to get the settings from
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: Settings of the user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sedad:
+                    type: boolean
+                    example: false
+                  sdistancia:
+                    type: boolean
+                    example: true
+                  sinvitacion:
+                    type: boolean
+                    example: true
+                  sseguidor:
+                    type: boolean
+                    example: false
+                  nmensaje:
+                    type: boolean
+                    example: false
+                required:
+                  - info
+    put:
+      summary: Updates the settings of the user
+      description: Changes the settings of the user by the ones given
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user to get the settings from
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sEdad:
+                  type: boolean
+                  example: false
+                sDistancia:
+                  type: boolean
+                  example: true
+                sInvitacion:
+                  type: boolean
+                  example: true
+                sSeguidor:
+                  type: boolean
+                  example: false
+                nMensaje:
+                  type: boolean
+                  example: false
+              required:
+                - sEdad
+                - sDistancia
+                - sInvitacion
+                - sSeguidor
+                - nMensaje
+      responses:
+        200:
+          description: OK
   '/training':
     post:
       summary: Creates a training
@@ -246,11 +397,11 @@ paths:
               schema:
                 type: object
                 properties:
-                  idElemento:
+                  idelemento:
                     type: integer
                     example: 12345
                 required:
-                  - idElemento
+                  - idelemento
         '400':
           description: >-
             Some required parameters are missing or with an incorrect type
@@ -336,11 +487,11 @@ paths:
               schema:
                 type: object
                 properties:
-                  idElemento:
+                  idelemento:
                     type: integer
                     example: 12345
                 required:
-                  - idElemento
+                  - idelemento
         '400':
           description: >-
             Some required parameters are missing or with an incorrect type
@@ -422,21 +573,21 @@ paths:
                 items:
                   type: object
                   properties:
-                    idComida:
+                    idcomida:
                       type: integer
                     nombre:
                       type: string
-                    horaComida:
+                    horacomida:
                       type: string
                 example:
-                  - idComida: 56
+                  - idcomida: 56
                     nombre: MealTest
-                    horaComida: '10:00'
-                  - idComida: 100
+                    horacomida: '10:00'
+                  - idcomida: 100
                     nombre: MealTest2
-                    horaComida: '18:00'
+                    horacomida: '18:00'
                 required:
-                - result
+                - mealSet
   '/meal':
     post:
       summary: Creates a meal
@@ -477,11 +628,11 @@ paths:
               schema:
                 type: object
                 properties:
-                  idComida:
+                  idcomida:
                     type: integer
                     example: 12345
                 required:
-                  - idComida
+                  - idcomida
         '400':
           description: >-
             Some required parameters are missing or with an incorrect type
@@ -556,7 +707,7 @@ paths:
                 items:
                   type: object
                   properties:
-                    idAlimento:
+                    idalimento:
                       type: integer
                     nombre:
                       type: string
@@ -565,16 +716,16 @@ paths:
                     calorias:
                       type: integer
                 example:
-                  - idAlimento: 56
+                  - idalimento: 56
                     nombre: AlimentTest
                     descripcion: DescriptionTest
                     calorias: 300
-                  - idAlimento: 78
+                  - idalimento: 78
                     nombre: AlimentTest2
                     descripcion: DescriptionTest2
                     calorias: 400
                 required:
-                - result
+                - alimentSet
   '/aliment':
     post:
       summary: Creates an aliment
@@ -614,11 +765,11 @@ paths:
               schema:
                 type: object
                 properties:
-                  idAlimento:
+                  idalimento:
                     type: integer
                     example: 12345
                 required:
-                  - idAlimento
+                  - idalimento
         '400':
           description: >-
             Some required parameters are missing or with an incorrect type
