@@ -44,8 +44,8 @@ pipeline {
                         enableNewApi: true,
                         zoomCoverageChart: true,
                         maxNumberOfBuilds: 0,
-                        conditionalCoverageTargets: '80, 50, 0',
-                        lineCoverageTargets: '80, 50, 0'
+                        conditionalCoverageTargets: '99, 0, 0',
+                        lineCoverageTargets: '99, 0, 0'
                     )
                 }
                 success {
@@ -65,6 +65,7 @@ pipeline {
                 scannerHome = tool 'SonarScanner'
             }
             steps {
+                echo 'Starting SonarQube analysis'
                 nodejs(nodeJSInstallationName: 'node12') {
                     withSonarQubeEnv('SonarQube') {
                         sh "${scannerHome}/bin/sonar-scanner \
@@ -82,7 +83,6 @@ pipeline {
             steps {
                 script {
                     timeout(time: 15, units: 'MINUTES') {
-                        echo 'Waiting for SonarQube quality gate'
                         def qg = waitForQualityGate()
                         if (qg.status != 'OK') {
                             currentBuild.result = 'UNSTABLE'
@@ -127,7 +127,6 @@ pipeline {
                                 script {
                                     docker.withRegistry('http://localhost:5000') {
                                         image = docker.image('fibness/api-stage:latest')
-                                        echo 'Pushing image to registry'
                                         image.push('latest')
                                     }
                                     
@@ -179,7 +178,6 @@ pipeline {
                                 script {
                                     docker.withRegistry('http://localhost:5000') {
                                         image = docker.image('fibness/api-prod:latest')
-                                        echo 'Pushing image to registry'
                                         image.push('latest')
                                     }
                                 }
