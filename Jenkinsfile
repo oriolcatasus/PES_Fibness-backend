@@ -68,7 +68,7 @@ pipeline {
                 nodejs(nodeJSInstallationName: 'node12') {
                     withSonarQubeEnv('SonarQube') {
                         sh "${scannerHome}/bin/sonar-scanner \
-                            -Dsonar.projectKey=PES_fibness-backend-$BRANCH_NAME 
+                            -Dsonar.projectKey=PES_fibness-backend-$BRANCH_NAME"
                     }
                 }
             }
@@ -172,7 +172,8 @@ pipeline {
                                 echo 'Building production image'
                                 sh 'cp /home/alumne/config/local-production.json ./config'
                                 script {
-                                    docker.build('fibness/api-prod:latest', '--build-arg NODE_ENV=production .')
+                                    docker.build('fibness/api-prod:latest', '--force-rm \
+                                        --build-arg NODE_ENV=production .')
                                 }
                                 echo 'Registering production image'
                                 script {
