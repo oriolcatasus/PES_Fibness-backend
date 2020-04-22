@@ -1,6 +1,6 @@
 const express = require("express");
 
-const exercise = require("../src/models/exerciseModel");
+const exercise = require("../models/exerciseModel");
 
 const router = express.Router();
 

@@ -10,7 +10,7 @@ const training = require("./routes/training")
 const diet = require("./routes/diet")
 const meal = require("./routes/meal")
 const aliment = require("./routes/aliment")
-
+const exercise = require("./routes/exercise")
 //Middleware
 const errorHandler = require("../middleware/errorHandlers");
 
@@ -24,6 +24,8 @@ app.use(express.json());
 app.use("/user", user);
 
 app.use("/training", training);
+
+app.use("/exercise",exercise);
 
 app.use("/diet", diet);
 

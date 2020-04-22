@@ -82,6 +82,7 @@ router.put('/:id/settings', async function(req, res, next){
         await user.putUserSettings(req.params.id, req.body);
         res.sendStatus(200);
     } catch(err) {
+
         next(err);
     }
 })
@@ -91,6 +92,7 @@ router.get('/:id/settings', async function(req, res, next){
         const settings = await user.getUserSettings(req.params.id);
         res.status(200).send(settings);
     } catch(err) {
+        res.status(500).send(e.message);
         next(err);
     }
 })
