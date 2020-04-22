@@ -94,4 +94,25 @@ describe("user route", function() {
             //expect(trainings).to.not.be.empty;
         });
     });
+
+    describe("POST /user/resetPassword", function(){
+        it("should reset the password of a user", async function() {
+            const fakeUser = {
+                nombre: "fakeName",
+                email: "fake@example.com",
+                password: "fakeHash"
+            };
+
+            const res = await request.post(`/user`)
+                .set("Accept", "application/json")
+                .send(fakeUser)
+
+            const newPassword = {
+                email:"fake@example.com",
+                password: "trueHash"
+            };
+
+            await request.post(`/user/resetPassword`).expect(200);
+        });
+    });
 });

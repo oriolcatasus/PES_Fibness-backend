@@ -59,4 +59,13 @@ router.get('/:id/diets', async function(req, res, next) {
     }
 })
 
+router.post('/resetPassword', async function(req, res, next) {
+    try {
+        await user.resetPassword(req.body);
+        res.sendStatus(200);
+    } catch (err) {
+        next(err);
+    }
+})
+
 module.exports = router;

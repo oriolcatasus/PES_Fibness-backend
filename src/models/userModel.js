@@ -103,11 +103,20 @@ async function diets(id) {
     return dietSet;
 }
 
+async function resetPassword ({email, password}) {
+    let query = {
+        text: "UPDATE usuarios SET password = $2 WHERE email = $1",
+        values: [email, password]
+    }
+    await dbCtrl.execute(query);
+}
+
 
 module.exports = {
     create,
     validate,
     del,
     trainings,
-    diets    
+    diets,
+    resetPassword    
 }

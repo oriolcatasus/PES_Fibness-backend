@@ -465,4 +465,33 @@ describe("userModel script", function() {
             assert.equal(dietSet.length, 0);
         });
     });
+
+    describe("reset password operation", function() {
+        it("should reset password successfully", async function() {
+            //create user
+            let newUser = {
+                nombre: "Oriol",
+                password: "hash",
+                email: "oriol@example.com",
+            }
+            await user.create(newUser);
+
+            //Reset the password
+            let newPassword = {
+                email: "oriol@example.com",
+                password: "newHash",
+            }
+            await user.resetPassword(newPassword);
+
+            //make sure it has been reseted
+            query = {
+                text: "SELECT password \
+                        FROM usuarios \
+                        WHERE email = $1",
+                values: [newUser.email],
+            };
+            let pass = (await dbCtrl.execute(query)).rows[0].password;
+            assert.equal(pass, newPassword.password);
+        });
+    });
 });
