@@ -43,7 +43,7 @@ pipeline {
                         onlyStable: false,
                         enableNewApi: true,
                         zoomCoverageChart: true,
-                        maxNumberOfBuilds: 0
+                        maxNumberOfBuilds: 0,
                         conditionalCoverageTargets: '80, 0, 0',
                         fileCoverageTargets: '80, 0, 0',
                         lineCoverageTargets: '80, 0, 0',
