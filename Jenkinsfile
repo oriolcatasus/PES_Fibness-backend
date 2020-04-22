@@ -34,7 +34,7 @@ pipeline {
                         healthScaleFactor: 10.0,
                         keepLongStdio: true)
                     cobertura(
-                        autoUpdateHealth: true,
+                        autoUpdateHealth: false,
                         autoUpdateStability: false,
                         coberturaReportFile: 'reports/cobertura-coverage.xml',
                         failNoReports: true,
@@ -44,10 +44,8 @@ pipeline {
                         enableNewApi: true,
                         zoomCoverageChart: true,
                         maxNumberOfBuilds: 0,
-                        conditionalCoverageTargets: '100, 0, 0',
-                        fileCoverageTargets: '100, 0, 0',
-                        lineCoverageTargets: '100, 0, 0',
-                        methodCoverageTargets: '100, 0, 0'
+                        conditionalCoverageTargets: '99, 80, 0'
+                        lineCoverageTargets: '99, 80, 0'
                     )
                     step([
                         $class: 'CloverPublisher',
