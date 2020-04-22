@@ -494,4 +494,79 @@ describe("userModel script", function() {
             assert.equal(pass, newPassword.password);
         });
     });
+
+    describe("get user info operation", function() {
+        it("should return user info successfully", async function() {
+            //create user
+            let newUser = {
+                nombre: "Oriol",
+                password: "hash",
+                email: "oriol@example.com",
+            }
+            await user.create(newUser);
+
+            //select id from user
+            let query = {
+                text: "SELECT id \
+                        FROM usuarios \
+                        WHERE nombre = $1",
+                values: ["Oriol"],
+            };
+            let res = (await dbCtrl.execute(query)).rows[0];
+            idUser = res.id; 
+
+            let info = (await user.userInfo(idUser));
+            assert.equal(info.nombre, newUser.nombre);
+            assert.equal(info.rutaImagen, null);
+            assert.equal(info.nseguidores, 0);
+            assert.equal(info.nseguidos, 0);
+            assert.equal(info.npost, 0);
+        });
+    });
+
+    describe("post & get user settings operation", function() {
+        it("should return user settings successfully", async function() {
+            //create user
+            let newUser = {
+                nombre: "Oriol",
+                password: "hash",
+                email: "oriol@example.com",
+            }
+            await user.create(newUser);
+
+            //select id from user
+            let query = {
+                text: "SELECT id \
+                        FROM usuarios \
+                        WHERE nombre = $1",
+                values: ["Oriol"],
+            };
+            let res = (await dbCtrl.execute(query)).rows[0];
+            idUser = res.id; 
+
+            //make sure the settings are created correctly
+            let settings = (await user.getUserSettings(idUser));
+            assert.equal(settings.sedad, true);
+            assert.equal(settings.sinvitacion, true);
+            assert.equal(settings.nmensaje, true);
+
+            //insert new settings
+            let newSettings = {
+                sEdad: false,
+                sDistancia: true,
+                sInvitacion: false,
+                sSeguidor: false,
+                nMensaje: true,
+            }
+            await user.postUserSettings(idUser, newSettings);
+            settings = (await user.getUserSettings(idUser));
+
+            //make sure the settings have been updated
+            assert.equal(settings.sedad, newSettings.sEdad);
+            assert.equal(settings.sdistancia, newSettings.sDistancia);
+            assert.equal(settings.sinvitacion, newSettings.sInvitacion);
+            assert.equal(settings.sseguidor, newSettings.sSeguidor);
+            assert.equal(settings.nmensaje, newSettings.nMensaje);
+        });
+    });
 });

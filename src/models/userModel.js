@@ -112,11 +112,47 @@ async function resetPassword ({email, password}) {
 }
 
 
+async function userInfo(id) {
+    let query = {
+        text: "SELECT nombre, rutaImagen, nSeguidores, nSeguidos, nPost \
+                FROM usuarios \
+                WHERE id = $1",
+        values: [id]
+    }
+    res = (await dbCtrl.execute(query)).rows[0];
+    return res;
+}
+
+async function postUserSettings(id, set) {
+    let query = {
+        text: "UPDATE usuarios set sEdad = $2, sDistancia =$3, sInvitacion = $4, \
+                sSeguidor = $5, nMensaje = $6 \
+                WHERE id = $1",
+        values: [id, set.sEdad, set.sDistancia, set.sInvitacion, set.sSeguidor, set.nMensaje]
+    }
+    await dbCtrl.execute(query)
+}
+
+async function getUserSettings(id) {
+    let query = {
+        text: "SELECT sEdad, sDistancia, sInvitacion, sSeguidor, nMensaje \
+                FROM usuarios \
+                WHERE id = $1",
+        values: [id]
+    }
+    res = (await dbCtrl.execute(query)).rows[0];
+    return res;
+}
+
+
 module.exports = {
     create,
     validate,
     del,
     trainings,
     diets,
-    resetPassword    
+    resetPassword,
+    userInfo,   
+    getUserSettings,
+    postUserSettings
 }

@@ -68,4 +68,32 @@ router.post('/resetPassword', async function(req, res, next) {
     }
 })
 
+router.get('/:id/userInfo', async function(req, res, next){
+    try {
+        const info = await user.userInfo(req.params.id);
+        res.status(200).send(info);
+    } catch(err) {
+        next(err);
+    }
+})
+
+router.post('/:id/userSettings', async function(req, res, next){
+    try {
+        await user.postUserSettings(req.params.id, req.body);
+        res.sendStatus(200);
+    } catch(err) {
+        next(err);
+    }
+})
+
+router.get('/:id/userSettings', async function(req, res, next){
+    try {
+        const settings = await user.getUserSettings(req.params.id);
+        res.status(200).send(settings);
+    } catch(err) {
+        next(err);
+    }
+})
+
+
 module.exports = router;

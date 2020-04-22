@@ -103,7 +103,7 @@ describe("user route", function() {
                 password: "fakeHash"
             };
 
-            const res = await request.post(`/user`)
+            await request.post(`/user`)
                 .set("Accept", "application/json")
                 .send(fakeUser)
 
@@ -112,7 +112,82 @@ describe("user route", function() {
                 password: "trueHash"
             };
 
-            await request.post(`/user/resetPassword`).expect(200);
+            await request.post(`/user/resetPassword`)
+                .send(newPassword)
+                .expect(200);
         });
     });
+
+    describe("GET /user/:id/userInfo", function(){
+        it("should return the information of a user", async function() {
+            const fakeUser = {
+                nombre: "fakeName",
+                email: "fake@example.com",
+                password: "fakeHash"
+            }
+            let res = await request.post("/user")
+                .set("Accept", "application/json")
+                .send(fakeUser);
+            const idUser = res.body.id;
+
+            res = await request.get(`/user/${idUser}/userInfo`)
+                .expect('Content-Type', /json/)
+                .expect(200);
+            expect(res.body).to.not.equal(undefined);
+            expect(res.body.nseguidores).to.equal(0);
+        });
+    });
+
+    describe("GET /user/:id/userSettings", function(){
+        it("should return the settings of a user", async function() {
+            const fakeUser = {
+                nombre: "fakeName",
+                email: "fake@example.com",
+                password: "fakeHash"
+            }
+            let res = await request.post("/user")
+                .set("Accept", "application/json")
+                .send(fakeUser);
+            const idUser = res.body.id;
+
+            res = await request.get(`/user/${idUser}/userSettings`)
+                .expect('Content-Type', /json/)
+                .expect(200);
+            expect(res.body).to.not.equal(undefined);
+            expect(res.body.sedad).to.equal(true);
+        });
+    });
+
+    describe("POST /user/:id/userInfo", function(){
+        it("should update the settings of a user", async function() {
+            const fakeUser = {
+                nombre: "fakeName",
+                email: "fake@example.com",
+                password: "fakeHash"
+            }
+            let res = await request.post("/user")
+                .set("Accept", "application/json")
+                .send(fakeUser);
+            const idUser = res.body.id;
+            const newSettings = {
+                sEdad: false,
+                sDistancia: true,
+                sInvitacion: false,
+                sSeguidor: false,
+                nMensaje: true,
+            }
+
+            res = await request.post(`/user/${idUser}/userSettings`)
+                .send(newSettings)
+                .expect(200);
+
+            res = await request.get(`/user/${idUser}/userSettings`)
+                .expect('Content-Type', /json/)
+                .expect(200);
+            expect(res.body).to.not.equal(undefined);
+            expect(res.body.sedad).to.equal(false);
+        });
+    });
+
+    
 });
