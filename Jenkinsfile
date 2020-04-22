@@ -52,7 +52,7 @@ pipeline {
                     step([
                         $class: 'CloverPublisher',
                         cloverReportDir: 'reports',
-                        cloverReportFileName: 'clover.xml'
+                        cloverReportFileName: 'clover.xml',
                         healthyTarget: [methodCoverage: 80, conditionalCoverage: 80, statementCoverage: 80]
                     ])
                 }
