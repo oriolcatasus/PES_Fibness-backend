@@ -31,11 +31,11 @@ pipeline {
                     sh 'docker-compose -f docker-compose.test.yaml down -v --rmi local'
                     junit(testResults: 'reports/junit.xml',
                         allowEmptyResults:false,
-                        healthScaleFactor: 2.0,
+                        healthScaleFactor: 10.0,
                         keepLongStdio: true)
                     cobertura(
                         autoUpdateHealth: true,
-                        autoUpdateStability: true,
+                        autoUpdateStability: false,
                         coberturaReportFile: 'reports/cobertura-coverage.xml',
                         failNoReports: true,
                         failUnhealthy: false,
@@ -44,16 +44,15 @@ pipeline {
                         enableNewApi: true,
                         zoomCoverageChart: true,
                         maxNumberOfBuilds: 0,
-                        conditionalCoverageTargets: '80, 0, 0',
-                        fileCoverageTargets: '80, 0, 0',
-                        lineCoverageTargets: '80, 0, 0',
-                        methodCoverageTargets: '80, 0, 0'
+                        conditionalCoverageTargets: '100, 0, 0',
+                        fileCoverageTargets: '100, 0, 0',
+                        lineCoverageTargets: '100, 0, 0',
+                        methodCoverageTargets: '100, 0, 0'
                     )
                     step([
                         $class: 'CloverPublisher',
                         cloverReportDir: 'reports',
-                        cloverReportFileName: 'clover.xml',
-                        healthyTarget: [methodCoverage: 80, conditionalCoverage: 80, statementCoverage: 80]
+                        cloverReportFileName: 'clover.xml'
                     ])
                 }
                 success {
