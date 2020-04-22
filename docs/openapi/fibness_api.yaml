@@ -452,6 +452,196 @@ paths:
       responses:
             '200':
               description: Ok
+  /training/{idTraining}/activities:
+    get:
+      summary: Gives the activities(exercises or sports) of a certain training
+      description: Returns all the activities of a given training id
+      tags:
+        - training
+      parameters:
+        - name: idTraining
+          in: path
+          required: true
+          description: The id of the training
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: Set of exercises or sports of a certain training
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    idActividad:
+                      type: integer
+                      description: id of the activity(sport or exercise)
+                    nombre:
+                      type: string
+                     
+                    descripcion:
+                      type: string
+                     
+                    tiempoEjecucion:
+                      type: integer
+                      
+                    numSets:
+                      type: integer
+        
+                    numRepeticiones:
+                      type: integer
+                      
+                    tiempoDescanso:
+                      type: integer
+                      
+                  example:
+                      - idActividad: 3
+                        nombre: exerciseTest
+                        descripcion: exerciseDescription
+                        tiempoEjecucion: 4
+                        numSets: 3 
+                        numRepeticiones: 2
+                        tiempoDescanso: 1
+                      - idActividad: 4
+                        nombre: exerciseTest_2
+                        descripcion: exerciseDescription_2
+                        tiempoEjecucion: 5
+                        numSets: 4 
+                        numRepeticiones: 1
+                        tiempoDescanso: 10  
+                  required:
+                    - idEntrenamiento
+                
+                          
+  '/exercise':
+    post:
+      summary: Creates an exercise
+      description: Creates an exercise with the given description and it's associated to the given training 
+      tags:
+        - exercise
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idEntrenamiento:
+                  type: integer
+                  description: id of the training
+                  example: 1
+                nombre:
+                  type: string
+                  example: exerciseTest
+                descripcion:
+                  type: string
+                  example: exerciseDescription
+                tiempoEjecucion:
+                  type: integer
+                  example: 4
+                numSets:
+                  type: integer
+                  example: 3  
+                numRepeticiones:
+                  type: integer
+                  example: 2
+                tiempoDescanso:
+                  type: integer
+                  example: 1
+              required:
+                - idEntrenamiento
+                - nombre
+                - descripcion
+                - tiempoEjecucion
+                - numSets
+                - numRepeticiones
+                - tiempoDescanso
+                
+      responses:
+        '201':
+          description: Exercise created succesfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  idexercise:
+                    type: integer
+                    example: 34
+                required:
+                  - idexercise
+        '400':
+          description: >-
+            Some required parameters are missing or with an incorrect type
+            
+  '/exercise/{id}':
+    delete:
+      summary: Deletes a exercise by id
+      tags:
+        - exercise
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the exercise to delete
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Ok
+    put:
+      summary: Update a exercise by id
+      tags:
+        - exercise
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the exercise to update
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: exerciseTestModified
+                descripcion:
+                  type: string
+                  example: exerciseDescriptionModified
+                tiempoEjecucion:
+                  type: integer
+                  example: 5
+                numSets:
+                  type: integer
+                  example: 2  
+                numRepeticiones:
+                  type: integer
+                  example: 1
+                tiempoDescanso:
+                  type: integer
+                  example: 4
+              required:
+                - nombre
+                - descripcion
+                - tiempoEjecucion
+                - numSets
+                - numRepeticiones
+                - tiempoDescanso
+      responses:
+            '200':
+              description: Ok
+
+              
   '/diet':
     post:
       summary: Creates a diet
