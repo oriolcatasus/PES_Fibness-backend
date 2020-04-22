@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    environment {
+        UNSUCCESSFUL_STAGE = 'null'
+    }
     stages {
         stage('Build test image') {
             steps {
@@ -14,6 +17,9 @@ pipeline {
                 }
                 failure {
                     echo 'Failed to build image'
+                    script {
+                        UNSUCCESSFUL_STAGE = env.STAGE_NAME
+                    }
                 }
             }
         }
@@ -58,6 +64,11 @@ pipeline {
                 failure {
                     echo 'Test execution failed'
                 }
+                unsuccessful {
+                    script {
+                        UNSUCCESSFUL_STAGE = env.STAGE_NAME
+                    }
+                }
             }
         }
         stage('SonarQube analysis') {
@@ -76,6 +87,9 @@ pipeline {
             post {
                 failure {
                     echo 'SonarQube analysis failed'
+                    script {
+                        UNSUCCESSFUL_STAGE = env.STAGE_NAME
+                    }
                 }
             }
         }
@@ -97,9 +111,17 @@ pipeline {
                 unstable {
                     echo 'SonarQube quality gate failed'
                     echo 'Build marked as unstable'
+                    script {
+                        if (UNSUCCESSFUL_STAGE == "null") {
+                            UNSUCCESSFUL_STAGE = env.STAGE_NAME
+                        }                        
+                    }
                 }
                 failure {
                     echo 'Quality gate not received'
+                    script {
+                        UNSUCCESSFUL_STAGE = env.STAGE_NAME
+                    }
                 }
             }
         }
@@ -138,6 +160,9 @@ pipeline {
                                 }
                                 failure {
                                     echo 'Failed to build stage image'
+                                    script {
+                                        UNSUCCESSFUL_STAGE = env.STAGE_NAME
+                                    }
                                 }
                             }
                         }
@@ -156,6 +181,9 @@ pipeline {
                                 }
                                 failure {
                                     echo 'Failed to deploy to stage'
+                                    script {
+                                        UNSUCCESSFUL_STAGE = env.STAGE_NAME
+                                    }
                                 }
                             }
                         }
@@ -188,6 +216,9 @@ pipeline {
                                 }
                                 failure {
                                     echo 'Failed to build production image'
+                                    script {
+                                        UNSUCCESSFUL_STAGE = env.STAGE_NAME
+                                    }
                                 }
                             }
                         }
@@ -206,11 +237,50 @@ pipeline {
                                 }
                                 failure {
                                     echo 'Failed to deploy to production'
+                                    script {
+                                        UNSUCCESSFUL_STAGE = env.STAGE_NAME
+                                    }
                                 }
                             }
                         }
                     }
                 }
+            }
+        }
+    }
+    post {
+        always {
+            script {
+                def msg = sh(
+                    script: 'git --no-pager show -s --format="[%an] **%s**"',
+                    returnStdout: true
+                ) + "\n"
+                def img;
+                if (currentBuild.result == "SUCCESS") {
+                    msg = msg + "Congratulations, your commit works!"
+                    if (env.BRANCH_NAME == "master" || env.BRANCH_NAME == "development") {
+                        msg = msg + "\nAnd it's already deployed! "
+                    }
+                    img = "https://wompampsupport.azureedge.net/fetchimage?siteId=7575&v=2&jpgQuality=100&width=700&url=https%3A%2F%2Fi.kym-cdn.com%2Fentries%2Ficons%2Ffacebook%2F000%2F027%2F838%2FUntitled-1.jpg"
+                } else if (currentBuild.result == "UNSTABLE") {
+                    if (UNSUCCESSFUL_STAGE == "Test") {
+                        msg = msg + "Lol, it didn't even pass the tests..."
+                    } else if (UNSUCCESSFUL_STAGE == "Quality Gate") {
+                        msg = msg + "I'm sorry, sonarqube didn't like your commit..."
+                    }
+                    img = "https://i.pinimg.com/originals/89/33/dd/8933ddd084a8bbf8d0c994894d49179c.jpg";
+                } else if (currentBuild.result == "FAILURE") {
+                    msg = msg + "It seems something went wrong at stage ${UNSUCCESSFUL_STAGE}"
+                    img = "https://storage.googleapis.com/www-paredro-com/uploads/2019/06/a61005be-20130109.png"
+                }
+                discordSend(
+                    webhookURL: "https://discordapp.com/api/webhooks/702577264373792808/mXotnBpGeUGiX5-QPWVTI2Kd6hWl8zRrZ2IP2tO01BBBkpkkeFhPkhAU3RoPkLnZYQsi",
+                    title: "${currentBuild.currentResult} in ${env.JOB_NAME}",
+                    link: env.BUILD_URL,
+                    result: currentBuild.result,
+                    image: img,
+                    description: msg
+                )
             }
         }
     }
