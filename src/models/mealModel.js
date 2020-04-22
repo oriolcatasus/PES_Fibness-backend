@@ -34,7 +34,8 @@ async function aliments(idComida) {
     let query = {
         text: "SELECT idAlimento, nombre, descripcion, calorias \
                FROM alimentos\
-               WHERE idComida = $1",
+               WHERE idComida = $1 \
+               ORDER BY idAlimento ASC",
         values: [idComida]
     }
     res = (await dbCtrl.execute(query));

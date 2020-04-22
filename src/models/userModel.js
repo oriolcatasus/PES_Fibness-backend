@@ -74,7 +74,8 @@ async function trainings(id) {
                WHERE e.idUsuario = $1 AND EXISTS \
                                         (SELECT * \
                                          FROM entrenamientos \
-                                         WHERE idUsuario = $1)",
+                                         WHERE idUsuario = $1) \
+               ORDER BY e.idElemento ASC",
         values: [id]
     }
     res = (await dbCtrl.execute(query));
@@ -92,7 +93,8 @@ async function diets(id) {
                WHERE e.idUsuario = $1 AND EXISTS \
                                         (SELECT * \
                                          FROM dietas \
-                                         WHERE idUsuario = $1)",
+                                         WHERE idUsuario = $1) \
+               ORDER BY e.idElemento ASC",
         values: [id]
     }
     res = (await dbCtrl.execute(query));
