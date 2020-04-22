@@ -28,7 +28,7 @@ describe("exerciseModel script", function() {
                 values: ["Oriol"],
             };
             let res = (await dbCtrl.execute(query)).rows[0];
-            idTest = res.id; 
+            let idTest = res.id; 
 
             //create training (and element)
             let newTraining = {
@@ -37,15 +37,14 @@ describe("exerciseModel script", function() {
                 idUser: idTest,
             }
             await training.create(newTraining);
-
             //get the automatically generated id for the training
             let queryGetElementID = {
                 text: "SELECT idElemento \
                         FROM elementos \
-                        WHERE nombre = $1 and idUsuario = $2",
-                values: [newTraining.nombre, idTest],
+                        WHERE nombre = $1 and idusuario = $2",
+                values: [newTraining.nombre, newTraining.idUser],
             };
-            res = (await dbCtrl.execute(queryGetElementID)).rows[0];
+            res = (await dbCtrl.execute(queryGetElementID)).rows[0];      
             idTrainigTest = res.idelemento;
 
             //create exercise( and activity)
@@ -62,13 +61,15 @@ describe("exerciseModel script", function() {
 
             //get the automatically generated id for the exercise in order to access it
             let queryGetID = {
-                text: "SELECT MAX(idActividad) \
-                        FROM actividades \
-                        WHERE nombre = $1 and idEntrenamiento = $2",
+                text: "SELECT idactividad \
+                       FROM actividades \
+                       WHERE nombre = $1 and idEntrenamiento = $2\
+                       ORDER BY idActividad DESC",
                 values: [newExercise.nombre,newExercise.idEntrenamiento],
             };
             res = (await dbCtrl.execute(queryGetID)).rows[0];
-            idActi = res.idActividad;
+            let idActi = res.idactividad;
+            
 
             //get the activity that we have created
             queryGetActivity = {
@@ -78,32 +79,30 @@ describe("exerciseModel script", function() {
                 values: [idActi],
             };
             
-            resAct = (await dbCtrl.execute(queryGetActivity)).rows[0]
+            let resAct = (await dbCtrl.execute(queryGetActivity)).rows[0]
 
             //make sure is really the activity we created
             assert.equal(newExercise.nombre, resAct.nombre);
             assert.equal(newExercise.descripcion, resAct.descripcion);
-            assert.equal(newExercise.tiempoEjecucion, resAct.tiempoEjecucion);
-            assert.equal(newExercise.idEntrenamiento, resAct.idEntrenamiento);
+            assert.equal(newExercise.tiempoEjecucion, resAct.tiempoejecucion);
+            assert.equal(newExercise.idEntrenamiento, resAct.identrenamiento);
 
             //get the exercise that we have created
             queryGetExercise = {
-                text: "(SELECT idActividad,numsets,numRepeticiones,tiempoDescanso \
-                        FROM exercises \
-                        WHERE idActividad = $1)",
+                text: "(SELECT idactividad,numsets,numrepeticiones,tiempodescanso \
+                        FROM ejercicios \
+                        WHERE idactividad = $1)",
                 values: [idActi],
             };
-            resExer = (await dbCtrl.execute(query)).rows[0];            
-            
-            
+            resExer = (await dbCtrl.execute(queryGetExercise)).rows[0];                      
             //make sure it really is the exercise we have created
-            assert.equal(newExercise.numSets, resExer.numSets);
-            assert.equal(newExercise.numRepeticiones, resExer.numRepeticiones);
-            assert.equal(newExercise.tiempoDescanso, resExer.tiempoDescanso);
-            assert.equal(idActi,resExer.idActividad);
+            assert.equal(newExercise.numSets, resExer.numsets);
+            assert.equal(newExercise.numRepeticiones, resExer.numrepeticiones);
+            assert.equal(newExercise.tiempoDescanso, resExer.tiempodescanso);
+            assert.equal(idActi,resExer.idactividad);
         });
     });
-    /*   
+
     describe("delete function", function() {
         
         it("should return exercise deleted correctly", async function() {
@@ -138,7 +137,7 @@ describe("exerciseModel script", function() {
                 text: "SELECT idElemento \
                         FROM elementos \
                         WHERE nombre = $1 and idUsuario = $2",
-                values: [newTraining.nombre, idTest],
+                values: [newTraining.nombre, newTraining.idUser],
             };
             res = (await dbCtrl.execute(queryGetID)).rows[0];
             idTrainigTest = res.idelemento;
@@ -156,16 +155,14 @@ describe("exerciseModel script", function() {
             await exercise.create(newExercise);
 
             //get the automatically generated id for the exercise in order to access it
-            let queryGetID = {
-                text: "SELECT MAX(idActividad) \
+            let queryGetIDActividad = {
+                text: "SELECT MAX(idActividad) as idactividad \
                         FROM actividades \
-                        WHERE nombre = $1 and idEntrenamiento = $2",
+                        WHERE nombre = $1 and identrenamiento = $2",
                 values: [newExercise.nombre,newExercise.idEntrenamiento],
             };
-            res = (await dbCtrl.execute(queryGetID)).rows[0];
-            idActi = res.idActividad;
-
-
+            res = (await dbCtrl.execute(queryGetIDActividad)).rows[0];
+            idActi = res.idactividad;
             //deletion of the exercise
             await exercise.del(idActi);
 
@@ -173,7 +170,7 @@ describe("exerciseModel script", function() {
             query = {
                 text: "SELECT * \
                         FROM actividades\
-                        WHERE idActividad = $1",
+                        WHERE idactividad = $1",
                 values: [idActi]
             };
             res = (await dbCtrl.execute(query)).rows;
@@ -242,18 +239,19 @@ describe("exerciseModel script", function() {
             await exercise.create(newExercise);
 
             //get the automatically generated id for the exercise in order to access it
-            let queryGetID = {
-                text: "SELECT MAX(idActividad) \
+            let queryGetIDActividad = {
+                text: "SELECT MAX(idActividad) as idactividad\
                         FROM actividades \
                         WHERE nombre = $1 and idEntrenamiento = $2",
                 values: [newExercise.nombre,newExercise.idEntrenamiento],
             };
-            res = (await dbCtrl.execute(queryGetID)).rows[0];
-            idActi = res.idActividad;
+            res = (await dbCtrl.execute(queryGetIDActividad)).rows[0];
+            idActi = res.idactividad;
+            
 
             let modifiedExercise = {
-                nombre: "exercise_Test",
-                descripcion: "exercise_Description",
+                nombre: 'exercise_Test',
+                descripcion: 'exercise_Description',
                 tiempoEjecucion: 5,
                 idEntrenamiento: idTrainigTest,
                 numSets: 4,
@@ -262,11 +260,11 @@ describe("exerciseModel script", function() {
             }
 
             //update training
-            await training.update(modifiedExercise, idActi);
+            await exercise.update(modifiedExercise, idActi);
 
             //get the activity that we have modified
              queryGetActivity = {
-                text: "(SELECT nombre, descripcion,tiempoEjecucion, idEntrenamiento \
+                text: "(SELECT nombre, descripcion,tiempoejecucion, identrenamiento \
                         FROM actividades \
                         WHERE idActividad = $1)",
                 values: [idActi],
@@ -277,25 +275,22 @@ describe("exerciseModel script", function() {
             //make sure the changes have been made in the activity(related to the exercise)
             assert.equal(modifiedExercise.nombre, resAct.nombre);
             assert.equal(modifiedExercise.descripcion, resAct.descripcion);
-            assert.equal(modifiedExercise.tiempoEjecucion, resAct.tiempoEjecucion);
-            assert.equal(modifiedExercise.idEntrenamiento, resAct.idEntrenamiento);
+            assert.equal(modifiedExercise.tiempoEjecucion, resAct.tiempoejecucion);
+            assert.equal(modifiedExercise.idEntrenamiento, resAct.identrenamiento);
 
             //get the exercise that we have modified
             queryGetExercise = {
-                text: "(SELECT idActividad,numsets,numRepeticiones,tiempoDescanso \
-                        FROM exercises \
+                text: "(SELECT idactividad,numsets,numrepeticiones,tiempodescanso \
+                        FROM ejercicios \
                         WHERE idActividad = $1)",
                 values: [idActi],
             };
-            resExer = (await dbCtrl.execute(query)).rows[0];            
-            
+            resExer = (await dbCtrl.execute(queryGetExercise)).rows[0];
             //make sure  the changes have been made in the exercise
-            assert.equal(modifiedExercise.numSets, resExer.numSets);
-            assert.equal(modifiedExercise.numRepeticiones, resExer.numRepeticiones);
-            assert.equal(modifiedExercise.tiempoDescanso, resExer.tiempoDescanso);
-            assert.equal(idActi,resExer.idActividad);
-            
+            assert.equal(modifiedExercise.numSets, resExer.numsets);
+            assert.equal(modifiedExercise.numRepeticiones, resExer.numrepeticiones);
+            assert.equal(modifiedExercise.tiempoDescanso, resExer.tiempodescanso);
+            assert.equal(idActi,resExer.idactividad);
         });
     });
-    */
 });

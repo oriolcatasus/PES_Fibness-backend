@@ -44,13 +44,16 @@ async function update(elemento, idElemento) {
 }
 // For now just returns exercises but it should return also sports
 async function activities(idElemento) {
+    
     let query = {
-        text: "SELECT a.idActividad, a.nombre, a.descripcion,a.tiempoejecucion, \
-               FROM actividades a\
-               WHERE a.idElemento= $1 AND EXISTS \
+        text: "SELECT a.idactividad, a.nombre, a.descripcion,a.tiempoejecucion, e.numsets, e.numrepeticiones, e.tiempodescanso \
+               FROM actividades a inner join ejercicios e on a.idactividad = e.idactividad\
+               WHERE a.idEntrenamiento = $1 AND EXISTS \
                                         (SELECT * \
-                                         FROM ejercicios \
-                                         WHERE idElemento = $1)",
+                                         FROM ejercicios e1 \
+                                         WHERE e1.idactividad IN (SELECT a.idactividad\
+                                                             FROM actividades a\
+                                                             WHERE a.idEntrenamiento = $1))",
         values: [idElemento]
     }
     return (await dbCtrl.execute(query));

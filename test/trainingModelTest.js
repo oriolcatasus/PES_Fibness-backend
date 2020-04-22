@@ -2,6 +2,7 @@ const assert = require("assert");
 
 const user = require("../src/models/userModel");
 const training = require("../src/models/trainingModel");
+const exercise = require("../src/models/exerciseModel");
 const dbCtrl = require("../src/ctrls/dbCtrl");
 
 require("./rootHooks");
@@ -228,5 +229,84 @@ describe("trainingModel script", function() {
             assert.equal(modifiedTraining.descripcion, res.descripcion);
             assert.equal(newTraining.idUser, res.idusuario);
         });
+    });
+    describe("get operation", function() {
+
+        it("should return set of exercises correctly", async function(){
+            //create user
+            let newUser = {
+                nombre: "Oriol",
+                password: "hash",
+                email: "oriol@example.com",
+            }
+            await user.create(newUser);
+
+            //select id from user in order to create a training (we need it for the foreign key of element)
+            let query = {
+                text: "SELECT id \
+                        FROM usuarios \
+                        WHERE nombre = $1",
+                values: ["Oriol"],
+            };
+            let res = (await dbCtrl.execute(query)).rows[0];
+            let idTest = res.id; 
+
+            //create training  (and element)
+            let newTraining = {
+                nombre: "TrainingTest",
+                descripcion: "TrainingDescription",
+                idUser: idTest,
+            }
+            await training.create(newTraining);
+
+            //get the automatically generated id for the training in order to access it
+            let queryGetID = {
+                text: "SELECT idElemento \
+                        FROM elementos \
+                        WHERE nombre = $1 and idUsuario = $2",
+                values: [newTraining.nombre, idTest],
+            };
+            res = (await dbCtrl.execute(queryGetID)).rows[0];
+            idTrainigTest = res.idelemento;
+            //Exercise 1
+            let newExercise = {
+                nombre: "exerciseTest",
+                descripcion: "exerciseDescription",
+                tiempoEjecucion: 4,
+                idEntrenamiento: idTrainigTest,
+                numSets: 3,
+                numRepeticiones: 2,
+                tiempoDescanso: 1,
+            }
+            await exercise.create(newExercise);
+            //Exercise 2
+            let newExercise2 = {
+                nombre: 'exercise_Test',
+                descripcion: 'exercise_Description',
+                tiempoEjecucion: 5,
+                idEntrenamiento: idTrainigTest,
+                numSets: 4,
+                numRepeticiones: 3,
+                tiempoDescanso: 2,
+            }
+            await exercise.create(newExercise2);
+
+            let trainingSet = await training.activities(idTrainigTest);
+
+            assert.equal(trainingSet.rows[0].nombre, newExercise.nombre);
+            assert.equal(trainingSet.rows[0].descripcion, newExercise.descripcion);
+            assert.equal(trainingSet.rows[0].tiempoejecucion, newExercise.tiempoEjecucion);
+            assert.equal(trainingSet.rows[0].numsets, newExercise.numSets);
+            assert.equal(trainingSet.rows[0].numrepeticiones, newExercise.numRepeticiones);
+            assert.equal(trainingSet.rows[0].tiempodescanso, newExercise.tiempoDescanso);
+        
+            assert.equal(trainingSet.rows[1].nombre, newExercise2.nombre);
+            assert.equal(trainingSet.rows[1].descripcion, newExercise2.descripcion);
+            assert.equal(trainingSet.rows[1].tiempoejecucion, newExercise2.tiempoEjecucion);
+            assert.equal(trainingSet.rows[1].numsets, newExercise2.numSets);
+            assert.equal(trainingSet.rows[1].numrepeticiones, newExercise2.numRepeticiones);
+            assert.equal(trainingSet.rows[1].tiempodescanso, newExercise2.tiempoDescanso);
+        });
+
     });
 });
