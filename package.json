@@ -8,7 +8,7 @@
     "dev": "nodemon index.js",
     "test": "mocha",
     "coverage": "nyc --reporter text --reporter text-summary npm test",
-    "coverage-jenkins": "nyc --reporter cobertura --reporter clover --reporter lcovonly --reporter text --reporter text-summary mocha -R mocha-multi-reporters --reporter-options configFile=mmr.json",
+    "coverage-jenkins": "nyc --reporter cobertura --reporter lcovonly --reporter text --reporter text-summary mocha -R mocha-multi-reporters --reporter-options configFile=mmr.json",
     "migrate": "node-pg-migrate -j=sql"
   },
   "repository": {

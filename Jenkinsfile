@@ -31,31 +31,22 @@ pipeline {
                     sh 'docker-compose -f docker-compose.test.yaml down -v --rmi local'
                     junit(testResults: 'reports/junit.xml',
                         allowEmptyResults:false,
-                        healthScaleFactor: 2.0,
+                        healthScaleFactor: 10.0,
                         keepLongStdio: true)
                     cobertura(
                         autoUpdateHealth: true,
-                        autoUpdateStability: true,
+                        autoUpdateStability: false,
                         coberturaReportFile: 'reports/cobertura-coverage.xml',
                         failNoReports: true,
                         failUnhealthy: false,
                         failUnstable: false,                        
                         onlyStable: false,
                         enableNewApi: true,
-                        maxNumberOfBuilds: 0
-                        //conditionalCoverageTargets: '90, 80, 70',
-                        //fileCoverageTargets: '90, 80, 70',
-                        //lineCoverageTargets: '90, 80, 70',
-                        //methodCoverageTargets: '90, 80, 70'
+                        zoomCoverageChart: true,
+                        maxNumberOfBuilds: 0,
+                        conditionalCoverageTargets: '80, 0, 0',
+                        lineCoverageTargets: '80, 0, 0'
                     )
-                    step([
-                        $class: 'CloverPublisher',
-                        cloverReportDir: 'reports',
-                        cloverReportFileName: 'clover.xml'
-                        //healthyTarget: [methodCoverage: 90, conditionalCoverage: 90, statementCoverage: 90],
-                        //unhealthyTarget: [methodCoverage: 80, conditionalCoverage: 80, statementCoverage: 80],
-                        //failingTarget: [methodCoverage: 70, conditionalCoverage: 70, statementCoverage: 70]
-                    ])
                 }
                 success {
                     echo 'Tests succesfully executed'
@@ -93,10 +84,13 @@ pipeline {
         }
         stage('Quality Gate') {
             steps {
-                timeout(15) {
-                    def qg = waitFotQualityGate()
-                    if (qg != "OK") {
-                        currentBuild.result = "UNSTABLE"
+                script {
+                    timeout(time: 15, units: 'MINUTES') {
+                        echo 'Waiting for SonarQube quality gate'
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            currentBuild.result = 'UNSTABLE'
+                        }
                     }
                 }
             }
@@ -139,10 +133,15 @@ pipeline {
                                         image = docker.image('fibness/api-stage:latest')
                                         echo 'Pushing image to registry'
                                         image.push('latest')
-                                    }   
+                                    }
+                                    
                                 }
                             }
                             post {
+                                always {
+                                    echo 'Cleaning up docker leftovers'
+                                    sh 'docker image prune -f'
+                                }
                                 success {
                                     echo 'Stage image successfully built'
                                 }
@@ -222,21 +221,6 @@ pipeline {
                     }
                 }
             }
-        }
-    }
-    post {
-        always {
-            echo 'Cleaning up docker leftovers'
-            sh 'docker system prune'
-        }
-        success {
-            echo 'Job successfully finished'
-        }
-        unstable {
-            echo 'Job marked as unstable'
-        }
-        failure {
-            echo 'Job failed'
         }
     }
 }
