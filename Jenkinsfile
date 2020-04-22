@@ -259,7 +259,7 @@ pipeline {
                 if (currentBuild.result == "SUCCESS") {
                     msg = msg + "🎉 Congratulations, your commit works! 🎉"
                     if (env.BRANCH_NAME == "master" || env.BRANCH_NAME == "development") {
-                        msg = msg + "\nIt is deployed in the server "
+                        msg = msg + "\n And it is already deployed! "
                     }
                     img = "https://wompampsupport.azureedge.net/fetchimage?siteId=7575&v=2&jpgQuality=100&width=700&url=https%3A%2F%2Fi.kym-cdn.com%2Fentries%2Ficons%2Ffacebook%2F000%2F027%2F838%2FUntitled-1.jpg"
                 } else if (currentBuild.result == "UNSTABLE") {
