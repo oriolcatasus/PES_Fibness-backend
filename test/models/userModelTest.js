@@ -500,29 +500,27 @@ describe("userModel script", function() {
     describe("get user info operation", function() {
         it("should return user info successfully", async function() {
             //create user
-            let newUser = {
+            const fakeUser = {
                 nombre: "Oriol",
                 password: "hash",
                 email: "oriol@example.com",
             }
-            await user.create(newUser);
-
-            //select id from user
-            let query = {
-                text: "SELECT id \
-                        FROM usuarios \
-                        WHERE nombre = $1",
-                values: ["Oriol"],
-            };
-            let res = (await dbCtrl.execute(query)).rows[0];
-            idUser = res.id; 
-
-            let info = (await user.userInfo(idUser));
-            assert.equal(info.nombre, newUser.nombre);
-            assert.equal(info.rutaImagen, null);
-            assert.equal(info.nseguidores, 0);
-            assert.equal(info.nseguidos, 0);
-            assert.equal(info.npost, 0);
+            const idUser = (await user.create(fakeUser)).id;
+            const info = (await user.userInfo(idUser));
+            //const todayDate = new Date(Date.now()).toDateString();
+            expect(info.nombre).to.equal(fakeUser.nombre);
+            expect(info.email).to.equal(fakeUser.email);
+            expect(info.tipousuario).to.equal(`principiante`);
+            expect(info.tipoperfil).to.equal(`publico`);
+            expect(info.genero).to.equal(null);
+            expect(info.descripcion).to.equal(null);
+            expect(info.fechadenacimiento).to.equal(null);
+            //expect(info.fechaderegistro).to.equal(todayDate);
+            expect(info.pais).to.equal(null);            
+            expect(info.rutaimagen).to.equal(null);
+            expect(info.nseguidores).to.equal(0);
+            expect(info.nseguidos).to.equal(0);
+            expect(info.npost).to.equal(0);
         });
     });
 

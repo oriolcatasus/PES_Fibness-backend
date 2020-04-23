@@ -115,14 +115,11 @@ async function resetPassword ({email, password}) {
 
 
 async function userInfo(id) {
-    let query = {
-        text: "SELECT nombre, rutaImagen, nSeguidores, nSeguidos, nPost \
-                FROM usuarios \
-                WHERE id = $1",
-        values: [id]
-    }
-    res = (await dbCtrl.execute(query)).rows[0];
-    return res;
+    const query = `SELECT nombre, email, tipoUsuario, tipoPerfil, genero, descripcion, fechaDeNacimiento,
+            fechaDeRegistro, pais, rutaImagen, nSeguidores, nSeguidos, nPost
+        FROM usuarios
+        WHERE id = ${id}`;
+    return (await dbCtrl.execute(query)).rows[0]
 }
 
 async function putUserSettings(id, set) {

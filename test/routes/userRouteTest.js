@@ -113,6 +113,14 @@ describe("user route", function() {
                 .expect(200);
 
             expect(res.body).to.have.property("nombre");
+            expect(res.body).to.have.property("email");
+            expect(res.body).to.have.property("tipousuario");
+            expect(res.body).to.have.property("tipoperfil");
+            expect(res.body).to.have.property("genero");
+            expect(res.body).to.have.property("descripcion");
+            expect(res.body).to.have.property("fechadenacimiento");
+            expect(res.body).to.have.property("fechaderegistro");
+            expect(res.body).to.have.property("pais");
             expect(res.body).to.have.property("rutaimagen");
             expect(res.body).to.have.property("nseguidores");
             expect(res.body).to.have.property("nseguidos");
