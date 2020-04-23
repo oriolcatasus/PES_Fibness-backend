@@ -13,6 +13,8 @@ tags:
     description: Operations about users
   - name: training
     description: Operations about trainings
+  - name: exercise
+    description: Operations about exercises  
   - name: diet
     description: Operations about diets
   - name: meal
@@ -513,7 +515,7 @@ paths:
                         numRepeticiones: 1
                         tiempoDescanso: 10  
                   required:
-                    - idEntrenamiento
+                    - activitySet
                 
                           
   '/exercise':

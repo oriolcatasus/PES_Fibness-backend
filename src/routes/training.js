@@ -39,12 +39,13 @@ router.put('/:idElemento', async (req, res) => {
 });
 
 //Get the activities of a training
-router.get('/:id/activities', async function(req, res, next) {
+router.get('/:idElemento/activities', async function(req, res) {
     try {
-        const trainingSet = await training.activities(req.params.id);
-        res.send(trainingSet);
-    } catch (err) {
-        next(err);
+        const trainingSet = await training.activities(req.params.idElemento);
+        res.status(200).send(trainingSet);
+    } catch (e) {
+        console.error(e.message);
+        res.status(400).send(e.message);
     }
 })
 
