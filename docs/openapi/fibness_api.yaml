@@ -78,8 +78,59 @@ paths:
                     type: string
                     example: null value in column 'email' violates constraint
                 required:
-                  - created
+                  - created 
                   - error
+  /user/fb:
+    post:
+      summary: Log in a user with Facebook token
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: Oriol
+                email:
+                  type: string
+                  example: oriol@example.com
+                password:
+                  type: string
+                  description: Facebook token
+                  example: '5f4dcc3b5aa765d61d8327deb882cf99'
+              required:
+                - nombre
+                - password
+                - email
+      responses:
+        200:
+          description: User is correct
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 12345
+                required:
+                  - id
+        201:
+          description: User created succesfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 12345
+                required:
+                  - id
   /user/{id}:
     delete:
       summary: Deletes a user by id
@@ -264,6 +315,30 @@ paths:
                   nombre:
                     type: string
                     example: UserTest
+                  email:
+                    type: string
+                    example: user@example.com
+                  tipousuario:
+                    type: string
+                    example: principiante
+                  tipoperfil:
+                    type: string
+                    example: publico
+                  genero:
+                    type: boolean
+                    example: true
+                  descripcion:
+                    type: string
+                    example: Esta es mi descripcion
+                  fechadenacimiento:
+                    type: string
+                    example: Thu Apr 10 1983
+                  fecharegistro:
+                    type: string
+                    example: Thu Apr 29 2020
+                  pais:
+                    type: integer
+                    example: 54
                   rutaimagen:
                     type: string
                     example: /home/marc/Escritorio/nodeTest
@@ -277,7 +352,19 @@ paths:
                     type: integer
                     example: 100
                 required:
-                  - info
+                  - nombre
+                  - email
+                  - tipousuario
+                  - tipoperfil
+                  - genero
+                  - descripcion
+                  - fechadenacimiento
+                  - fecharegistro
+                  - pais
+                  - rutaimagen
+                  - nseguidores
+                  - nseguidos
+                  - npost
   /user/{id}/settings:
     get:
       summary: Gets the settings of the user
