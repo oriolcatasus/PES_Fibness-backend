@@ -49,7 +49,7 @@ describe("user route", function() {
         });
 
         it("should not delete a nonexistent user", async function() {
-            await request.delete(`/user/badId`).expect(400);
+            await request.delete(`/user/badId`).expect(500);
         });
     });
 

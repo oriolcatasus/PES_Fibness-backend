@@ -1,10 +1,10 @@
 function validation(err, req, res, next) {
     console.log(err.message);
-    if (err.name == "JsonSchemaValidationError") {
+    /*if (err.name == "JsonSchemaValidationError") {
         res.status(400).send(err.validationError);
-    } else {
+    } else {*/
         next(err);
-    }
+    //}
 }
 
 function def(err, req, res, next) {

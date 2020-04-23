@@ -51,8 +51,9 @@ async function start() {
 }
 
 async function stop() {
+    await server.close();
     dbCtrl.disconnect();
-    server.close();
+    
 }
 
 module.exports = {
@@ -60,4 +61,3 @@ module.exports = {
     stop,
     app
 }
-

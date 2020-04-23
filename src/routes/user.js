@@ -20,14 +20,13 @@ router.post('/', async function(req, res, next) {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async function(req, res, next) {
     console.log(req.params.id);
     try {
         await user.del(req.params.id);
         res.sendStatus(200);
-    } catch (e) {
-        console.error(e.message);
-        res.status(400).send(e.message);
+    } catch (err) {
+        next(err);
     }
 });
 
