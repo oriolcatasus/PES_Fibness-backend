@@ -293,19 +293,19 @@ describe("trainingModel script", function() {
 
             let trainingSet = await training.activities(idTrainigTest);
 
-            assert.equal(trainingSet.rows[0].nombre, newExercise.nombre);
-            assert.equal(trainingSet.rows[0].descripcion, newExercise.descripcion);
-            assert.equal(trainingSet.rows[0].tiempoejecucion, newExercise.tiempoEjecucion);
-            assert.equal(trainingSet.rows[0].numsets, newExercise.numSets);
-            assert.equal(trainingSet.rows[0].numrepeticiones, newExercise.numRepeticiones);
-            assert.equal(trainingSet.rows[0].tiempodescanso, newExercise.tiempoDescanso);
+            assert.equal(trainingSet[0].nombre, newExercise.nombre);
+            assert.equal(trainingSet[0].descripcion, newExercise.descripcion);
+            assert.equal(trainingSet[0].tiempoejecucion, newExercise.tiempoEjecucion);
+            assert.equal(trainingSet[0].numsets, newExercise.numSets);
+            assert.equal(trainingSet[0].numrepeticiones, newExercise.numRepeticiones);
+            assert.equal(trainingSet[0].tiempodescanso, newExercise.tiempoDescanso);
         
-            assert.equal(trainingSet.rows[1].nombre, newExercise2.nombre);
-            assert.equal(trainingSet.rows[1].descripcion, newExercise2.descripcion);
-            assert.equal(trainingSet.rows[1].tiempoejecucion, newExercise2.tiempoEjecucion);
-            assert.equal(trainingSet.rows[1].numsets, newExercise2.numSets);
-            assert.equal(trainingSet.rows[1].numrepeticiones, newExercise2.numRepeticiones);
-            assert.equal(trainingSet.rows[1].tiempodescanso, newExercise2.tiempoDescanso);
+            assert.equal(trainingSet[1].nombre, newExercise2.nombre);
+            assert.equal(trainingSet[1].descripcion, newExercise2.descripcion);
+            assert.equal(trainingSet[1].tiempoejecucion, newExercise2.tiempoEjecucion);
+            assert.equal(trainingSet[1].numsets, newExercise2.numSets);
+            assert.equal(trainingSet[1].numrepeticiones, newExercise2.numRepeticiones);
+            assert.equal(trainingSet[1].tiempodescanso, newExercise2.tiempoDescanso);
         });
 
     });
