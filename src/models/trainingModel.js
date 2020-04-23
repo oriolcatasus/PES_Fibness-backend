@@ -58,7 +58,7 @@ async function activities(idElemento) {
     res=await dbCtrl.execute(query)
     let activitySet = [];
     for (i=0; i<res.rows.length; ++i) {
-        dietSet.push(res.rows[i]);
+        activitySet.push(res.rows[i]);
     }
     return activitySet;
 }
