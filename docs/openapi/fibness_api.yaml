@@ -332,7 +332,7 @@ paths:
                     example: Esta es mi descripcion
                   fechadenacimiento:
                     type: string
-                    example: Thu Apr 10 1983
+                    example: 1978-01-30
                   fecharegistro:
                     type: string
                     example: Thu Apr 29 2020
@@ -365,6 +365,60 @@ paths:
                   - nseguidores
                   - nseguidos
                   - npost
+    put:
+      summary: Update user info
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user to get the information from
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: MiNuevoNombre
+                genero:
+                  type: boolean
+                  example: false
+                descripcion:
+                  type: string
+                  example: Mi nueva descripcion
+                fechadenacimiento:
+                  type: string
+                  example: 1997-12-30
+                pais:
+                  type: integer
+                  example: 56
+              required:
+                - nombre
+                - genero
+                - descripcion
+                - fechadenacimiento
+                - pais
+      responses:
+        200:
+          description: User is correct
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 12345
+                required:
+                  - id
+      
   /user/{id}/settings:
     get:
       summary: Gets the settings of the user
