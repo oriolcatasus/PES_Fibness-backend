@@ -442,10 +442,10 @@ paths:
             schema:
               type: object
               properties:
-                name:
+                nombre:
                   type: string
                   example: weekends training
-                description:
+                descripcion:
                   type: string
                   example: This training has vareity of exercices. 
               required:

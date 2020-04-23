@@ -50,8 +50,8 @@ pipeline {
                         enableNewApi: true,
                         zoomCoverageChart: true,
                         maxNumberOfBuilds: 0,
-                        conditionalCoverageTargets: '99, 0, 0',
-                        lineCoverageTargets: '99, 0, 0'
+                        conditionalCoverageTargets: '80, 50, 0',
+                        lineCoverageTargets: '80, 50, 0'
                     )
                 }
                 success {
@@ -259,7 +259,7 @@ pipeline {
                 if (currentBuild.result == "SUCCESS") {
                     msg = msg + "Congratulations, your commit works!"
                     if (env.BRANCH_NAME == "master" || env.BRANCH_NAME == "development") {
-                        msg = msg + "\nAnd it's already deployed! "
+                        msg = msg + "\nAnd it's already **deployed**! "
                     }
                     img = "https://wompampsupport.azureedge.net/fetchimage?siteId=7575&v=2&jpgQuality=100&width=700&url=https%3A%2F%2Fi.kym-cdn.com%2Fentries%2Ficons%2Ffacebook%2F000%2F027%2F838%2FUntitled-1.jpg"
                 } else if (currentBuild.result == "UNSTABLE") {
@@ -273,6 +273,7 @@ pipeline {
                     msg = msg + "It seems something went wrong at stage ${UNSUCCESSFUL_STAGE}"
                     img = "https://storage.googleapis.com/www-paredro-com/uploads/2019/06/a61005be-20130109.png"
                 }
+                msg = msg + "\n[Sonarqube](http://10.4.41.146:9000/dashboard?id=PES_fibness-backend-${env.BRANCH_NAME})"
                 discordSend(
                     webhookURL: "https://discordapp.com/api/webhooks/702577264373792808/mXotnBpGeUGiX5-QPWVTI2Kd6hWl8zRrZ2IP2tO01BBBkpkkeFhPkhAU3RoPkLnZYQsi",
                     title: "${currentBuild.currentResult} in ${env.JOB_NAME}",

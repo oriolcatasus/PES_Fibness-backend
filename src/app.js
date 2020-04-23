@@ -12,7 +12,7 @@ const meal = require("./routes/meal")
 const aliment = require("./routes/aliment")
 const exercise = require("./routes/exercise")
 //Middleware
-const errorHandler = require("../middleware/errorHandlers");
+const errorHandler = require("./middleware/errorHandlers");
 
 const port = process.env.PORT || 3000;
 
