@@ -1,3 +1,5 @@
+const SQL = require('sql-template-strings');
+
 const dbCtrl = require("../ctrls/dbCtrl");
 
 async function create(user) {
@@ -113,18 +115,24 @@ async function resetPassword ({email, password}) {
     await dbCtrl.execute(query);
 }
 
-
-async function userInfo(id) {
-    const query = `SELECT nombre, email, tipoUsuario, tipoPerfil, genero, descripcion, fechaDeNacimiento,
+async function getInfo(id) {
+    const query = SQL`SELECT nombre, email, tipoUsuario, tipoPerfil, genero, descripcion, fechaDeNacimiento,
             fechaDeRegistro, pais, rutaImagen, nSeguidores, nSeguidos, nPost
         FROM usuarios
         WHERE id = ${id}`;
     return (await dbCtrl.execute(query)).rows[0]
 }
 
-async function putUserSettings(id, set) {
+async function putInfo(id, info) {
+    const query = SQL`UPDATE usuarios SET nombre=${info.nombre}, genero=${info.genero},
+            descripcion=${info.descripcion}, fechadenacimiento=${info.fechadenacimiento}, pais=${info.pais}
+        WHERE id=${id}`
+    await dbCtrl.execute(query);
+}
+
+async function putSettings(id, set) {
     let query = {
-        text: "UPDATE usuarios set sEdad = $2, sDistancia =$3, sInvitacion = $4, \
+        text: "UPDATE usuarios SET sEdad = $2, sDistancia =$3, sInvitacion = $4, \
                 sSeguidor = $5, nMensaje = $6 \
                 WHERE id = $1",
         values: [id, set.sEdad, set.sDistancia, set.sInvitacion, set.sSeguidor, set.nMensaje]
@@ -132,7 +140,7 @@ async function putUserSettings(id, set) {
     await dbCtrl.execute(query)
 }
 
-async function getUserSettings(id) {
+async function getSettings(id) {
     let query = {
         text: "SELECT sEdad, sDistancia, sInvitacion, sSeguidor, nMensaje \
                 FROM usuarios \
@@ -163,9 +171,10 @@ module.exports = {
     trainings,
     diets,
     resetPassword,
-    userInfo,   
-    getUserSettings,
-    putUserSettings,
+    getInfo,
+    putInfo,
+    getSettings,
+    putSettings,
     getByEmail,
     fbLogin
 }

@@ -128,22 +128,23 @@ describe("user route", function() {
         });
     });
 
-    describe("PUT /user/:id/info", function(){
-        it("should update the settings of a user", async function() {
-            let res = await request.post("/user")
-                .set("Accept", "application/json")
+    describe(`PUT /user/:id/info`, function() {
+        it(`should modify a user`, async function() {
+            const res = await request.post(`/user`)
+                .set(`Accept`, `application/json`)
                 .send(fakeUser);
             const idUser = res.body.id;
-            const newFakeSettings = {
-                sEdad: false,
-                sDistancia: true,
-                sInvitacion: false,
-                sSeguidor: false,
-                nMensaje: true,
-            }
 
-            res = await request.put(`/user/${idUser}/settings`)
-                .send(newFakeSettings)
+            const newFakeInfo = {
+                nombre: `FakeName`,
+                genero: false,
+                descripcion: `Fake description`,
+                fechadenacimiento: `2017-05-29`,
+                pais: 23
+            }
+            await request.put(`/user/${idUser}/info`)
+                .set(`Accept`, `application/json`)
+                .send(newFakeInfo)
                 .expect(200);
         });
     });
@@ -166,6 +167,26 @@ describe("user route", function() {
         });
     });
 
+    describe("PUT /user/:id/settings", function(){
+        it("should update the settings of a user", async function() {
+            let res = await request.post("/user")
+                .set("Accept", "application/json")
+                .send(fakeUser);
+            const idUser = res.body.id;
+            const newFakeSettings = {
+                sEdad: false,
+                sDistancia: true,
+                sInvitacion: false,
+                sSeguidor: false,
+                nMensaje: true,
+            }
+
+            res = await request.put(`/user/${idUser}/settings`)
+                .send(newFakeSettings)
+                .expect(200);
+        });
+    });
+    
     describe(`POST /user/fb`, function() {
         it(`should login a new user with fb`, async function(){
             const res = await request.post(`/user/fb`)

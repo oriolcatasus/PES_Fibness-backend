@@ -47,7 +47,7 @@ router.get('/:id/trainings', async function(req, res, next) {
     } catch (err) {
         next(err);
     }
-})
+});
 
 router.get('/:id/diets', async function(req, res, next) {
     try {
@@ -56,7 +56,7 @@ router.get('/:id/diets', async function(req, res, next) {
     } catch (err) {
         next(err);
     }
-})
+});
 
 router.put('/resetPassword', async function(req, res, next) {
     try {
@@ -65,29 +65,38 @@ router.put('/resetPassword', async function(req, res, next) {
     } catch (err) {
         next(err);
     }
-})
+});
 
 router.get('/:id/info', async function(req, res, next){
     try {
-        const info = await user.userInfo(req.params.id);
+        const info = await user.getInfo(req.params.id);
         res.status(200).send(info);
     } catch(err) {
         next(err);
     }
-})
+});
 
-router.put('/:id/settings', async function(req, res, next){
+router.put(`/:id/info`, async function(req, res, next) {
     try {
-        await user.putUserSettings(req.params.id, req.body);
+        await user.putInfo(req.params.id, req.body);
         res.sendStatus(200);
     } catch(err) {
         next(err);
     }
-})
+});
+
+router.put('/:id/settings', async function(req, res, next){
+    try {
+        await user.putSettings(req.params.id, req.body);
+        res.sendStatus(200);
+    } catch(err) {
+        next(err);
+    }
+});
 
 router.get('/:id/settings', async function(req, res, next){
     try {
-        const settings = await user.getUserSettings(req.params.id);
+        const settings = await user.getSettings(req.params.id);
         res.status(200).send(settings);
     } catch(err) {
         next(err);

@@ -506,7 +506,7 @@ describe("userModel script", function() {
                 email: "oriol@example.com",
             }
             const idUser = (await user.create(fakeUser)).id;
-            const info = (await user.userInfo(idUser));
+            const info = (await user.getInfo(idUser));
             //const todayDate = new Date(Date.now()).toDateString();
             expect(info.nombre).to.equal(fakeUser.nombre);
             expect(info.email).to.equal(fakeUser.email);
@@ -521,6 +521,32 @@ describe("userModel script", function() {
             expect(info.nseguidores).to.equal(0);
             expect(info.nseguidos).to.equal(0);
             expect(info.npost).to.equal(0);
+        });
+    });
+
+    describe(`putInfo`, function() {
+        it(`should successfully update user info`, async function() {
+            const fakeUser = {
+                nombre: `FakeName`,
+                password: `fakeHash`,
+                email: `fake@example.com`,
+            };
+            const idUser = (await user.create(fakeUser)).id;
+            const newFakeInfo = {
+                nombre: `FakeName`,
+                genero: false,
+                descripcion: `Fake description`,
+                fechadenacimiento: `2017-05-29`,
+                pais: 23
+            }
+            await user.putInfo(idUser, newFakeInfo);
+
+            let info = await user.getInfo(idUser);
+            expect(newFakeInfo.nombre).equal(info.nombre);
+            expect(newFakeInfo.genero).equal(info.genero);
+            expect(newFakeInfo.descripcion).equal(info.descripcion);
+            expect(newFakeInfo.fechadenacimiento).equal(info.fechadenacimiento);
+            expect(newFakeInfo.pais).equal(newFakeInfo.pais);
         });
     });
 
@@ -552,8 +578,8 @@ describe("userModel script", function() {
                 sSeguidor: false,
                 nMensaje: true,
             }
-            await user.putUserSettings(idUser, newSettings);
-            settings = (await user.getUserSettings(idUser));
+            await user.putSettings(idUser, newSettings);
+            settings = (await user.getSettings(idUser));
 
             //make sure the settings have been updated
             assert.equal(settings.sedad, newSettings.sEdad);
