@@ -28,14 +28,14 @@ async function create(user) {
     return result;    
 }
 
-async function getUserByEmail(email) {
+async function getByEmail(email) {
     const query = {
         text: "SELECT * \
             FROM usuarios \
             WHERE email = $1",
         values: [email]
     }
-    return await dbCtrl.execute(query)
+    return (await dbCtrl.execute(query)).rows[0];
 }
 
 async function validate({email, password}) {
@@ -146,6 +146,18 @@ async function getUserSettings(id) {
     return res;
 }
 
+async function fbLogin(user) {
+    const oldUser = await getByEmail(user.email);
+    if (oldUser === undefined) {
+        return (await create(user));
+    } else {
+        return {
+            created: false,
+            id: oldUser.id
+        };
+    }
+}
+
 
 module.exports = {
     create,
@@ -156,5 +168,7 @@ module.exports = {
     resetPassword,
     userInfo,   
     getUserSettings,
-    putUserSettings
+    putUserSettings,
+    getByEmail,
+    fbLogin
 }

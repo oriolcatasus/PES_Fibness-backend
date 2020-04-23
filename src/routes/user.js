@@ -82,7 +82,6 @@ router.put('/:id/settings', async function(req, res, next){
         await user.putUserSettings(req.params.id, req.body);
         res.sendStatus(200);
     } catch(err) {
-
         next(err);
     }
 })
@@ -92,10 +91,24 @@ router.get('/:id/settings', async function(req, res, next){
         const settings = await user.getUserSettings(req.params.id);
         res.status(200).send(settings);
     } catch(err) {
-        res.status(500).send(e.message);
         next(err);
     }
-})
+});
+
+router.post('/fb', async function(req, res, next) {
+    try {
+        const result = await user.fbLogin(req.body);
+        let status;
+        if (result.created === true) {
+            status = 201;
+        } else {
+            status = 200;
+        }
+        res.status(status).send({ id } = result);
+    } catch (err) {
+        next(err);
+    }
+});
 
 
 module.exports = router;

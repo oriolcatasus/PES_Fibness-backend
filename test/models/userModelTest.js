@@ -1,4 +1,5 @@
 const assert = require("assert");
+const chai = require("chai");
 
 const user = require("../../src/models/userModel");
 const training = require("../../src/models/trainingModel");
@@ -6,6 +7,7 @@ const diet = require("../../src/models/dietModel")
 const dbCtrl = require("../../src/ctrls/dbCtrl");
 
 require("../rootHooks");
+const expect = chai.expect;
 
 describe("userModel script", function() {
     describe("create function", function() {
@@ -561,6 +563,37 @@ describe("userModel script", function() {
             assert.equal(settings.sinvitacion, newSettings.sInvitacion);
             assert.equal(settings.sseguidor, newSettings.sSeguidor);
             assert.equal(settings.nmensaje, newSettings.nMensaje);
+        });
+    });
+
+    describe("fbLogin(user)", function() {
+        it("should login with fb if the user doesn't exists", async function() {
+            const fakeFbUser = {
+                nombre: "FakeFbName",
+                password: "fakeFbHash",
+                email: "fakeFb@example.com",
+            };
+            const res = await user.fbLogin(fakeFbUser);
+            
+            const userDb = await user.getByEmail(fakeFbUser.email);            
+            expect(res.created).to.equal(true);
+            expect(userDb.nombre).to.equal(fakeFbUser.nombre);
+            expect(userDb.email).to.equal(fakeFbUser.email);
+        });
+
+        it("should login with fb if the user already exists", async function() {
+            const fakeFbUser = {
+                nombre: "FakeFbName",
+                password: "fakeFbHash",
+                email: "fakeFb@example.com",
+            };
+            await user.fbLogin(fakeFbUser);            
+            const res = await user.fbLogin(fakeFbUser);
+            
+            const userDb = await user.getByEmail(fakeFbUser.email);            
+            expect(res.created).to.equal(false);
+            expect(userDb.nombre).to.equal(fakeFbUser.nombre);
+            expect(userDb.email).to.equal(fakeFbUser.email);
         });
     });
 });

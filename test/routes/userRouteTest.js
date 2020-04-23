@@ -10,13 +10,13 @@ const expect = chai.expect;
 chai.use(require('chai-things'));
 
 describe("user route", function() {
+    const fakeUser = {
+        nombre: "fakeName",
+        email: "fake@example.com",
+        password: "fakeHash"
+    }
     describe("POST /user", function() {
         it("should create a user", async function() {
-            const fakeUser = {
-                nombre: "fakeName",
-                email: "fake@example.com",
-                password: "fakeHash"
-            }
             const res = await request.post("/user")
                 .set("Accept", "application/json")
                 .send(fakeUser)
@@ -27,11 +27,10 @@ describe("user route", function() {
             expect(id).to.not.equal(undefined);
         });
 
-        it("should NOT create a user", async function() {
-            const fakeUser = { }
+        it("should NOT create a user", async function() {            
             const res = await request.post("/user")
                 .set("Accept", "application/json")
-                .send(fakeUser)
+                .send({ })
                 .expect('Content-Type', /json/)
                 .expect(400);
             const {created, id} = res.body;
@@ -42,11 +41,6 @@ describe("user route", function() {
 
     describe("DELETE /user/:id", async function() {
         it("should delete a user", async function() {
-            const fakeUser = {
-                nombre: "fakeName",
-                email: "fake@example.com",
-                password: "fakeHash"
-            };
             const res = await request.post("/user")
                 .set("Accept", "application/json")
                 .send(fakeUser);
@@ -61,13 +55,13 @@ describe("user route", function() {
 
     describe("POST /user/validate", function(){
         it("should check if a user is valid", async function() {
-            const fakeUser = {
-                email: "fake@example.com",
-                password: "fakeHash"
+            const fakeUserToValidate = {
+                email: fakeUser.email,
+                password: fakeUser.password
             };
             const res = await request.post(`/user/validate`)
                 .set("Accept", "application/json")
-                .send(fakeUser)
+                .send(fakeUserToValidate)
                 .expect('Content-Type', /json/)
                 .expect(200);
             const { result } = res.body;
@@ -77,11 +71,6 @@ describe("user route", function() {
 
     describe("GET /user/:id/trainings", function() {
         it.skip("should return an array of trainings", async function() {
-            const fakeUser = {
-                nombre: "fakeName",
-                email: "fake@example.com",
-                password: "fakeHash"
-            }
             let res = await request.post("/user")
                 .set("Accept", "application/json")
                 .send(fakeUser);
@@ -97,19 +86,13 @@ describe("user route", function() {
 
     describe("POST /user/resetPassword", function(){
         it("should reset the password of a user", async function() {
-            const fakeUser = {
-                nombre: "fakeName",
-                email: "fake@example.com",
-                password: "fakeHash"
-            };
-
             await request.post(`/user`)
                 .set("Accept", "application/json")
                 .send(fakeUser)
 
             const newPassword = {
-                email:"fake@example.com",
-                password: "trueHash"
+                email: fakeUser.email,
+                password: "newFakeHash"
             };
 
             await request.put(`/user/resetPassword`)
@@ -120,11 +103,6 @@ describe("user route", function() {
 
     describe("GET /user/:id/info", function(){
         it("should return the information of a user", async function() {
-            const fakeUser = {
-                nombre: "fakeName",
-                email: "fake@example.com",
-                password: "fakeHash"
-            }
             let res = await request.post("/user")
                 .set("Accept", "application/json")
                 .send(fakeUser);
@@ -144,16 +122,11 @@ describe("user route", function() {
 
     describe("PUT /user/:id/info", function(){
         it("should update the settings of a user", async function() {
-            const fakeUser = {
-                nombre: "fakeName",
-                email: "fake@example.com",
-                password: "fakeHash"
-            }
             let res = await request.post("/user")
                 .set("Accept", "application/json")
                 .send(fakeUser);
             const idUser = res.body.id;
-            const newSettings = {
+            const newFakeSettings = {
                 sEdad: false,
                 sDistancia: true,
                 sInvitacion: false,
@@ -162,18 +135,13 @@ describe("user route", function() {
             }
 
             res = await request.put(`/user/${idUser}/settings`)
-                .send(newSettings)
+                .send(newFakeSettings)
                 .expect(200);
         });
     });
 
     describe("GET /user/:id/settings", function(){
         it("should return the settings of a user", async function() {
-            const fakeUser = {
-                nombre: "fakeName",
-                email: "fake@example.com",
-                password: "fakeHash"
-            }
             let res = await request.post("/user")
                 .set("Accept", "application/json")
                 .send(fakeUser);
@@ -188,5 +156,26 @@ describe("user route", function() {
             expect(res.body).to.have.property("sseguidor");
             expect(res.body).to.have.property("nmensaje");
         });
-    });    
+    });
+
+    describe(`POST /user/fb`, function() {
+        it(`should login a new user with fb`, async function(){
+            const res = await request.post(`/user/fb`)
+                .set(`Accept`, `application/json`)
+                .send(fakeUser)
+                .expect(201);
+            expect(res.body).to.have.property(`id`);
+        });
+        
+        it(`should login an existent user with fb`, async function() {
+            await request.post(`/user/fb`)
+                .set(`Accept`, `application/json`)
+                .send(fakeUser);
+            const res = await request.post(`/user/fb`)
+                .set(`Accept`, `application/json`)
+                .send(fakeUser)
+                .expect(200);
+            expect(res.body).to.have.property(`id`);
+        });
+    });
 });

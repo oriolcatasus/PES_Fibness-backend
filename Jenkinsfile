@@ -50,8 +50,10 @@ pipeline {
                         enableNewApi: true,
                         zoomCoverageChart: true,
                         maxNumberOfBuilds: 0,
-                        conditionalCoverageTargets: '80, 50, 0',
-                        lineCoverageTargets: '80, 50, 0'
+                        conditionalCoverageTargets: '99, 0, 0',
+                        lineCoverageTargets: '99, 0, 0',
+                        fileCoverageTargets: '99, 0, 0',
+                        methodCoverageTargets: '99, 0, 0'
                     )
                 }
                 success {
@@ -273,7 +275,7 @@ pipeline {
                     msg = msg + "It seems something went wrong at stage ${UNSUCCESSFUL_STAGE}"
                     img = "https://storage.googleapis.com/www-paredro-com/uploads/2019/06/a61005be-20130109.png"
                 }
-                msg = msg + "\n[Sonarqube](http://10.4.41.146:9000/dashboard?id=PES_fibness-backend-${env.BRANCH_NAME})"
+                msg = msg + "\n\n[SonarQube](http://10.4.41.146:9000/dashboard?id=PES_fibness-backend-${env.BRANCH_NAME})"
                 discordSend(
                     webhookURL: "https://discordapp.com/api/webhooks/702577264373792808/mXotnBpGeUGiX5-QPWVTI2Kd6hWl8zRrZ2IP2tO01BBBkpkkeFhPkhAU3RoPkLnZYQsi",
                     title: "${currentBuild.currentResult} in ${env.JOB_NAME}",

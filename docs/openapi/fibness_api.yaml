@@ -3,9 +3,6 @@ info:
   title: Fibness API
   version: "1.0.0"
 servers:
-# Added by API Auto Mocking Plugin
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/Minat99/FibnessDEf/1.0.0
   - url: 'http://10.4.41.146:3001'
     description: FIB server, UPC VPN required to connect
 tags:
