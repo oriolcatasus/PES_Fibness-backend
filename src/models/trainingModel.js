@@ -51,15 +51,16 @@ async function activities(idElemento) {
     let query = {
         text: "SELECT a.idactividad, a.nombre, a.descripcion,a.tiempoejecucion, e.numsets, e.numrepeticiones, e.tiempodescanso \
                FROM actividades a inner join ejercicios e on a.idactividad = e.idactividad\
-               WHERE a.idEntrenamiento = $1 AND EXISTS \
-                                        (SELECT * \
-                                         FROM ejercicios e1 \
-                                         WHERE e1.idactividad IN (SELECT a.idactividad\
-                                                             FROM actividades a\
-                                                             WHERE a.idEntrenamiento = $1))",
+               WHERE a.idEntrenamiento = $1",
         values: [idElemento]
     }
-    return (await dbCtrl.execute(query));
+
+    res=await dbCtrl.execute(query)
+    let activitySet = [];
+    for (i=0; i<res.rows.length; ++i) {
+        dietSet.push(res.rows[i]);
+    }
+    return activitySet;
 }
 
 
