@@ -277,7 +277,7 @@ pipeline {
                 }
                 msg = msg + "\n\n[SonarQube](http://10.4.41.146:9000/dashboard?id=PES_fibness-backend-${env.BRANCH_NAME})"
                 discordSend(
-                    webhookURL: "https://discordapp.com/api/webhooks/702577264373792808/mXotnBpGeUGiX5-QPWVTI2Kd6hWl8zRrZ2IP2tO01BBBkpkkeFhPkhAU3RoPkLnZYQsi",
+                    webhookURL: "https://discordapp.com/api/webhooks/703191414997254246/y6Uk-sJJJNUSG7ELQH0nk1ZH_Jc497NMJTNazPqKo0NvFcAUA8aPD2BiwDOoHLaKdZjB",
                     title: "${currentBuild.currentResult} in ${env.JOB_NAME}",
                     link: env.BUILD_URL,
                     result: currentBuild.result,
