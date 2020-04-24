@@ -8,6 +8,6 @@ const request = supertest(app);
 describe("GET /test", function() {
     it("should return OK", async function() {
         await request.get(`/test`)
-            .expect(201);
+            .expect(200);
     });
 });
