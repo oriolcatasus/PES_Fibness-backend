@@ -638,20 +638,20 @@ paths:
                       type: integer
                       
                   example:
-                      - idActividad: 3
+                      - idactividad: 3
                         nombre: exerciseTest
                         descripcion: exerciseDescription
-                        tiempoEjecucion: 4
-                        numSets: 3 
-                        numRepeticiones: 2
-                        tiempoDescanso: 1
-                      - idActividad: 4
+                        tiempoejecucion: 4
+                        numsets: 3 
+                        numrepeticiones: 2
+                        tiempodescanso: 1
+                      - idactividad: 4
                         nombre: exerciseTest_2
                         descripcion: exerciseDescription_2
-                        tiempoEjecucion: 5
-                        numSets: 4 
-                        numRepeticiones: 1
-                        tiempoDescanso: 10  
+                        tiempoejecucion: 5
+                        numsets: 4 
+                        numrepeticiones: 1
+                        tiempodescanso: 10  
                   required:
                     - activitySet
                 

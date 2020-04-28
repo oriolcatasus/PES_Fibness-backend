@@ -49,12 +49,12 @@ async function update(elemento, idElemento) {
 async function activities(idElemento) {
     
     let query = {
-        text: "SELECT a.idactividad AS idActividad, a.nombre, a.descripcion,a.tiempoejecucion AS tiempoEjecucion, e.numsets AS numSets, e.numrepeticiones AS numRepeticiones, e.tiempodescanso AS tiempoDescanso\
+        text: "SELECT a.idactividad, a.nombre, a.descripcion,a.tiempoejecucion , e.numsets , e.numrepeticiones , e.tiempodescanso\
                FROM actividades a inner join ejercicios e on a.idactividad = e.idactividad\
                WHERE a.idEntrenamiento = $1",
         values: [idElemento]
     }
-
+    
     res=await dbCtrl.execute(query)
     let activitySet = [];
     for (i=0; i<res.rows.length; ++i) {
