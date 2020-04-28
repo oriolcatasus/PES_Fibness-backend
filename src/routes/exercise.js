@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/', async (req, res) => {
     try {
         await exercise.create(req.body);
-        res.sendStatus(200);
+        res.status(201).send(result);
     } catch (e) {
         console.error(e.message);
         res.status(400).send(e.message);
