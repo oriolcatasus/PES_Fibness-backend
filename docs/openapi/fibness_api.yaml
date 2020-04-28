@@ -708,11 +708,11 @@ paths:
               schema:
                 type: object
                 properties:
-                  idexercise:
+                  idExercise:
                     type: integer
                     example: 34
                 required:
-                  - idexercise
+                  - idExercise
         '400':
           description: >-
             Some required parameters are missing or with an incorrect type
