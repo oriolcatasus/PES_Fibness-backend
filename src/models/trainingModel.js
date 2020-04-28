@@ -51,7 +51,8 @@ async function activities(idElemento) {
     let query = {
         text: "SELECT a.idactividad, a.nombre, a.descripcion,a.tiempoejecucion , e.numsets , e.numrepeticiones , e.tiempodescanso\
                FROM actividades a inner join ejercicios e on a.idactividad = e.idactividad\
-               WHERE a.idEntrenamiento = $1",
+               WHERE a.idEntrenamiento = $1\
+               ORDER BY a.idactividad",
         values: [idElemento]
     }
     
