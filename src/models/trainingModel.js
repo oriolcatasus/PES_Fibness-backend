@@ -1,7 +1,7 @@
 const dbCtrl = require("../ctrls/dbCtrl");
 
 async function del(idElemento) {
-    let query = {
+    const query = {
         text: "DELETE FROM elementos WHERE idElemento = $1",
         values: [idElemento]
     }
@@ -17,14 +17,14 @@ async function create(training) {
     await dbCtrl.execute(query);
 
     //get the automatically generated id of the element (that will be referred from training)
-    let queryGetID = {
+    const queryGetID = {
         text: "SELECT idElemento \
                 FROM elementos \
                 WHERE nombre = $1 and idUsuario = $2",
         values: [training.nombre, training.idUser],
     };
-    let res = (await dbCtrl.execute(queryGetID)).rows;
-    let idElem = res[0].idelemento;
+    const res = (await dbCtrl.execute(queryGetID)).rows;
+    const idElem = res[0].idelemento;
 
     //create training
     query = {
@@ -32,14 +32,14 @@ async function create(training) {
         values: [idElem],
     }
     await dbCtrl.execute(query);
-    let ret = {
+    const ret = {
         idElemento: idElem,
     }
     return ret;
 }
 
 async function update(elemento, idElemento) {
-    let query = {
+    const query = {
         text: "UPDATE elementos SET nombre = $2 ,descripcion = $3 WHERE idElemento = $1",
         values: [idElemento, elemento.nombre, elemento.descripcion]
     }
@@ -48,7 +48,7 @@ async function update(elemento, idElemento) {
 // For now just returns exercises but it should return also sports
 async function activities(idElemento) {
     
-    let query = {
+    const query = {
         text: "SELECT a.idactividad, a.nombre, a.descripcion,a.tiempoejecucion , e.numsets , e.numrepeticiones , e.tiempodescanso\
                FROM actividades a inner join ejercicios e on a.idactividad = e.idactividad\
                WHERE a.idEntrenamiento = $1\
@@ -56,9 +56,9 @@ async function activities(idElemento) {
         values: [idElemento]
     }
     
-    res=await dbCtrl.execute(query)
-    let activitySet = [];
-    for (i=0; i<res.rows.length; ++i) {
+    let res=await dbCtrl.execute(query)
+    const activitySet = [];
+    for (let i=0; i<res.rows.length; ++i) {
         activitySet.push(res.rows[i]);
     }
     return activitySet;

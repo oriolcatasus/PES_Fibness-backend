@@ -61,7 +61,7 @@ async function validate({email, password}) {
 }
 
 async function del(id) {
-    let query = {
+    const query = {
         text: "DELETE FROM usuarios where id = $1",
         values: [id]
     }
@@ -70,7 +70,7 @@ async function del(id) {
 
 
 async function trainings(id) {
-    let query = {
+    const query = {
         text: "SELECT e.idElemento, e.nombre, e.descripcion \
                FROM elementos e\
                WHERE e.idUsuario = $1 AND EXISTS \
@@ -81,7 +81,7 @@ async function trainings(id) {
         values: [id]
     }
     res = (await dbCtrl.execute(query));
-    let trainingSet = [];
+    const trainingSet = [];
     for (i=0; i<res.rows.length; ++i) {
         trainingSet.push(res.rows[i]);
     }
@@ -89,7 +89,7 @@ async function trainings(id) {
 }
 
 async function diets(id) {
-    let query = {
+    const query = {
         text: "SELECT e.idElemento, e.nombre, e.descripcion \
                FROM elementos e\
                WHERE e.idUsuario = $1 AND EXISTS \
@@ -99,16 +99,16 @@ async function diets(id) {
                ORDER BY e.idElemento ASC",
         values: [id]
     }
-    res = (await dbCtrl.execute(query));
-    let dietSet = [];
-    for (i=0; i<res.rows.length; ++i) {
+    let res = (await dbCtrl.execute(query));
+    const dietSet = [];
+    for (let i=0; i<res.rows.length; ++i) {
         dietSet.push(res.rows[i]);
     }
     return dietSet;
 }
 
 async function resetPassword ({email, password}) {
-    let query = {
+    const query = {
         text: "UPDATE usuarios SET password = $2 WHERE email = $1",
         values: [email, password]
     }
@@ -131,7 +131,7 @@ async function putInfo(id, info) {
 }
 
 async function putSettings(id, set) {
-    let query = {
+    const query = {
         text: "UPDATE usuarios SET sEdad = $2, sDistancia =$3, sInvitacion = $4, \
                 sSeguidor = $5, nMensaje = $6 \
                 WHERE id = $1",
@@ -141,7 +141,7 @@ async function putSettings(id, set) {
 }
 
 async function getSettings(id) {
-    let query = {
+    const query = {
         text: "SELECT sEdad, sDistancia, sInvitacion, sSeguidor, nMensaje \
                 FROM usuarios \
                 WHERE id = $1",

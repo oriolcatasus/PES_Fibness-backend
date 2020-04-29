@@ -33,7 +33,6 @@ router.put('/:idElemento', async (req, res) => {
         await training.update(req.body, req.params.idElemento);
         res.sendStatus(200);
     } catch (e) {
-        //console.error(e.message);
         res.status(400).send(e.message);
     }
 });

@@ -33,7 +33,6 @@ router.put('/:idComida', async (req, res) => {
         await meal.update(req.body, req.params.idElemento);
         res.sendStatus(200);
     } catch (e) {
-        //console.error(e.message);
         res.status(400).send(e.message);
     }
 });

@@ -112,7 +112,8 @@ router.post('/fb', async function(req, res, next) {
         } else {
             status = 200;
         }
-        res.status(status).send({ id } = result);
+        const id = result;
+        res.status(status).send(id);
     } catch (err) {
         next(err);
     }

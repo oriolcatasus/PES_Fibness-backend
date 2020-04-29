@@ -22,7 +22,6 @@ router.put('/:idActividad', async (req, res) => {
         await exercise.update(req.body, req.params.idActividad);
         res.sendStatus(200);
     } catch (e) {
-        //console.error(e.message);
         res.status(400).send(e.message);
     }
 });

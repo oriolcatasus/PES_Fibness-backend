@@ -66,7 +66,7 @@ async function dayMeals(idElemento, day) {
         values: [idElemento, day]
     }
     let res = (await dbCtrl.execute(query));
-    let dayMealSet = [];
+    const dayMealSet = [];
     for (let i=0; i<res.rows.length; ++i) {
         dayMealSet.push(res.rows[i]);
     }
