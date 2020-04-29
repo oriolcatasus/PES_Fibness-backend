@@ -51,7 +51,7 @@ describe("Diet route", function() {
                 .set("Accept", "application/json")
                 .send(fakeDiet);
             const idDiet = res.body.idElemento;
-            await request.delete(`/training/${idDiet}`)
+            await request.delete(`/diet/${idDiet}`)
                 .expect(200);
         });
 
@@ -71,10 +71,14 @@ describe("Diet route", function() {
                 nombre: "NewFakeName",
                 descripcion: "NewFakeDescription"
             }
-            await request.put(`/training/${idDiet}`)
+            await request.put(`/diet/${idDiet}`)
                 .set("Accept", "application/json")
                 .send(newFakeDiet)    
                 .expect(200);
+        });
+
+        it("should not modify a badly formated id", async function() {
+            await request.put(`/diet/badId`).expect(400);
         });
     });
 
@@ -117,6 +121,10 @@ describe("Diet route", function() {
             expect(meals[0]).to.have.property("horacomida");
             expect(meals[1].nombre).to.equal("MealTest");
             //expect(trainings).to.not.be.empty;
+        });
+        it("should not get a badly formated id", async function() {
+            const dia = "miercoles";
+            await request.get(`/diet/badId/badDia`).expect(400);
         });
     });
 });

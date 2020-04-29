@@ -42,7 +42,7 @@ router.get('/:idElemento/:dia', async function(req, res, next) {
         const dayMealSet = await diet.dayMeals(req.params.idElemento, req.params.dia);
         res.status(200).send(dayMealSet);
     } catch (err) {
-        next(err);
+        res.status(400).send(err.message);
     }
 })
 
