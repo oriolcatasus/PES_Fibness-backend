@@ -3,13 +3,13 @@ const SQL = require('sql-template-strings');
 const dbCtrl = require("../ctrls/dbCtrl");
 
 async function create(user) {
-    let result; 
+    let result;
     try {
         let query = {
             text: "INSERT INTO usuarios(nombre, password, email) values($1, $2, $3)",
             values: [user.nombre, user.password, user.email]
         };
-        await dbCtrl.execute(query); 
+        await dbCtrl.execute(query);
         query = {
             text: "SELECT id \
                 FROM usuarios \
@@ -27,7 +27,7 @@ async function create(user) {
             error: err.message
         }
     }
-    return result;    
+    return result;
 }
 
 async function getByEmail(email) {
@@ -54,7 +54,7 @@ async function validate({email, password}) {
             id: res.rows[0].id
         }
     } else {
-        return { 
+        return {
             result: false
         }
     }

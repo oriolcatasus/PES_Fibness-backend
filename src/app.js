@@ -45,7 +45,7 @@ app.use(errorHandler.def);
 
 async function start() {
     await dbCtrl.connect(db);
-    server = app.listen(port, () => {    
+    server = app.listen(port, () => {
         console.log("Server started at port " + port);
     });
 }
@@ -53,7 +53,6 @@ async function start() {
 async function stop() {
     await server.close();
     dbCtrl.disconnect();
-    
 }
 
 module.exports = {

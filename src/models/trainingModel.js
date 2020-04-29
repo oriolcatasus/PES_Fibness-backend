@@ -47,7 +47,6 @@ async function update(elemento, idElemento) {
 }
 // For now just returns exercises but it should return also sports
 async function activities(idElemento) {
-    
     const query = {
         text: "SELECT a.idactividad, a.nombre, a.descripcion,a.tiempoejecucion , e.numsets , e.numrepeticiones , e.tiempodescanso\
                FROM actividades a inner join ejercicios e on a.idactividad = e.idactividad\
@@ -55,7 +54,6 @@ async function activities(idElemento) {
                ORDER BY a.idactividad",
         values: [idElemento]
     }
-    
     let res=await dbCtrl.execute(query)
     const activitySet = [];
     for (let i=0; i<res.rows.length; ++i) {

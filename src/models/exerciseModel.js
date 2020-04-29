@@ -18,9 +18,7 @@ async function create(exercise) {
         values: [exercise.nombre, exercise.idEntrenamiento],
     };
     const res = (await dbCtrl.execute(queryGetID)).rows;
-
     const idActividad = res[0].idactividad;
- 
     //create exercise
     const query = {
         text: "INSERT INTO ejercicios(idactividad,numsets,numrepeticiones,tiempodescanso) values($1,$2,$3,$4)",
