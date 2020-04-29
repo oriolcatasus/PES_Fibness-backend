@@ -6,7 +6,7 @@ async function create(meal) {
         text: "INSERT INTO comidas(nombre, horaComida, idElemento, tipoDia) values($1, $2, $3, $4) RETURNING idComida",
         values: [meal.nombre, meal.horaComida, meal.idElemento, meal.tipoDia]
     }
-    idMeal = (await dbCtrl.execute(query)).rows[0].idcomida;
+    let idMeal = (await dbCtrl.execute(query)).rows[0].idcomida;
     let ret = {
         idComida: idMeal,
     }
@@ -38,9 +38,9 @@ async function aliments(idComida) {
                ORDER BY idAlimento ASC",
         values: [idComida]
     }
-    res = (await dbCtrl.execute(query));
+    let res = (await dbCtrl.execute(query));
     let alimentsSet = [];
-    for (i=0; i<res.rows.length; ++i) {
+    for (let i=0; i<res.rows.length; ++i) {
         alimentsSet.push(res.rows[i]);
     }
     return alimentsSet;
