@@ -292,7 +292,6 @@ describe("trainingModel script", function() {
             await exercise.create(newExercise2);
 
             let trainingSet = await training.activities(idTrainigTest);
-
             assert.equal(trainingSet[0].nombre, newExercise.nombre);
             assert.equal(trainingSet[0].descripcion, newExercise.descripcion);
             assert.equal(trainingSet[0].tiempoejecucion, newExercise.tiempoEjecucion);

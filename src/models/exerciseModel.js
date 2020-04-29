@@ -27,7 +27,10 @@ async function create(exercise) {
         values: [idActividad, exercise.numSets, exercise.numRepeticiones, exercise.tiempoDescanso],
     }
     await dbCtrl.execute(query);
-    return idActividad;
+    let ret = {
+        idExercise: idActividad,
+    }
+    return ret;
 }
 
 async function update(exercise, idActividad) {
