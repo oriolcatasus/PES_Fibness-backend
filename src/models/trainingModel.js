@@ -45,9 +45,26 @@ async function update(elemento, idElemento) {
     }
     await dbCtrl.execute(query);
 }
-
+// For now just returns exercises but it should return also sports
+async function activities(idElemento) {
+    
+    let query = {
+        text: "SELECT a.idactividad, a.nombre, a.descripcion,a.tiempoejecucion , e.numsets , e.numrepeticiones , e.tiempodescanso\
+               FROM actividades a inner join ejercicios e on a.idactividad = e.idactividad\
+               WHERE a.idEntrenamiento = $1\
+               ORDER BY a.idactividad",
+        values: [idElemento]
+    }
+    
+    res=await dbCtrl.execute(query)
+    let activitySet = [];
+    for (i=0; i<res.rows.length; ++i) {
+        activitySet.push(res.rows[i]);
+    }
+    return activitySet;
+}
 
 
 module.exports = {
-    create,update,del
+    create,update,del,activities
 }

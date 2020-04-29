@@ -10,9 +10,9 @@ const training = require("./routes/training")
 const diet = require("./routes/diet")
 const meal = require("./routes/meal")
 const aliment = require("./routes/aliment")
-
+const exercise = require("./routes/exercise")
 //Middleware
-const errorHandler = require("../middleware/errorHandlers");
+const errorHandler = require("./middleware/errorHandlers");
 
 const port = process.env.PORT || 3000;
 
@@ -24,6 +24,8 @@ app.use(express.json());
 app.use("/user", user);
 
 app.use("/training", training);
+
+app.use("/exercise",exercise);
 
 app.use("/diet", diet);
 
@@ -42,15 +44,16 @@ app.use(errorHandler.def);
 
 
 async function start() {
-    dbCtrl.connect(db);
+    await dbCtrl.connect(db);
     server = app.listen(port, () => {    
         console.log("Server started at port " + port);
     });
 }
 
 async function stop() {
+    await server.close();
     dbCtrl.disconnect();
-    server.close();
+    
 }
 
 module.exports = {
@@ -58,4 +61,3 @@ module.exports = {
     stop,
     app
 }
-

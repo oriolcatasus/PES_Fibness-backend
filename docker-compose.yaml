@@ -1,7 +1,7 @@
 version: "3.7"
 
 volumes:
-  pg-db:
+  pg_data:
 
 services:
   api:
@@ -10,7 +10,7 @@ services:
       - pg
     environment:
       NODE_ENV: development
-    network_mode: host
+      NODE_CONFIG_ENV: docker
     ports:
       - "3000:3000"
     volumes:
@@ -26,6 +26,6 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pg-db:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data
       - ./scripts/postgres:/docker-entrypoint-initdb.d/
       

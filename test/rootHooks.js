@@ -4,7 +4,7 @@ process.env.PORT = 3010;
 const { db } = require("config");
 
 const dbCtrl = require("../src/ctrls/dbCtrl");
-const app = require("../src/app");
+const app = require(`../src/app`);
 
 before(async function() {
     await dbCtrl.migrate(db)
@@ -19,5 +19,5 @@ afterEach(async function() {
 
 after(async function() {
     //dbCtrl.disconnect();
-    await app.stop();
+    app.stop();
 });

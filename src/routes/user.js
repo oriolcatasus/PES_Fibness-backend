@@ -20,14 +20,13 @@ router.post('/', async function(req, res, next) {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async function(req, res, next) {
     console.log(req.params.id);
     try {
         await user.del(req.params.id);
         res.sendStatus(200);
-    } catch (e) {
-        console.error(e.message);
-        res.status(400).send(e.message);
+    } catch (err) {
+        next(err);
     }
 });
 
@@ -48,7 +47,7 @@ router.get('/:id/trainings', async function(req, res, next) {
     } catch (err) {
         next(err);
     }
-})
+});
 
 router.get('/:id/diets', async function(req, res, next) {
     try {
@@ -57,7 +56,7 @@ router.get('/:id/diets', async function(req, res, next) {
     } catch (err) {
         next(err);
     }
-})
+});
 
 router.put('/resetPassword', async function(req, res, next) {
     try {
@@ -66,34 +65,58 @@ router.put('/resetPassword', async function(req, res, next) {
     } catch (err) {
         next(err);
     }
-})
+});
 
-router.get('/:id/userInfo', async function(req, res, next){
+router.get('/:id/info', async function(req, res, next){
     try {
-        const info = await user.userInfo(req.params.id);
+        const info = await user.getInfo(req.params.id);
         res.status(200).send(info);
     } catch(err) {
         next(err);
     }
-})
+});
 
-router.put('/:id/userSettings', async function(req, res, next){
+router.put(`/:id/info`, async function(req, res, next) {
     try {
-        await user.putUserSettings(req.params.id, req.body);
+        await user.putInfo(req.params.id, req.body);
         res.sendStatus(200);
     } catch(err) {
         next(err);
     }
-})
+});
 
-router.get('/:id/userSettings', async function(req, res, next){
+router.put('/:id/settings', async function(req, res, next){
     try {
-        const settings = await user.getUserSettings(req.params.id);
+        await user.putSettings(req.params.id, req.body);
+        res.sendStatus(200);
+    } catch(err) {
+        next(err);
+    }
+});
+
+router.get('/:id/settings', async function(req, res, next){
+    try {
+        const settings = await user.getSettings(req.params.id);
         res.status(200).send(settings);
     } catch(err) {
         next(err);
     }
-})
+});
+
+router.post('/fb', async function(req, res, next) {
+    try {
+        const result = await user.fbLogin(req.body);
+        let status;
+        if (result.created === true) {
+            status = 201;
+        } else {
+            status = 200;
+        }
+        res.status(status).send({ id } = result);
+    } catch (err) {
+        next(err);
+    }
+});
 
 
 module.exports = router;

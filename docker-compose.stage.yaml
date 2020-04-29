@@ -1,32 +1,32 @@
 version: "3.7"
 
 volumes:
-  pg-db-stage:
+  pg_data:
 
 networks:
-  fibness-backend_stage:
+  backend_network:
 
 services:
-  api-stage:
+  api:
     image: localhost:5000/fibness/api-stage:latest
     depends_on:
-      - pg-stage
+      - pg
     environment:
       NODE_ENV: stage
     networks:
-      - fibness-backend_stage
+      - backend_network
     ports:
       - "3001:3000"
   
-  pg-stage:
+  pg:
     image: postgres:12
     environment:
       POSTGRES_USER: ${DB_STAGE_USR}
       POSTGRES_PASSWORD: ${DB_STAGE_PSW}
       POSTGRES_DB: fibness
     networks:
-      - fibness-backend_stage
+      - backend_network
     ports:
       - "54321:5432"
     volumes:
-      - pg-db-stage:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data

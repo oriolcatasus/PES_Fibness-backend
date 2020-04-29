@@ -3,9 +3,6 @@ info:
   title: Fibness API
   version: "1.0.0"
 servers:
-# Added by API Auto Mocking Plugin
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/Minat99/FibnessDEf/1.0.0
   - url: 'http://10.4.41.146:3001'
     description: FIB server, UPC VPN required to connect
 tags:
@@ -13,6 +10,8 @@ tags:
     description: Operations about users
   - name: training
     description: Operations about trainings
+  - name: exercise
+    description: Operations about exercises  
   - name: diet
     description: Operations about diets
   - name: meal
@@ -79,8 +78,59 @@ paths:
                     type: string
                     example: null value in column 'email' violates constraint
                 required:
-                  - created
+                  - created 
                   - error
+  /user/fb:
+    post:
+      summary: Log in a user with Facebook token
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: Oriol
+                email:
+                  type: string
+                  example: oriol@example.com
+                password:
+                  type: string
+                  description: Facebook token
+                  example: '5f4dcc3b5aa765d61d8327deb882cf99'
+              required:
+                - nombre
+                - password
+                - email
+      responses:
+        200:
+          description: User is correct
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 12345
+                required:
+                  - id
+        201:
+          description: User created succesfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 12345
+                required:
+                  - id
   /user/{id}:
     delete:
       summary: Deletes a user by id
@@ -240,7 +290,7 @@ paths:
       responses:
         200:
           description: OK
-  /user/{id}/userInfo:
+  /user/{id}/info:
     get:
       summary: Gets the info of the user
       description: Returns the information of the given user
@@ -265,6 +315,30 @@ paths:
                   nombre:
                     type: string
                     example: UserTest
+                  email:
+                    type: string
+                    example: user@example.com
+                  tipousuario:
+                    type: string
+                    example: principiante
+                  tipoperfil:
+                    type: string
+                    example: publico
+                  genero:
+                    type: boolean
+                    example: true
+                  descripcion:
+                    type: string
+                    example: Esta es mi descripcion
+                  fechadenacimiento:
+                    type: string
+                    example: 1978-01-30
+                  fecharegistro:
+                    type: string
+                    example: Thu Apr 29 2020
+                  pais:
+                    type: integer
+                    example: 54
                   rutaimagen:
                     type: string
                     example: /home/marc/Escritorio/nodeTest
@@ -278,8 +352,74 @@ paths:
                     type: integer
                     example: 100
                 required:
-                  - info
-  /user/{id}/userSettings:
+                  - nombre
+                  - email
+                  - tipousuario
+                  - tipoperfil
+                  - genero
+                  - descripcion
+                  - fechadenacimiento
+                  - fecharegistro
+                  - pais
+                  - rutaimagen
+                  - nseguidores
+                  - nseguidos
+                  - npost
+    put:
+      summary: Update user info
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user to get the information from
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: MiNuevoNombre
+                genero:
+                  type: boolean
+                  example: false
+                descripcion:
+                  type: string
+                  example: Mi nueva descripcion
+                fechadenacimiento:
+                  type: string
+                  example: 1997-12-30
+                pais:
+                  type: integer
+                  example: 56
+              required:
+                - nombre
+                - genero
+                - descripcion
+                - fechadenacimiento
+                - pais
+      responses:
+        200:
+          description: User is correct
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 12345
+                required:
+                  - id
+      
+  /user/{id}/settings:
     get:
       summary: Gets the settings of the user
       description: Returns the settings of the given user
@@ -440,10 +580,10 @@ paths:
             schema:
               type: object
               properties:
-                name:
+                nombre:
                   type: string
                   example: weekends training
-                description:
+                descripcion:
                   type: string
                   example: This training has vareity of exercices. 
               required:
@@ -452,6 +592,196 @@ paths:
       responses:
             '200':
               description: Ok
+  /training/{idTraining}/activities:
+    get:
+      summary: Gives the activities(exercises or sports) of a certain training
+      description: Returns all the activities of a given training id
+      tags:
+        - training
+      parameters:
+        - name: idTraining
+          in: path
+          required: true
+          description: The id of the training
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: Set of exercises or sports of a certain training
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    idActividad:
+                      type: integer
+                      description: id of the activity(sport or exercise)
+                    nombre:
+                      type: string
+                     
+                    descripcion:
+                      type: string
+                     
+                    tiempoEjecucion:
+                      type: integer
+                      
+                    numSets:
+                      type: integer
+        
+                    numRepeticiones:
+                      type: integer
+                      
+                    tiempoDescanso:
+                      type: integer
+                      
+                  example:
+                      - idactividad: 3
+                        nombre: exerciseTest
+                        descripcion: exerciseDescription
+                        tiempoejecucion: 4
+                        numsets: 3 
+                        numrepeticiones: 2
+                        tiempodescanso: 1
+                      - idactividad: 4
+                        nombre: exerciseTest_2
+                        descripcion: exerciseDescription_2
+                        tiempoejecucion: 5
+                        numsets: 4 
+                        numrepeticiones: 1
+                        tiempodescanso: 10  
+                  required:
+                    - activitySet
+                
+                          
+  '/exercise':
+    post:
+      summary: Creates an exercise
+      description: Creates an exercise with the given description and it's associated to the given training 
+      tags:
+        - exercise
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idEntrenamiento:
+                  type: integer
+                  description: id of the training
+                  example: 1
+                nombre:
+                  type: string
+                  example: exerciseTest
+                descripcion:
+                  type: string
+                  example: exerciseDescription
+                tiempoEjecucion:
+                  type: integer
+                  example: 4
+                numSets:
+                  type: integer
+                  example: 3  
+                numRepeticiones:
+                  type: integer
+                  example: 2
+                tiempoDescanso:
+                  type: integer
+                  example: 1
+              required:
+                - idEntrenamiento
+                - nombre
+                - descripcion
+                - tiempoEjecucion
+                - numSets
+                - numRepeticiones
+                - tiempoDescanso
+                
+      responses:
+        '201':
+          description: Exercise created succesfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  idExercise:
+                    type: integer
+                    example: 34
+                required:
+                  - idExercise
+        '400':
+          description: >-
+            Some required parameters are missing or with an incorrect type
+            
+  '/exercise/{id}':
+    delete:
+      summary: Deletes a exercise by id
+      tags:
+        - exercise
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the exercise to delete
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Ok
+    put:
+      summary: Update a exercise by id
+      tags:
+        - exercise
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the exercise to update
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: exerciseTestModified
+                descripcion:
+                  type: string
+                  example: exerciseDescriptionModified
+                tiempoEjecucion:
+                  type: integer
+                  example: 5
+                numSets:
+                  type: integer
+                  example: 2  
+                numRepeticiones:
+                  type: integer
+                  example: 1
+                tiempoDescanso:
+                  type: integer
+                  example: 4
+              required:
+                - nombre
+                - descripcion
+                - tiempoEjecucion
+                - numSets
+                - numRepeticiones
+                - tiempoDescanso
+      responses:
+            '200':
+              description: Ok
+
+              
   '/diet':
     post:
       summary: Creates a diet

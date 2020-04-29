@@ -10,13 +10,13 @@ const expect = chai.expect;
 chai.use(require('chai-things'));
 
 describe("user route", function() {
+    const fakeUser = {
+        nombre: "fakeName",
+        email: "fake@example.com",
+        password: "fakeHash"
+    }
     describe("POST /user", function() {
         it("should create a user", async function() {
-            const fakeUser = {
-                nombre: "fakeName",
-                email: "fake@example.com",
-                password: "fakeHash"
-            }
             const res = await request.post("/user")
                 .set("Accept", "application/json")
                 .send(fakeUser)
@@ -27,11 +27,10 @@ describe("user route", function() {
             expect(id).to.not.equal(undefined);
         });
 
-        it("should NOT create a user", async function() {
-            const fakeUser = { }
+        it("should NOT create a user", async function() {            
             const res = await request.post("/user")
                 .set("Accept", "application/json")
-                .send(fakeUser)
+                .send({ })
                 .expect('Content-Type', /json/)
                 .expect(400);
             const {created, id} = res.body;
@@ -42,11 +41,6 @@ describe("user route", function() {
 
     describe("DELETE /user/:id", async function() {
         it("should delete a user", async function() {
-            const fakeUser = {
-                nombre: "fakeName",
-                email: "fake@example.com",
-                password: "fakeHash"
-            };
             const res = await request.post("/user")
                 .set("Accept", "application/json")
                 .send(fakeUser);
@@ -55,19 +49,19 @@ describe("user route", function() {
         });
 
         it("should not delete a nonexistent user", async function() {
-            await request.delete(`/user/badId`).expect(400);
+            await request.delete(`/user/badId`).expect(500);
         });
     });
 
     describe("POST /user/validate", function(){
         it("should check if a user is valid", async function() {
-            const fakeUser = {
-                email: "fake@example.com",
-                password: "fakeHash"
+            const fakeUserToValidate = {
+                email: fakeUser.email,
+                password: fakeUser.password
             };
             const res = await request.post(`/user/validate`)
                 .set("Accept", "application/json")
-                .send(fakeUser)
+                .send(fakeUserToValidate)
                 .expect('Content-Type', /json/)
                 .expect(200);
             const { result } = res.body;
@@ -77,11 +71,6 @@ describe("user route", function() {
 
     describe("GET /user/:id/trainings", function() {
         it.skip("should return an array of trainings", async function() {
-            const fakeUser = {
-                nombre: "fakeName",
-                email: "fake@example.com",
-                password: "fakeHash"
-            }
             let res = await request.post("/user")
                 .set("Accept", "application/json")
                 .send(fakeUser);
@@ -97,19 +86,13 @@ describe("user route", function() {
 
     describe("POST /user/resetPassword", function(){
         it("should reset the password of a user", async function() {
-            const fakeUser = {
-                nombre: "fakeName",
-                email: "fake@example.com",
-                password: "fakeHash"
-            };
-
             await request.post(`/user`)
                 .set("Accept", "application/json")
                 .send(fakeUser)
 
             const newPassword = {
-                email:"fake@example.com",
-                password: "trueHash"
+                email: fakeUser.email,
+                password: "newFakeHash"
             };
 
             await request.put(`/user/resetPassword`)
@@ -118,58 +101,79 @@ describe("user route", function() {
         });
     });
 
-    describe("GET /user/:id/userInfo", function(){
+    describe("GET /user/:id/info", function(){
         it("should return the information of a user", async function() {
-            const fakeUser = {
-                nombre: "fakeName",
-                email: "fake@example.com",
-                password: "fakeHash"
-            }
             let res = await request.post("/user")
                 .set("Accept", "application/json")
                 .send(fakeUser);
             const idUser = res.body.id;
 
-            res = await request.get(`/user/${idUser}/userInfo`)
+            res = await request.get(`/user/${idUser}/info`)
                 .expect('Content-Type', /json/)
                 .expect(200);
-            expect(res.body).to.not.equal(undefined);
-            expect(res.body.nseguidores).to.equal(0);
+
+            expect(res.body).to.have.property("nombre");
+            expect(res.body).to.have.property("email");
+            expect(res.body).to.have.property("tipousuario");
+            expect(res.body).to.have.property("tipoperfil");
+            expect(res.body).to.have.property("genero");
+            expect(res.body).to.have.property("descripcion");
+            expect(res.body).to.have.property("fechadenacimiento");
+            expect(res.body).to.have.property("fechaderegistro");
+            expect(res.body).to.have.property("pais");
+            expect(res.body).to.have.property("rutaimagen");
+            expect(res.body).to.have.property("nseguidores");
+            expect(res.body).to.have.property("nseguidos");
+            expect(res.body).to.have.property("npost");
         });
     });
 
-    describe("GET /user/:id/userSettings", function(){
+    describe(`PUT /user/:id/info`, function() {
+        it(`should modify a user`, async function() {
+            const res = await request.post(`/user`)
+                .set(`Accept`, `application/json`)
+                .send(fakeUser);
+            const idUser = res.body.id;
+
+            const newFakeInfo = {
+                nombre: `FakeName`,
+                genero: false,
+                descripcion: `Fake description`,
+                fechadenacimiento: `2017-05-29`,
+                pais: 23
+            }
+            await request.put(`/user/${idUser}/info`)
+                .set(`Accept`, `application/json`)
+                .send(newFakeInfo)
+                .expect(200);
+        });
+    });
+
+    describe("GET /user/:id/settings", function(){
         it("should return the settings of a user", async function() {
-            const fakeUser = {
-                nombre: "fakeName",
-                email: "fake@example.com",
-                password: "fakeHash"
-            }
             let res = await request.post("/user")
                 .set("Accept", "application/json")
                 .send(fakeUser);
             const idUser = res.body.id;
 
-            res = await request.get(`/user/${idUser}/userSettings`)
+            res = await request.get(`/user/${idUser}/settings`)
                 .expect('Content-Type', /json/)
                 .expect(200);
-            expect(res.body).to.not.equal(undefined);
-            expect(res.body.sedad).to.equal(true);
+            expect(res.body).to.have.property("sedad");
+            expect(res.body).to.have.property("sdistancia");
+            expect(res.body).to.have.property("sinvitacion");
+            expect(res.body).to.have.property("sseguidor");
+            expect(res.body).to.have.property("nmensaje");
         });
     });
 
-    describe("POST /user/:id/userInfo", function(){
+    describe("PUT /user/:id/settings", function(){
         it("should update the settings of a user", async function() {
-            const fakeUser = {
-                nombre: "fakeName",
-                email: "fake@example.com",
-                password: "fakeHash"
-            }
             let res = await request.post("/user")
                 .set("Accept", "application/json")
                 .send(fakeUser);
             const idUser = res.body.id;
-            const newSettings = {
+            const newFakeSettings = {
                 sEdad: false,
                 sDistancia: true,
                 sInvitacion: false,
@@ -177,17 +181,30 @@ describe("user route", function() {
                 nMensaje: true,
             }
 
-            res = await request.put(`/user/${idUser}/userSettings`)
-                .send(newSettings)
+            res = await request.put(`/user/${idUser}/settings`)
+                .send(newFakeSettings)
                 .expect(200);
-
-            res = await request.get(`/user/${idUser}/userSettings`)
-                .expect('Content-Type', /json/)
-                .expect(200);
-            expect(res.body).to.not.equal(undefined);
-            expect(res.body.sedad).to.equal(false);
         });
     });
-
     
+    describe(`POST /user/fb`, function() {
+        it(`should login a new user with fb`, async function(){
+            const res = await request.post(`/user/fb`)
+                .set(`Accept`, `application/json`)
+                .send(fakeUser)
+                .expect(201);
+            expect(res.body).to.have.property(`id`);
+        });
+        
+        it(`should login an existent user with fb`, async function() {
+            await request.post(`/user/fb`)
+                .set(`Accept`, `application/json`)
+                .send(fakeUser);
+            const res = await request.post(`/user/fb`)
+                .set(`Accept`, `application/json`)
+                .send(fakeUser)
+                .expect(200);
+            expect(res.body).to.have.property(`id`);
+        });
+    });
 });
