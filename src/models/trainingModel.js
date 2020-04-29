@@ -54,7 +54,7 @@ async function activities(idElemento) {
                ORDER BY a.idactividad",
         values: [idElemento]
     }
-    let res=await dbCtrl.execute(query)
+    const res=await dbCtrl.execute(query)
     const activitySet = [];
     for (let i=0; i<res.rows.length; ++i) {
         activitySet.push(res.rows[i]);

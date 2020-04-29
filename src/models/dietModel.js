@@ -65,7 +65,7 @@ async function dayMeals(idElemento, day) {
                ORDER BY horaComida",
         values: [idElemento, day]
     }
-    let res = (await dbCtrl.execute(query));
+    const res = (await dbCtrl.execute(query));
     const dayMealSet = [];
     for (let i=0; i<res.rows.length; ++i) {
         dayMealSet.push(res.rows[i]);

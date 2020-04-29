@@ -80,9 +80,9 @@ async function trainings(id) {
                ORDER BY e.idElemento ASC",
         values: [id]
     }
-    res = (await dbCtrl.execute(query));
+    let res = (await dbCtrl.execute(query));
     const trainingSet = [];
-    for (i=0; i<res.rows.length; ++i) {
+    for (let i=0; i<res.rows.length; ++i) {
         trainingSet.push(res.rows[i]);
     }
     return trainingSet;
@@ -99,7 +99,7 @@ async function diets(id) {
                ORDER BY e.idElemento ASC",
         values: [id]
     }
-    let res = (await dbCtrl.execute(query));
+    const res = (await dbCtrl.execute(query));
     const dietSet = [];
     for (let i=0; i<res.rows.length; ++i) {
         dietSet.push(res.rows[i]);

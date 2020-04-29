@@ -6,7 +6,7 @@ async function create(aliment) {
         text: "INSERT INTO alimentos(nombre, descripcion, calorias, idComida) values($1, $2, $3, $4) RETURNING idAlimento",
         values: [aliment.nombre, aliment.descripcion, aliment.calorias, aliment.idComida]
     }
-    let idAliment = (await dbCtrl.execute(query)).rows[0].idalimento;
+    const idAliment = (await dbCtrl.execute(query)).rows[0].idalimento;
     const ret = {
         idAlimento: idAliment,
     }
