@@ -80,7 +80,7 @@ async function trainings(id) {
                ORDER BY e.idElemento ASC",
         values: [id]
     }
-    let res = (await dbCtrl.execute(query));
+    const res = (await dbCtrl.execute(query));
     const trainingSet = [];
     for (let i=0; i<res.rows.length; ++i) {
         trainingSet.push(res.rows[i]);
@@ -147,14 +147,14 @@ async function getSettings(id) {
                 WHERE id = $1",
         values: [id]
     }
-    res = (await dbCtrl.execute(query)).rows[0];
+    const res = (await dbCtrl.execute(query)).rows[0];
     return res;
 }
 
 async function fbLogin(user) {
     const oldUser = await getByEmail(user.email);
     if (oldUser === undefined) {
-        return (await create(user));
+        return (create(user));
     } else {
         return {
             created: false,

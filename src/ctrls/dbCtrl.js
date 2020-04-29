@@ -16,7 +16,7 @@ async function migrate(config) {
 }
 
 async function execute(query) {
-    return await pool.query(query);
+    return pool.query(query);
 }
 
 async function disconnect() {
