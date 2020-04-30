@@ -37,6 +37,14 @@ describe("user route", function() {
             expect(created).to.not.equal(undefined);
             expect(id).to.equal(undefined);
         });
+
+        it("should not create a user if parameters are missing", async function() {
+            const fakeUser = { }
+            await request.post("/user")
+                .set("Accept", "application/json")
+                .send(fakeUser)
+                .expect(400);
+        });
     });
 
     describe("DELETE /user/:id", async function() {
@@ -126,6 +134,10 @@ describe("user route", function() {
             expect(res.body).to.have.property("nseguidos");
             expect(res.body).to.have.property("npost");
         });
+
+        it("should not return info for a nonexistent user", async function() {
+            await request.get(`/user/badId/info`).expect(400);
+        });
     });
 
     describe(`PUT /user/:id/info`, function() {
@@ -147,6 +159,10 @@ describe("user route", function() {
                 .send(newFakeInfo)
                 .expect(200);
         });
+
+        it("should not modify info for a nonexistent user", async function() {
+            await request.put(`/user/badId/info`).expect(400);
+        });
     });
 
     describe("GET /user/:id/settings", function(){
@@ -164,6 +180,10 @@ describe("user route", function() {
             expect(res.body).to.have.property("sinvitacion");
             expect(res.body).to.have.property("sseguidor");
             expect(res.body).to.have.property("nmensaje");
+        });
+
+        it("should not get settings for a nonexistent user", async function() {
+            await request.get(`/user/badId/settings`).expect(400);
         });
     });
 
@@ -184,6 +204,10 @@ describe("user route", function() {
             res = await request.put(`/user/${idUser}/settings`)
                 .send(newFakeSettings)
                 .expect(200);
+        });
+
+        it("should not modify settings for a nonexistent user", async function() {
+            await request.put(`/user/badId/settings`).expect(400);
         });
     });
     

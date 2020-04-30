@@ -15,7 +15,7 @@ router.post('/', async function(req, res, next) {
         }
         res.send(result);
     } catch (err) {
-        next(err);
+        res.status(400).send(err.message);
     }
 });
 
@@ -33,7 +33,7 @@ router.post('/validate', async function(req, res, next) {
         const valid = await user.validate(req.body);
         res.send(valid);
     } catch (err) {
-        next(err);
+        res.status(400).send(err.message);
     }
 });
 
@@ -64,12 +64,12 @@ router.put('/resetPassword', async function(req, res, next) {
     }
 });
 
-router.get('/:id/info', async function(req, res, next){
+router.get('/:id/info', async function(req, res){
     try {
         const info = await user.getInfo(req.params.id);
         res.status(200).send(info);
     } catch(err) {
-        next(err);
+        res.status(400).send(err.message);
     }
 });
 
@@ -78,7 +78,7 @@ router.put(`/:id/info`, async function(req, res, next) {
         await user.putInfo(req.params.id, req.body);
         res.sendStatus(200);
     } catch(err) {
-        next(err);
+        res.status(400).send(err.message);
     }
 });
 
@@ -87,7 +87,7 @@ router.put('/:id/settings', async function(req, res, next){
         await user.putSettings(req.params.id, req.body);
         res.sendStatus(200);
     } catch(err) {
-        next(err);
+        res.status(400).send(err.message);
     }
 });
 
@@ -96,7 +96,7 @@ router.get('/:id/settings', async function(req, res, next){
         const settings = await user.getSettings(req.params.id);
         res.status(200).send(settings);
     } catch(err) {
-        next(err);
+        res.status(400).send(err.message);
     }
 });
 
