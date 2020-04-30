@@ -11,7 +11,6 @@ router.post('/', async (req, res) => {
         const result = await meal.create(req.body);
         res.status(201).send(result);
     } catch (e) {
-        console.error(e.message);
         res.status(400).send(e.message);
     }
 });
@@ -19,10 +18,9 @@ router.post('/', async (req, res) => {
 //delete
 router.delete('/:idComida', async (req, res) => {
     try {
-        await meal.del(req.params.idElemento);
+        await meal.del(req.params.idComida);
         res.sendStatus(200);
     } catch (e) {
-        console.error(e.message);
         res.status(400).send(e.message);
     }
 });
@@ -30,7 +28,7 @@ router.delete('/:idComida', async (req, res) => {
 //update element (aka name and/or description)
 router.put('/:idComida', async (req, res) => {
     try {
-        await meal.update(req.body, req.params.idElemento);
+        await meal.update(req.body, req.params.idComida);
         res.sendStatus(200);
     } catch (e) {
         res.status(400).send(e.message);
@@ -42,7 +40,7 @@ router.get('/:idComida/aliments', async function(req, res, next) {
         const alimentsSet = await meal.aliments(req.params.idComida);
         res.status(200).send(alimentsSet);
     } catch (err) {
-        next(err);
+        res.status(400).send(err.message);
     }
 })
 

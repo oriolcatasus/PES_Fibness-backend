@@ -17,20 +17,19 @@ router.post('/', async (req, res) => {
 });
 
 //delete
-router.delete('/:idElemento', async (req, res) => {
+router.delete('/:idAlimento', async (req, res) => {
     try {
-        await aliment.del(req.params.idElemento);
+        await aliment.del(req.params.idAlimento);
         res.sendStatus(200);
     } catch (e) {
-        console.error(e.message);
         res.status(400).send(e.message);
     }
 });
 
 //update element (aka name and/or description)
-router.put('/:idElemento', async (req, res) => {
+router.put('/:idAlimento', async (req, res) => {
     try {
-        await aliment.update(req.body, req.params.idElemento);
+        await aliment.update(req.body, req.params.idAlimento);
         res.sendStatus(200);
     } catch (e) {
         res.status(400).send(e.message);

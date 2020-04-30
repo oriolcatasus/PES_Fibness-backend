@@ -6,7 +6,6 @@ const router = express.Router();
 
 
 router.post('/', async function(req, res, next) {
-    console.log(req.body);
     try {
         const result = await user.create(req.body);
         if (result.created) {
@@ -21,7 +20,6 @@ router.post('/', async function(req, res, next) {
 });
 
 router.delete('/:id', async function(req, res, next) {
-    console.log(req.params.id);
     try {
         await user.del(req.params.id);
         res.sendStatus(200);
@@ -31,7 +29,6 @@ router.delete('/:id', async function(req, res, next) {
 });
 
 router.post('/validate', async function(req, res, next) {
-    console.log(req.body);
     try {
         const valid = await user.validate(req.body);
         res.send(valid);

@@ -117,13 +117,11 @@ describe("Diet route", function() {
                 .expect(200);
             const meals = res.body;
             expect(meals).to.be.an('array');
-            console.log(meals);
             expect(meals[0]).to.have.property("horacomida");
             expect(meals[1].nombre).to.equal("MealTest");
             //expect(trainings).to.not.be.empty;
         });
         it("should not get a badly formated id", async function() {
-            const dia = "miercoles";
             await request.get(`/diet/badId/badDia`).expect(400);
         });
     });

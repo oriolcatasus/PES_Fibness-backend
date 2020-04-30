@@ -29,6 +29,13 @@ describe("Aliment route", function() {
             idUser: undefined
         }
 
+        const meal = {
+            nombre: "MealTest",
+            horaComida: '22:00:00',
+            idElemento: undefined,
+            tipoDia: "miercoles",
+        };
+
         let res = await request.post("/user")
             .set("Accept", "application/json")
             .send(user)
@@ -37,7 +44,12 @@ describe("Aliment route", function() {
         res = await request.post("/diet")
             .set("Accept", "application/json")
             .send(diet)
-        aliment.idComida = res.body.idelemento;
+        meal.idElemento = res.body.idelemento;
+
+        res = await request.post("/meal")
+            .set("Accept", "application/json")
+            .send(meal)
+        aliment.idComida = res.body.idcomida;
     });
 
     describe("POST /aliment", function() {
@@ -49,9 +61,11 @@ describe("Aliment route", function() {
             expect(res.body).to.have.property("idAlimento");
         });
 
-        it("should not create an aliment if parameters are missing", async function() {
-            const fakeAliment = { }
-            await request.post("/diet")
+        it("should not create an aliment if parameters are wrong", async function() {
+            const fakeAliment = { 
+                idComida: -1,
+            };
+            await request.post("/aliment")
                 .set("Accept", "application/json")
                 .send(fakeAliment)
                 .expect(400);
