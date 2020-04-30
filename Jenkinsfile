@@ -2,13 +2,17 @@ pipeline {
     agent any
     environment {
         UNSUCCESSFUL_STAGE = 'null'
+        TEST_IMAGE_NAME = "fibness/api-test:${env.BUILD_ID}-${env.BRANCH_NAME}"
+        STAGE_IMAGE_NAME = 'fibness/api-stage:latest'
+        PROD_IMAGE_NAME = 'fibness/api-prod:latest'
     }
     stages {
         stage('Build test image') {
             steps {
                 echo 'Starting building test docker image'
                 script {
-                    sh 'docker-compose -f docker-compose.test.yaml build --build-arg NODE_ENV=test --pull'
+                    docker.build(TEST_IMAGE_NAME, '--force-rm --pull \
+                        --build-arg NODE_ENV=test .')
                 }
             }
             post {
@@ -24,17 +28,31 @@ pipeline {
             }
         }
         stage('Test') {
+            environment {
+                POSTGRES_USER = 'fibness'
+                POSTGRES_PASSWORD = 'fibness'
+                POSTGRES_DB = 'test'
+                NODE_ENV = 'test'
+                NODE_CONFIG_ENV = 'jenkins'
+            }
             steps {
-                echo 'Starting tests'
+                sh 'mkdir -p reports'
+                echo 'Starting test database'
                 script {
-                    sh 'mkdir -p reports'
-                    sh 'docker-compose -f docker-compose.test.yaml down -v'
-                    sh 'docker-compose -f docker-compose.test.yaml up -V api'
+                    docker.image('postgres:latest').withRun('-e POSTGRES_USER -e POSTGRES_PASSWORD -e POSTGRES_DB') { pgc ->
+                        echo 'Starting tests'
+                        docker.image(TEST_IMAGE_NAME)
+                            .inside("-u root -e NODE_ENV -e NODE_CONFIG_ENV --link ${pgc.id}:pg \
+                            -v ${env.WORKSPACE}/reports:/home/api/reports") {
+                                sh 'cd /home/api && ./scripts/wait-for-it.sh pg:5432 -t 60 -- npm run coverage-jenkins'
+                        }
+                    }
                 }
             }
             post {
                 always {
-                    sh 'docker-compose -f docker-compose.test.yaml down -v --rmi local'
+                    echo 'Removing test image'
+                    sh "docker image rm -f ${TEST_IMAGE_NAME}"
                     junit(testResults: 'reports/junit.xml',
                         allowEmptyResults:false,
                         healthScaleFactor: 10.0,
@@ -144,19 +162,22 @@ pipeline {
                                 echo 'Building stage docker image'
                                 sh 'cp /home/alumne/config/local-stage.json ./config'
                                 script {
-                                    docker.build('fibness/api-stage:latest', '--force-rm \
+                                    docker.build(STAGE_IMAGE_NAME, '--force-rm \
                                         --build-arg NODE_ENV=stage .')
                                 }
                                 echo 'Registering stage image'
                                 script {
                                     docker.withRegistry('http://localhost:5000') {
-                                        image = docker.image('fibness/api-stage:latest')
+                                        image = docker.image(STAGE_IMAGE_NAME)
                                         image.push('latest')
-                                    }
-                                    
+                                    }                                    
                                 }
                             }
                             post {
+                                always {
+                                    echo 'Remove local stage image'
+                                    sh "docker image rm ${STAGE_IMAGE_NAME}"
+                                }
                                 success {
                                     echo 'Stage image successfully built'
                                 }
@@ -201,18 +222,22 @@ pipeline {
                                 echo 'Building production image'
                                 sh 'cp /home/alumne/config/local-production.json ./config'
                                 script {
-                                    docker.build('fibness/api-prod:latest', '--force-rm \
+                                    docker.build(PROD_IMAGE_NAME, '--force-rm \
                                         --build-arg NODE_ENV=production .')
                                 }
                                 echo 'Registering production image'
                                 script {
                                     docker.withRegistry('http://localhost:5000') {
-                                        image = docker.image('fibness/api-prod:latest')
+                                        image = docker.image(PROD_IMAGE_NAME)
                                         image.push('latest')
                                     }
                                 }
                             }
                             post {
+                                always {
+                                    echo 'Remove local production image'
+                                    sh "docker image rm ${PROD_IMAGE_NAME}"
+                                }
                                 success {
                                     echo 'Production image successfully built'
                                 }
@@ -251,6 +276,10 @@ pipeline {
         }
     }
     post {
+        always {
+            echo 'Cleaning docker leftovers'
+            sh 'docker system prune -f --volumes'
+        }
         success {
             script {
                 def msg = commitInfo() + '\nCongratulations, your commit works!'

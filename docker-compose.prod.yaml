@@ -19,7 +19,7 @@ services:
       - "3000:3000"
   
   pg:
-    image: postgres:12
+    image: postgres:latest
     environment:
       POSTGRES_USER: ${DB_PROD_USR}
       POSTGRES_PASSWORD: ${DB_PROD_PSW}

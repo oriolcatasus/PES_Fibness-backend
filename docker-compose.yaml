@@ -18,7 +18,7 @@ services:
       - /home/app/node_modules
   
   pg:
-    image: postgres:12
+    image: postgres:latest
     environment:
       POSTGRES_USER: fibness
       POSTGRES_PASSWORD: fibness
