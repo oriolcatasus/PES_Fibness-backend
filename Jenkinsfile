@@ -160,7 +160,6 @@ pipeline {
                         stage('Build stage image') {
                             steps {
                                 echo 'Building stage docker image'
-                                sh 'cp /home/alumne/config/local-stage.json ./config'
                                 script {
                                     docker.build(STAGE_IMAGE_NAME, '--force-rm \
                                         --build-arg NODE_ENV=stage .')
@@ -221,7 +220,6 @@ pipeline {
                         stage('Build production image') {
                             steps {
                                 echo 'Building production image'
-                                sh 'cp /home/alumne/config/local-production.json ./config'
                                 script {
                                     docker.build(PROD_IMAGE_NAME, '--force-rm \
                                         --build-arg NODE_ENV=production .')
