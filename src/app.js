@@ -1,5 +1,4 @@
 const express = require("express");
-const { db } = require("config")
 
 //db
 const dbCtrl = require("./ctrls/dbCtrl");
@@ -11,6 +10,7 @@ const diet = require("./routes/diet")
 const meal = require("./routes/meal")
 const aliment = require("./routes/aliment")
 const exercise = require("./routes/exercise")
+
 //Middleware
 const errorHandler = require("./middleware/errorHandlers");
 
@@ -22,15 +22,10 @@ let server;
 app.use(express.json());
 
 app.use("/user", user);
-
 app.use("/training", training);
-
 app.use("/exercise",exercise);
-
 app.use("/diet", diet);
-
 app.use("/meal", meal);
-
 app.use("/aliment", aliment);
 
 app.get("/test", (req, res) => {
@@ -44,7 +39,7 @@ app.use(errorHandler.def);
 
 
 async function start() {
-    await dbCtrl.connect(db);
+    await dbCtrl.connect();
     server = app.listen(port, () => {
         console.log("Server started at port " + port);
     });

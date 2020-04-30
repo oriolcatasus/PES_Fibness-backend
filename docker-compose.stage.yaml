@@ -13,6 +13,7 @@ services:
       - pg
     environment:
       NODE_ENV: stage
+      DATABASE_URL: ${DATABASE_URL_STAGE}
     networks:
       - backend_network
     ports:

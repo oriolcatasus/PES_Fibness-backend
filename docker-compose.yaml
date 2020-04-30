@@ -10,7 +10,7 @@ services:
       - pg
     environment:
       NODE_ENV: development
-      NODE_CONFIG_ENV: docker
+      DATABASE_URL: postgresql://fibness:fibness@pg:5432/fibness
     ports:
       - "3000:3000"
     volumes:

@@ -33,7 +33,7 @@ pipeline {
                 POSTGRES_PASSWORD = 'fibness'
                 POSTGRES_DB = 'test'
                 NODE_ENV = 'test'
-                NODE_CONFIG_ENV = 'jenkins'
+                DATABASE_URL = 'postgresql://fibness:fibness@pg:5432/test'
             }
             steps {
                 sh 'mkdir -p reports'
@@ -42,7 +42,7 @@ pipeline {
                     docker.image('postgres:latest').withRun('-e POSTGRES_USER -e POSTGRES_PASSWORD -e POSTGRES_DB') { pgc ->
                         echo 'Starting tests'
                         docker.image(TEST_IMAGE_NAME)
-                            .inside("-u root -e NODE_ENV -e NODE_CONFIG_ENV --link ${pgc.id}:pg \
+                            .inside("-u root -e NODE_ENV -e DATABASE_URL --link ${pgc.id}:pg \
                             -v ${env.WORKSPACE}/reports:/home/api/reports") {
                                 sh 'cd /home/api && ./scripts/wait-for-it.sh pg:5432 -t 60 -- npm run coverage-jenkins'
                         }
@@ -192,6 +192,7 @@ pipeline {
                         stage('Deploy to stage') {
                             environment {
                                 DB_STAGE = credentials('db-stage')
+                                DATABASE_URL_STAGE = credentials('database-url-stage')
                             }
                             steps {                        
                                 echo 'Deploying image to stage'
@@ -252,6 +253,7 @@ pipeline {
                         stage('Deploy to production') {
                             environment {
                                 DB_PROD = credentials('db-prod')
+                                DATABASE_URL_PROD = credentials('database-url-prod')
                             }
                             steps {                        
                                 echo 'Deploying image to production'
@@ -323,13 +325,6 @@ def commitInfo() {
 def notifyDiscord(String msg, String img) {
     msg = msg + "\n\n[SonarQube](http://10.4.41.146:9000/dashboard?id=PES_fibness-backend-${env.BRANCH_NAME})"
     withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhook')]) {
-        discordSend(
-            webhookURL: webhook,
-            title: "${currentBuild.currentResult} in ${env.JOB_NAME}",
-            link: env.BUILD_URL,
-            result: currentBuild.result,
-            image: img,
-            description: msg
-        )
+
     }
 }
