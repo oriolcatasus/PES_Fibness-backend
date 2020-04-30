@@ -1,4 +1,5 @@
 const assert = require("assert");
+const SQL = require('sql-template-strings');
 
 const user = require("../../src/models/userModel");
 const diet = require("../../src/models/dietModel");
@@ -20,12 +21,9 @@ describe("alimentModel script", function() {
             await user.create(newUser);
             
             //select id from user in order to create a diet (we need it for the foreign key of element)
-            let query = {
-                text: "SELECT id \
-                        FROM usuarios \
-                        WHERE nombre = $1",
-                values: ["Oriol"],
-            };
+            let query = SQL`SELECT id
+                FROM usuarios
+                WHERE nombre = ${newUser.nombre}`
             let res = (await dbCtrl.execute(query)).rows[0];
             idTest = res.id; 
 

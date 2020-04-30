@@ -323,6 +323,13 @@ def commitInfo() {
 def notifyDiscord(String msg, String img) {
     msg = msg + "\n\n[SonarQube](http://10.4.41.146:9000/dashboard?id=PES_fibness-backend-${env.BRANCH_NAME})"
     withCredentials([string(credentialsId: 'discord-webhook', variable: 'webhook')]) {
-
+        discordSend(
+            webhookURL: webhook,
+            title: "${currentBuild.currentResult} in ${env.JOB_NAME}",
+            link: env.BUILD_URL,
+            result: currentBuild.result,
+            image: img,
+            description: msg
+        )
     }
 }
