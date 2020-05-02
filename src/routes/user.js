@@ -116,6 +116,16 @@ router.post('/fb', async function(req, res, next) {
     }
 });
 
+router.get('/:id/profile', async function(req, res, next) {
+    try {
+        const id = req.params.id
+        const pathImg = await user.getProfileImg(id)
+        res.status(200).sendFile(pathImg)
+    } catch (err) {
+        next(err)
+    }
+})
+
 router.post('/:id/profile', async function(req, res, next) {
     try {
         const id = req.params.id

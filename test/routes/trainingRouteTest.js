@@ -1,13 +1,11 @@
 const supertest = require("supertest");
-const chai = require("chai");
 
 require("../rootHooks");
 
+const expect = require('../chaiConfig')
 const { app } = require("../../src/app");
 
 const request = supertest(app);
-const expect = chai.expect;
-chai.use(require('chai-things'));
 
 describe("Training route", function() {
     const fakeTraining = {
@@ -22,7 +20,7 @@ describe("Training route", function() {
             password: "fakeHash"
         }
         const res = await request.post("/user")
-            .set("Accept", "application/json")
+            .set("Content-Type", "application/json")
             .send(fakeUser)
         fakeTraining.idUser = res.body.id;
     });
@@ -30,7 +28,7 @@ describe("Training route", function() {
     describe("POST /training", function() {
         it("should create a training", async function() {            
             const res = await request.post("/training")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(fakeTraining)
                 .expect(201);
             expect(res.body).to.have.property("idElemento");
@@ -39,7 +37,7 @@ describe("Training route", function() {
         it("should not create a training if parameters are missing", async function() {
             const fakeTraining = { }
             await request.post("/training")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(fakeTraining)
                 .expect(400);
         });
@@ -48,7 +46,7 @@ describe("Training route", function() {
     describe("DELETE /training/{id}", async function() {
         it("should delete a training", async function() {
             const res = await request.post("/training")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(fakeTraining);
             const idTraining = res.body.idElemento;
             await request.delete(`/training/${idTraining}`)
@@ -63,7 +61,7 @@ describe("Training route", function() {
     describe("PUT /training/{id}", function() {
         it("should update the given training", async function() {
             const res = await request.post("/training")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(fakeTraining);
             const idTraining = res.body.idElemento;
             
@@ -72,7 +70,7 @@ describe("Training route", function() {
                 descripcion: "NewFakeDescription"
             }
             await request.put(`/training/${idTraining}`)
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(newFakeTraining)    
                 .expect(200);
         });

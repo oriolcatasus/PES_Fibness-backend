@@ -103,36 +103,23 @@ describe("userModel script", function() {
         })
     })
 
-    describe("delete user", function() {        
-        it ("should return deleted correctly", async function() {
-            let newUser = {
+    describe('delete user', function() {        
+        it ('should return deleted correctly', async function() {
+            const fakeUser = {
                 nombre: "Oriol",
                 password: "hash",
                 email: "oriol@example.com",
-            }
-            await user.create(newUser);
-            let newUser2 = {
-                nombre: "Oriol2",
-                password: "hash2",
-                email: "oriol2@example.com",
-            }
-            await user.create(newUser2);
-            
-            let queryGetID = {
-                text: "SELECT id \
-                        FROM usuarios \
-                        WHERE nombre = $1",
-                values: ["Oriol"],
-            };
-            let idTest = (await dbCtrl.execute(queryGetID)).rows[0].id;
-            await user.del(idTest);
+            }            
+            const userCreated = await user.create(fakeUser)
+            const id = userCreated.id
+            const userPath = path.join(constants.resourcePath, 'user', `${id}`)
+            const userPathProfile = path.join(userPath, 'profile')
+            await fs.mkdir(userPathProfile, {recursive: true})
+            await user.del(id)
 
-            let query = {
-                text: "SELECT nombre, password, email \
-                        FROM usuarios" ,
-            };
-            let res = (await dbCtrl.execute(query)).rows;
-            assert.equal(res.length, 1);
+            const userRetrieved = await user.getById(id);
+            expect(userRetrieved).to.be.undefined
+            await expect(fs.access(userPath)).to.eventually.be.rejected
         });
     });
 
@@ -672,13 +659,13 @@ describe("userModel script", function() {
             }
             const res = await user.create(fakeUser)
             const id = res.id
-            const pathImg = path.join(testConstants.resourcePath, 'user', 'profile.jpg')
+            const pathImg = path.join(testConstants.resourcePath, 'user', 'profile', 'profile.jpg')
             const img = await fs.readFile(pathImg)
             const ext = 'jpg'
             await user.setProfileImg(id, img, ext)
 
             const pathUser = path.join(constants.resourcePath, 'user', `${id}`)
-            const pathNewImg = path.join(pathUser, `profile.${ext}`)
+            const pathNewImg = path.join(pathUser, 'profile', `profile.${ext}`)
             const newImg = await fs.readFile(pathNewImg)
             expect(img.equals(newImg)).to.be.true;
 
@@ -687,7 +674,7 @@ describe("userModel script", function() {
 
         it("should not set profile image if user doesn't exist", async function() {
             const id = 0;
-            const pathImg = path.join(testConstants.resourcePath, 'user', 'profile.jpg')
+            const pathImg = path.join(testConstants.resourcePath, 'user', 'profile', 'profile.jpg')
             const img = await fs.readFile(pathImg)
             const ext = 'jpg'
             await expect(user.setProfileImg(id, img, ext))

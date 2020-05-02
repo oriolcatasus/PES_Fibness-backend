@@ -22,7 +22,7 @@ describe("user route", function() {
     describe("POST /user", function() {
         it("should create a user", async function() {
             const res = await request.post("/user")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(fakeUser)
                 .expect('Content-Type', /json/)
                 .expect(201);
@@ -33,7 +33,7 @@ describe("user route", function() {
 
         it("should NOT create a user", async function() {            
             const res = await request.post("/user")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send({ })
                 .expect('Content-Type', /json/)
                 .expect(400);
@@ -45,7 +45,7 @@ describe("user route", function() {
         it("should not create a user if parameters are missing", async function() {
             const fakeUser = { }
             await request.post("/user")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(fakeUser)
                 .expect(400);
         });
@@ -54,7 +54,7 @@ describe("user route", function() {
     describe("DELETE /user/:id", async function() {
         it("should delete a user", async function() {
             const res = await request.post("/user")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(fakeUser);
             const id = res.body.id;
             await request.delete(`/user/${id}`).expect(200);
@@ -72,7 +72,7 @@ describe("user route", function() {
                 password: fakeUser.password
             };
             const res = await request.post(`/user/validate`)
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(fakeUserToValidate)
                 .expect('Content-Type', /json/)
                 .expect(200);
@@ -84,7 +84,7 @@ describe("user route", function() {
     describe("GET /user/:id/trainings", function() {
         it.skip("should return an array of trainings", async function() {
             let res = await request.post("/user")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(fakeUser);
             const idUser = res.body.id;
             res = await request.get(`/user/${idUser}/trainings`)
@@ -99,7 +99,7 @@ describe("user route", function() {
     describe("POST /user/resetPassword", function(){
         it("should reset the password of a user", async function() {
             await request.post(`/user`)
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(fakeUser)
 
             const newPassword = {
@@ -116,7 +116,7 @@ describe("user route", function() {
     describe("GET /user/:id/info", function(){
         it("should return the information of a user", async function() {
             let res = await request.post("/user")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(fakeUser);
             const idUser = res.body.id;
 
@@ -147,7 +147,7 @@ describe("user route", function() {
     describe(`PUT /user/:id/info`, function() {
         it(`should modify a user`, async function() {
             const res = await request.post(`/user`)
-                .set(`Accept`, `application/json`)
+                .set(`Content-Type`, `application/json`)
                 .send(fakeUser);
             const idUser = res.body.id;
 
@@ -159,7 +159,7 @@ describe("user route", function() {
                 pais: 23
             }
             await request.put(`/user/${idUser}/info`)
-                .set(`Accept`, `application/json`)
+                .set(`Content-Type`, `application/json`)
                 .send(newFakeInfo)
                 .expect(200);
         });
@@ -172,7 +172,7 @@ describe("user route", function() {
     describe('GET /user/:id/settings', function(){
         it('should return the settings of a user', async function() {
             let res = await request.post('/user')
-                .set('Accept', 'application/json')
+                .set('Content-Type', 'application/json')
                 .send(fakeUser);
             const idUser = res.body.id;
 
@@ -194,7 +194,7 @@ describe("user route", function() {
     describe('PUT /user/:id/settings', function(){
         it('should update the settings of a user', async function() {
             let res = await request.post('/user')
-                .set('Accept', 'application/json')
+                .set('Content-Type', 'application/json')
                 .send(fakeUser);
             const idUser = res.body.id;
             const newFakeSettings = {
@@ -218,7 +218,7 @@ describe("user route", function() {
     describe('POST /user/fb', function() {
         it('should login a new user with fb', async function(){
             const res = await request.post('/user/fb')
-                .set('Accept', 'application/json')
+                .set('Content-Type', 'application/json')
                 .send(fakeUser)
                 .expect(201);
             expect(res.body).to.have.property('id');
@@ -226,10 +226,10 @@ describe("user route", function() {
         
         it('should login an existent user with fb', async function() {
             await request.post('/user/fb')
-                .set('Accept', 'application/json')
+                .set('Content-Type', 'application/json')
                 .send(fakeUser);
             const res = await request.post('/user/fb')
-                .set('Accept', 'application/json')
+                .set('Content-Type', 'application/json')
                 .send(fakeUser)
                 .expect(200);
             expect(res.body).to.have.property('id');
@@ -239,10 +239,10 @@ describe("user route", function() {
     describe('POST /user/:id/profile', function() {
         it('should set a new profile image', async function() {
             const res = await request.post('/user')
-                .set('Accept', 'application/json')
+                .set('Content-Type', 'application/json')
                 .send(fakeUser);
             const id = res.body.id;
-            const pathImg = path.join(testConstants.resourcePath, 'user', 'profile.jpg')
+            const pathImg = path.join(testConstants.resourcePath, 'user', 'profile', 'profile.jpg')
             const img = await fs.readFile(pathImg)
             await request.post(`/user/${id}/profile`)
                 .set('Content-Type', 'image/jpeg')
@@ -255,7 +255,7 @@ describe("user route", function() {
 
         it('should not set a new profile image for a nonexistant user', async function() {
             const id = 0;
-            const pathImg = path.join(testConstants.resourcePath, 'user', 'profile.jpg')
+            const pathImg = path.join(testConstants.resourcePath, 'user', 'profile', 'profile.jpg')
             const img = await fs.readFile(pathImg)
             await request.post(`/user/${id}/profile`)
                 .set('Content-Type', 'image/jpeg')

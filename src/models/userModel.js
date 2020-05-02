@@ -12,7 +12,7 @@ const userResourcePath = path.join(resourcePath, 'user');
 async function create(user) {
     let result;
     try {
-        let query = SQL`INSERT INTO usuarios(nombre, password, email) 
+        const query = SQL`INSERT INTO usuarios(nombre, password, email) 
             values(${user.nombre}, ${user.password}, ${user.email})
             RETURNING id`;
         const res = await dbCtrl.execute(query);
@@ -67,7 +67,12 @@ async function validate({email, password}) {
 
 async function del(id) {
     const query = SQL`DELETE FROM usuarios WHERE id = ${id}`
-    await dbCtrl.execute(query);
+    const userPath = path.join(userResourcePath, `${id}`)
+    const promises = [
+        dbCtrl.execute(query),
+        fs.rmdir(userPath, {recursive: true})
+    ]
+    await Promise.all(promises)
 }
 
 
@@ -142,12 +147,19 @@ async function fbLogin(user) {
     }
 }
 
+async function getProfileImg(id) {
+    const imgDirPath = path.join(userResourcePath, `${id}`, 'profile')
+    const files = await fs.readdir(imgDirPath)
+    return path.resolve(imgDirPath, files[0])
+}
+
 async function setProfileImg(id, img, ext) {
     const user = await getById(id)
     if (user === undefined) {
         throw Error('User does not exist')
     }
-    const imgDirPath = path.join(userResourcePath, `${id}`)
+    const imgDirPath = path.join(userResourcePath, `${id}`, 'profile')
+    await fs.rmdir(imgDirPath, {recursive: true})
     await fs.mkdir(imgDirPath, {recursive: true})
     const imgPath = path.join(imgDirPath, `profile.${ext}`)
     await fs.writeFile(imgPath, img);
@@ -161,6 +173,7 @@ module.exports = {
     getByEmail,
     getInfo,
     getSettings,
+    getProfileImg,
     putInfo,
     putSettings,
     setProfileImg,

@@ -1,13 +1,12 @@
 const supertest = require("supertest");
-const chai = require("chai");
 
 require("../rootHooks");
 
+const expect = require('../chaiConfig')
 const { app } = require("../../src/app");
 
 const request = supertest(app);
-const expect = chai.expect;
-chai.use(require('chai-things'));
+
 
 describe("Aliment route", function() {
     const aliment = {
@@ -37,17 +36,17 @@ describe("Aliment route", function() {
         };
 
         let res = await request.post("/user")
-            .set("Accept", "application/json")
+            .set("Content-Type", "application/json")
             .send(user)
         diet.idUser = res.body.id;
 
         res = await request.post("/diet")
-            .set("Accept", "application/json")
+            .set("Content-Type", "application/json")
             .send(diet)
         meal.idElemento = res.body.idelemento;
 
         res = await request.post("/meal")
-            .set("Accept", "application/json")
+            .set("Content-Type", "application/json")
             .send(meal)
         aliment.idComida = res.body.idcomida;
     });
@@ -55,7 +54,7 @@ describe("Aliment route", function() {
     describe("POST /aliment", function() {
         it("should create an aliment", async function() {            
             const res = await request.post("/aliment")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(aliment)
                 .expect(201);
             expect(res.body).to.have.property("idAlimento");
@@ -66,7 +65,7 @@ describe("Aliment route", function() {
                 idComida: -1,
             };
             await request.post("/aliment")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(fakeAliment)
                 .expect(400);
         });
@@ -75,7 +74,7 @@ describe("Aliment route", function() {
     describe("DELETE /aliment/{id}", async function() {
         it("should delete an aliment", async function() {
             const res = await request.post("/aliment")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(aliment);
             const idAliment = res.body.idAlimento;
             await request.delete(`/aliment/${idAliment}`)
@@ -90,7 +89,7 @@ describe("Aliment route", function() {
     describe("PUT /aliment/{id}", function() {
         it("should update the given aliment", async function() {
             const res = await request.post("/aliment")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(aliment);
             const idAliment = res.body.idAlimento;
             
@@ -100,7 +99,7 @@ describe("Aliment route", function() {
                 calorias: '500',
             };
             await request.put(`/aliment/${idAliment}`)
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(newAliment)    
                 .expect(200);
         });
