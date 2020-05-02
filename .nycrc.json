@@ -2,5 +2,9 @@
     "report-dir": "reports",
     "include": [
         "src/**/*.js"
+    ],
+    "exclude": [
+        "src/app.js",
+        "src/ctrls/dbCtrl.js"
     ]
 }

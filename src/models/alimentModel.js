@@ -1,31 +1,28 @@
+const SQL = require('sql-template-strings')
+
 const dbCtrl = require("../ctrls/dbCtrl");
 
 async function create(aliment) {
     //create the element
-    const query = {
-        text: "INSERT INTO alimentos(nombre, descripcion, calorias, idComida) values($1, $2, $3, $4) RETURNING idAlimento",
-        values: [aliment.nombre, aliment.descripcion, aliment.calorias, aliment.idComida]
-    }
+    const query = SQL`INSERT INTO alimentos(nombre, descripcion, calorias, idComida)
+        values(${aliment.nombre}, ${aliment.descripcion}, ${aliment.calorias}, ${aliment.idComida})
+        RETURNING idAlimento`
     const idAliment = (await dbCtrl.execute(query)).rows[0].idalimento;
-    const ret = {
+    return {
         idAlimento: idAliment,
     }
-    return ret;
 }
 
 async function del(idAlimento) {
-    const query = {
-        text: "DELETE FROM alimentos WHERE idAlimento = $1",
-        values: [idAlimento]
-    }
+    const query = SQL`DELETE FROM alimentos
+        WHERE idAlimento = ${idAlimento}`
     await dbCtrl.execute(query);
 }
 
 async function update(newAlimento, idAlimento) {
-    const query = {
-        text: "UPDATE alimentos SET nombre = $2 ,descripcion = $3, calorias = $4 WHERE idAlimento = $1",
-        values: [idAlimento, newAlimento.nombre, newAlimento.descripcion, newAlimento.calorias]
-    }
+    const query = SQL`UPDATE alimentos
+        SET nombre = ${newAlimento.nombre}, descripcion = ${newAlimento.descripcion}, calorias = ${newAlimento.calorias}
+        WHERE idAlimento = ${idAlimento}`
     await dbCtrl.execute(query);
 }
 

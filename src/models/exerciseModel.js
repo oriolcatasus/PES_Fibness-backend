@@ -1,63 +1,51 @@
+const SQL = require('sql-template-strings')
+
 const dbCtrl = require("../ctrls/dbCtrl");
 
 async function create(exercise) {
     //create the activity
-    const queryCreateActivity = {
-        text: "INSERT INTO actividades(nombre, descripcion, tiempoejecucion,idEntrenamiento) values($1, $2, $3, $4)",
-        values: [exercise.nombre, exercise.descripcion, exercise.tiempoEjecucion, exercise.idEntrenamiento]
-    }
-    await dbCtrl.execute(queryCreateActivity);
+    let query = SQL`INSERT INTO actividades(nombre, descripcion, tiempoejecucion,idEntrenamiento)
+        values(${exercise.nombre}, ${exercise.descripcion}, ${exercise.tiempoEjecucion}, ${exercise.idEntrenamiento})`
+    await dbCtrl.execute(query);
 
     //get the automatically generated id of the activity (that will be referred from exercise)
     //there can be repeticions in the name but we know that the higher id related to name and idelemento
     // is the  last created by the user
-    const queryGetID = {
-        text: " SELECT MAX(idActividad) as idactividad\
-                FROM actividades \
-                WHERE nombre = $1 and idEntrenamiento = $2",
-        values: [exercise.nombre, exercise.idEntrenamiento],
-    };
-    const res = (await dbCtrl.execute(queryGetID)).rows;
+    query = SQL`SELECT MAX(idActividad) as idactividad
+        FROM actividades
+        WHERE nombre=${exercise.nombre} and idEntrenamiento=${exercise.idEntrenamiento}`
+    const res = (await dbCtrl.execute(query)).rows;
     const idActividad = res[0].idactividad;
     //create exercise
-    const query = {
-        text: "INSERT INTO ejercicios(idactividad,numsets,numrepeticiones,tiempodescanso) values($1,$2,$3,$4)",
-        values: [idActividad, exercise.numSets, exercise.numRepeticiones, exercise.tiempoDescanso],
-    }
+    query = SQL`INSERT INTO ejercicios(idactividad, numsets, numrepeticiones, tiempodescanso)
+        values(${idActividad}, ${exercise.numSets}, ${exercise.numRepeticiones}, ${exercise.tiempoDescanso})`
     await dbCtrl.execute(query);
-    const ret = {
+    return {
         idExercise: idActividad,
     }
-    return ret;
 }
 
 async function update(exercise, idActividad) {
+    let query = SQL`UPDATE actividades 
+        SET nombre=${exercise.nombre} ,descripcion=${exercise.descripcion}, tiempoejecucion=${exercise.tiempoEjecucion}
+        WHERE idactividad = ${idActividad}`
+    await dbCtrl.execute(query);
 
-    const queryUpdateActivity = {
-        text: "UPDATE actividades SET nombre = $2 ,descripcion = $3 , tiempoejecucion = $4 WHERE idactividad = $1",
-        values: [idActividad, exercise.nombre, exercise.descripcion,exercise.tiempoEjecucion]
-    }
-    await dbCtrl.execute(queryUpdateActivity);
-
-    const queryUpdateExercise = {
-        text: "UPDATE ejercicios SET numsets = $2, numrepeticiones = $3, tiempodescanso = $4 WHERE idactividad = $1",
-        values: [idActividad, exercise.numSets,exercise.numRepeticiones,exercise.tiempoDescanso],
-    }
-    await dbCtrl.execute(queryUpdateExercise);
-
+    query = SQL`UPDATE ejercicios
+        SET numsets=${exercise.numSets}, numrepeticiones=${exercise.numRepeticiones},
+            tiempodescanso=${exercise.tiempoDescanso}
+        WHERE idactividad = ${idActividad}`
+    await dbCtrl.execute(query);
 }
 
 
 async function del(idActividad) {
-
-    const query = {
-        text: "DELETE FROM actividades WHERE idActividad = $1",
-        values: [idActividad]
-    }
+    const query = SQL`DELETE FROM actividades WHERE idActividad = ${idActividad}`
     await dbCtrl.execute(query);
-
 }
 
 module.exports = {
-    create,update,del
+    create,
+    update,
+    del
 }
