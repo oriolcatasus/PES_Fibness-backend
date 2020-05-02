@@ -18,6 +18,8 @@ services:
       - backend_network
     ports:
       - "3000:3000"
+    volumes:
+      - /home/alumne/prod/resources:/home/api/resources
   
   pg:
     image: postgres:latest
