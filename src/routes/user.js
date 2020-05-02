@@ -116,5 +116,17 @@ router.post('/fb', async function(req, res, next) {
     }
 });
 
+router.post('/:id/profile', async function(req, res, next) {
+    try {
+        const id = req.params.id
+        const img = req.body
+        const ext = req.get('Content-Type').split('/')[1]
+        await user.setProfileImg(id, img, ext)
+        res.sendStatus(201)
+    } catch (err) {
+        next(err)
+    }
+})
+
 
 module.exports = router;

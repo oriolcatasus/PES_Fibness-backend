@@ -1,13 +1,17 @@
 const assert = require("assert");
-const chai = require("chai");
+const path = require('path')
+const fs = require('fs').promises
 
 const user = require("../../src/models/userModel");
 const training = require("../../src/models/trainingModel");
 const diet = require("../../src/models/dietModel")
 const dbCtrl = require("../../src/ctrls/dbCtrl");
 
+const testConstants = require('../constants')
+const constants = require('../../src/constants')
+const expect = require('../chaiConfig')
+
 require("../rootHooks");
-const expect = chai.expect;
 
 describe("userModel script", function() {
     describe("create function", function() {
@@ -67,6 +71,37 @@ describe("userModel script", function() {
         });
     });
 
+    describe('getById(id)', function() {
+        it('should return the user with the given id', async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                email: 'fake@example.com',
+                password: 'fakeHash'
+            }
+            const res = await user.create(fakeUser)
+            const userRetrieved = await user.getById(res.id)
+            
+            expect(fakeUser.nombre).to.equal(userRetrieved.nombre)
+            expect(fakeUser.email).to.equal(userRetrieved.email)
+            expect(fakeUser.password).to.equal(userRetrieved.password)
+        })
+    })
+
+    describe('getByEmail(email)', function() {
+        it('should return the user with the given email', async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                email: 'fake@example.com',
+                password: 'fakeHash'
+            }
+            await user.create(fakeUser)
+            const userRetrieved = await user.getByEmail(fakeUser.email)
+            
+            expect(fakeUser.nombre).to.equal(userRetrieved.nombre)
+            expect(fakeUser.email).to.equal(userRetrieved.email)
+            expect(fakeUser.password).to.equal(userRetrieved.password)
+        })
+    })
 
     describe("delete user", function() {        
         it ("should return deleted correctly", async function() {
@@ -626,5 +661,37 @@ describe("userModel script", function() {
             expect(userDb.nombre).to.equal(fakeFbUser.nombre);
             expect(userDb.email).to.equal(fakeFbUser.email);
         });
-    });
+    })
+
+    describe('setProfileImage(id, img, ext)', function() {
+        it('should set profile image correctly', async function(){
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            const res = await user.create(fakeUser)
+            const id = res.id
+            const pathImg = path.join(testConstants.resourcePath, 'user', 'profile.jpg')
+            const img = await fs.readFile(pathImg)
+            const ext = 'jpg'
+            await user.setProfileImg(id, img, ext)
+
+            const pathUser = path.join(constants.resourcePath, 'user', `${id}`)
+            const pathNewImg = path.join(pathUser, `profile.${ext}`)
+            const newImg = await fs.readFile(pathNewImg)
+            expect(img.equals(newImg)).to.be.true;
+
+            fs.rmdir(pathUser, {recursive: true})
+        })
+
+        it("should not set profile image if user doesn't exist", async function() {
+            const id = 0;
+            const pathImg = path.join(testConstants.resourcePath, 'user', 'profile.jpg')
+            const img = await fs.readFile(pathImg)
+            const ext = 'jpg'
+            await expect(user.setProfileImg(id, img, ext))
+                .to.eventually.be.rejectedWith(Error, 'User does not exist')
+        })
+    })
 });

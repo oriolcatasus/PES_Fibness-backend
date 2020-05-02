@@ -373,7 +373,7 @@ paths:
         - name: id
           in: path
           required: true
-          description: The id of the user to get the information from
+          description: The id of the user which info should be updated
           schema:
             type: integer
             minimum: 1
@@ -418,7 +418,48 @@ paths:
                     example: 12345
                 required:
                   - id
-      
+  /user/{id}/profile:
+    get:
+      summary: Get the user's profile image
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user which profile image should be updated
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: User's profile image in binary format
+          content:
+            image/*:
+              schema:
+                format: binary
+    post:
+      summary: Set a new profile image
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User's id
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        description: Profile image in binary format
+        required: true
+        content:
+          image/*:
+            schema:
+              format: binary
+      responses:
+        201:
+          description: Created
   /user/{id}/settings:
     get:
       summary: Gets the settings of the user

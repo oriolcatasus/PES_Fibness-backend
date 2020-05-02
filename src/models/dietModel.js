@@ -21,7 +21,7 @@ async function create(diet) {
 
 
     const days = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
-    for(day of days) {
+    for(const day of days) {
         query = SQL`INSERT INTO diasDieta(idElemento, tipoDia)
             values (${idElemento}, ${day})`
         await dbCtrl.execute(query);
