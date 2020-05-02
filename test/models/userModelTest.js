@@ -454,6 +454,13 @@ describe("userModel script", function() {
             }
             await training.create(newDiet);
 
+            let newDietTrue = {
+                nombre: "TrainingTest11",
+                descripcion: "TrainingDescription",
+                idUser: idUser2,
+            }
+            await diet.create(newDietTrue);
+
             //create training for user2
             let newDiet2 = {
                 nombre: "TrainingTest2",

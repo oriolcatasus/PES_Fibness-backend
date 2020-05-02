@@ -71,7 +71,7 @@ async function trainings(id) {
                WHERE e.idUsuario = $1 AND EXISTS \
                                         (SELECT * \
                                          FROM entrenamientos \
-                                         WHERE idUsuario = $1) \
+                                         WHERE idElemento = e.idElemento) \
                ORDER BY e.idElemento ASC",
         values: [id]
     }
@@ -90,7 +90,7 @@ async function diets(id) {
                WHERE e.idUsuario = $1 AND EXISTS \
                                         (SELECT * \
                                          FROM dietas \
-                                         WHERE idUsuario = $1) \
+                                         WHERE idElemento = e.idElemento) \
                ORDER BY e.idElemento ASC",
         values: [id]
     }
