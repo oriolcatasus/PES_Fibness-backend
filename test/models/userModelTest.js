@@ -11,6 +11,9 @@ const testConstants = require('../constants')
 const constants = require('../../src/constants')
 const expect = require('../chaiConfig')
 
+const userTestResourcePath = path.join(testConstants.resourcePath, 'user')
+const userResourcePath = path.join(constants.resourcePath, 'user')
+
 require("../rootHooks");
 
 describe("userModel script", function() {
@@ -659,26 +662,56 @@ describe("userModel script", function() {
             }
             const res = await user.create(fakeUser)
             const id = res.id
-            const pathImg = path.join(testConstants.resourcePath, 'user', 'profile', 'profile.jpg')
+            const pathImg = path.join(userTestResourcePath, 'profile', 'profile.jpg')
             const img = await fs.readFile(pathImg)
             const ext = 'jpg'
             await user.setProfileImg(id, img, ext)
 
-            const pathUser = path.join(constants.resourcePath, 'user', `${id}`)
-            const pathNewImg = path.join(pathUser, 'profile', `profile.${ext}`)
+            const pathNewImg = await user.getProfileImg(id)
             const newImg = await fs.readFile(pathNewImg)
             expect(img.equals(newImg)).to.be.true;
 
+            const pathUser = path.join(userResourcePath, `${id}`)
             fs.rmdir(pathUser, {recursive: true})
         })
 
         it("should not set profile image if user doesn't exist", async function() {
             const id = 0;
-            const pathImg = path.join(testConstants.resourcePath, 'user', 'profile', 'profile.jpg')
+            const pathImg = path.join(userTestResourcePath, 'profile', 'profile.jpg')
             const img = await fs.readFile(pathImg)
             const ext = 'jpg'
             await expect(user.setProfileImg(id, img, ext))
                 .to.eventually.be.rejectedWith(Error, 'User does not exist')
+        })
+    })
+
+    describe('getProfileImg(id)', function() {
+        it('should return the profile image', async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            const res = await user.create(fakeUser)
+            const id = res.id
+            const pathImg = path.join(userTestResourcePath, 'profile', 'profile.jpg')
+            const img = await fs.readFile(pathImg)
+            const ext = 'jpg'
+            await user.setProfileImg(id, img, ext)
+
+            const newImgPath = await user.getProfileImg(id)
+            const newImg = await fs.readFile(newImgPath)
+            const result = img.equals(newImg)
+            expect(result).to.be.true;
+
+            const pathUser = path.join(userResourcePath, `${id}`)
+            fs.rmdir(pathUser, {recursive: true})
+        })
+
+        it("should not return the profile image if the user doesn't exist", async function() {
+            const id = 0
+            await expect(user.getProfileImg(id)).to.eventually.be
+                .rejectedWith(Error, "ENOENT: no such file or directory, scandir 'resources/user/0/profile'")
         })
     })
 });

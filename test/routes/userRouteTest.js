@@ -11,6 +11,8 @@ const { app } = require("../../src/app")
 const testConstants = require('../constants')
 const constants = require('../../src/constants')
 
+const userTestResourcePath = path.join(testConstants.resourcePath, 'user')
+const userResourcePath = path.join(constants.resourcePath, 'user')
 const request = supertest(app)
 
 describe("user route", function() {
@@ -240,26 +242,54 @@ describe("user route", function() {
         it('should set a new profile image', async function() {
             const res = await request.post('/user')
                 .set('Content-Type', 'application/json')
-                .send(fakeUser);
-            const id = res.body.id;
-            const pathImg = path.join(testConstants.resourcePath, 'user', 'profile', 'profile.jpg')
+                .send(fakeUser)
+            const id = res.body.id
+            const pathImg = path.join(userTestResourcePath, 'profile', 'profile.jpg')
             const img = await fs.readFile(pathImg)
             await request.post(`/user/${id}/profile`)
                 .set('Content-Type', 'image/jpeg')
                 .send(img)
                 .expect(201)
 
-            const pathUser = path.join(constants.resourcePath, 'user', `${id}`)
+            const pathUser = path.join(userResourcePath, `${id}`)
             fs.rmdir(pathUser, {recursive: true})
         })
 
         it('should not set a new profile image for a nonexistant user', async function() {
             const id = 0;
-            const pathImg = path.join(testConstants.resourcePath, 'user', 'profile', 'profile.jpg')
+            const pathImg = path.join(userTestResourcePath, 'profile', 'profile.jpg')
             const img = await fs.readFile(pathImg)
             await request.post(`/user/${id}/profile`)
                 .set('Content-Type', 'image/jpeg')
                 .send(img)
+                .expect(500)
+        })
+    })
+
+    describe('GET /user/:id/profile', function() {
+        it('should get the profile image', async function() {
+            const res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser)
+            const id = res.body.id
+            const pathImg = path.join(userTestResourcePath, 'profile', 'profile.jpg')
+            const img = await fs.readFile(pathImg)
+            await request.post(`/user/${id}/profile`)
+                .set('Content-Type', 'image/jpeg')
+                .send(img)
+
+            const response = await request.get(`/user/${id}/profile`)
+            
+            const result = img.equals(response.body)
+            expect(result).to.be.true
+
+            const pathUser = path.join(userResourcePath, `${id}`)
+            fs.rmdir(pathUser, {recursive: true})
+        })
+
+        it("should not get the profile image if the user doesn't exist", async function() {
+            const id = 0
+            await request.get(`/user/${id}/profile`)
                 .expect(500)
         })
     })

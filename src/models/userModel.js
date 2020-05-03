@@ -6,7 +6,7 @@ const SQL = require('sql-template-strings')
 const dbCtrl = require("../ctrls/dbCtrl")
 const {resourcePath} = require('../constants')
 
-const userResourcePath = path.join(resourcePath, 'user');
+const userResourcePath = path.join(resourcePath, 'user')
 
 
 async function create(user) {
