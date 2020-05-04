@@ -57,10 +57,10 @@ router.get('/:id/diets', async function(req, res, next) {
 
 router.put('/resetPassword', async function(req, res, next) {
     try {
-        await user.resetPassword(req.body);
-        res.sendStatus(200);
+        const valid = await user.resetPassword(req.body);
+        res.status(200).send(valid);
     } catch (err) {
-        next(err);
+        res.status(400).send(err.message);
     }
 });
 

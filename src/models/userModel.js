@@ -104,10 +104,26 @@ async function diets(id) {
 
 async function resetPassword ({email, password}) {
     const query = {
-        text: "UPDATE usuarios SET password = $2 WHERE email = $1",
-        values: [email, password]
-    }
-    await dbCtrl.execute(query);
+        text: "SELECT id \
+                FROM usuarios \
+                WHERE email = $1",
+        values: [email],
+    };
+    const res = await dbCtrl.execute(query);
+    if (res.rows.length === 1) {
+        const query = {
+            text: "UPDATE usuarios SET password = $2 WHERE email = $1",
+            values: [email, password]
+        }
+        await dbCtrl.execute(query);
+        return {
+            result: true,
+        }
+    } else {
+        return {
+            result: false,
+        }
+    } 
 }
 
 async function getInfo(id) {

@@ -103,9 +103,22 @@ describe("user route", function() {
                 password: "newFakeHash"
             };
 
-            await request.put(`/user/resetPassword`)
+            const res = await request.put(`/user/resetPassword`)
                 .send(newPassword)
                 .expect(200);
+            expect(res.body.result).to.equal(true);
+        });
+
+        it("should not reset the password of a nonexistent user", async function() {
+            const newPassword = {
+                email: fakeUser.email,
+                password: "newFakeHash"
+            };
+
+            const res = await request.put(`/user/resetPassword`)
+                .send(newPassword)
+                .expect(200);
+            expect(res.body.result).to.equal(false);
         });
     });
 
