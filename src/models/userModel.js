@@ -101,7 +101,6 @@ async function diets(id) {
 }
 
 async function resetPassword ({email, password}) {
-<<<<<<< HEAD
     const query = {
         text: "SELECT id \
                 FROM usuarios \
@@ -123,10 +122,6 @@ async function resetPassword ({email, password}) {
             result: false,
         }
     } 
-=======
-    const query = SQL`UPDATE usuarios SET password = ${password} WHERE email = ${email}`
-    await dbCtrl.execute(query);
->>>>>>> f7ebedfe4270b5d6942424256f4fba48ecd3ae6e
 }
 
 async function getInfo(id) {
@@ -189,6 +184,33 @@ async function setProfileImg(id, img, ext) {
     await fs.writeFile(imgPath, img);
 }
 
+async function follow(idFollower, idFollowed) {
+    let query = SQL`INSERT INTO seguidores(idSeguidor, idSeguido) 
+            values(${idFollower}, ${idFollowed})`;
+    await dbCtrl.execute(query);
+
+    query = SQL`UPDATE usuarios SET nSeguidores = nSeguidores + 1
+            WHERE id = ${idFollowed}`;
+    await dbCtrl.execute(query);
+
+    query = SQL`UPDATE usuarios SET nSeguidos = nSeguidos + 1
+            WHERE id = ${idFollower}`;
+    await dbCtrl.execute(query);
+}
+
+async function unfollow(idFollower, idFollowed) {
+    let query = SQL`DELETE FROM seguidores WHERE idSeguidor = ${idFollower} AND idSeguido = ${idFollowed}`;
+    await dbCtrl.execute(query);
+
+    query = SQL`UPDATE usuarios SET nSeguidores = nSeguidores - 1
+            WHERE id = ${idFollowed}`;
+    await dbCtrl.execute(query);
+
+    query = SQL`UPDATE usuarios SET nSeguidos = nSeguidos - 1
+            WHERE id = ${idFollower}`;
+    await dbCtrl.execute(query);
+}
+
 module.exports = {
     create,
     validate,
@@ -205,4 +227,6 @@ module.exports = {
     del,
     trainings,
     diets,
+    follow,
+    unfollow,
 }

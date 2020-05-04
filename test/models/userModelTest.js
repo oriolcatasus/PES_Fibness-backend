@@ -714,4 +714,73 @@ describe("userModel script", function() {
                 .rejectedWith(Error, "ENOENT: no such file or directory, scandir 'resources/user/0/profile'")
         })
     })
-});
+
+    describe('followers operations', function() {
+        it('should create a follower', async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const idFollower = res.id;
+            
+            const fakeUser2 = {
+                nombre: 'Fake2',
+                password: 'fakeHash2',
+                email: 'fake2@example.com',
+            }
+            res = await user.create(fakeUser2);
+            const idFollowed = res.id;
+            await user.follow(idFollower, idFollowed);
+            const query = {
+                text: 'SELECT * \
+                        FROM seguidores \
+                        WHERE idSeguidor = $1 AND idSeguido = $2',
+                values: [idFollower, idFollowed]
+            };
+            res = await dbCtrl.execute(query);
+            assert.equal(res.rows.length, 1);
+            
+            const infoFollower = (await user.getInfo(idFollower));
+            assert.equal(infoFollower.nseguidos, 1);
+
+            const infoFollowed = (await user.getInfo(idFollowed));
+            assert.equal(infoFollowed.nseguidores, 1);
+        })
+
+        it("should delete a follower", async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const idFollower = res.id;
+            
+            const fakeUser2 = {
+                nombre: 'Fake2',
+                password: 'fakeHash2',
+                email: 'fake2@example.com',
+            }
+            res = await user.create(fakeUser2);
+            const idFollowed = res.id;
+            await user.follow(idFollower, idFollowed);
+            await user.unfollow(idFollower, idFollowed);
+            const query = {
+                text: 'SELECT * \
+                        FROM seguidores \
+                        WHERE idSeguidor = $1 AND idSeguido = $2',
+                values: [idFollower, idFollowed]
+            };
+            res = await dbCtrl.execute(query);
+            assert.equal(res.rows.length, 0);
+
+            const infoFollower = (await user.getInfo(idFollower));
+            assert.equal(infoFollower.nseguidos, 0);
+
+            const infoFollowed = (await user.getInfo(idFollowed));
+            assert.equal(infoFollowed.nseguidores, 0);
+        })
+    })
+})

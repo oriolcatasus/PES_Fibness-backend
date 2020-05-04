@@ -138,5 +138,23 @@ router.post('/:id/profile', async function(req, res, next) {
     }
 })
 
+router.post('/user/follow', async function(req, res) {
+    try {
+        await user.follow(req.body);
+        res.sendStatus(200)
+    } catch(err) {
+        res.status(400).send(err.message);
+    }
+})
+
+router.post('/user/unfollow', async function(req, res) {
+    try {
+        await user.unfollow(req.body);
+        res.sendStatus(200)
+    } catch(err) {
+        res.status(400).send(err.message);
+    }
+})
+
 
 module.exports = router;
