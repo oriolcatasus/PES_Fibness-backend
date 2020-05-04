@@ -1,20 +1,24 @@
-const SQL = require('sql-template-strings');
+const path = require('path')
+const fs = require('fs').promises
 
-const dbCtrl = require("../ctrls/dbCtrl");
+const SQL = require('sql-template-strings')
+
+const dbCtrl = require("../ctrls/dbCtrl")
+const {resourcePath} = require('../constants')
+
+const userResourcePath = path.join(resourcePath, 'user')
+
 
 async function create(user) {
     let result;
     try {
-        let query = SQL`INSERT INTO usuarios(nombre, password, email) 
-            values(${user.nombre}, ${user.password}, ${user.email})`;
-        await dbCtrl.execute(query);
-        query = SQL`SELECT id
-            FROM usuarios
-            WHERE email = ${user.email}`;
-        const { id } = (await dbCtrl.execute(query)).rows[0];
+        const query = SQL`INSERT INTO usuarios(nombre, password, email) 
+            values(${user.nombre}, ${user.password}, ${user.email})
+            RETURNING id`;
+        const res = await dbCtrl.execute(query);
         result = {
             created: true,
-            id
+            id: res.rows[0].id
         }
     } catch(err) {
         result = {
@@ -26,13 +30,19 @@ async function create(user) {
 }
 
 async function getByEmail(email) {
-    const query = {
-        text: "SELECT * \
-            FROM usuarios \
-            WHERE email = $1",
-        values: [email]
-    }
-    return (await dbCtrl.execute(query)).rows[0];
+    const query = SQL`SELECT *
+        FROM usuarios
+        WHERE email=${email}`
+    const res = await dbCtrl.execute(query);
+    return res.rows[0];
+}
+
+async function getById(id) {
+    const query = SQL`SELECT *
+        FROM usuarios
+        WHERE id=${id}`
+    const res = await dbCtrl.execute(query);
+    return res.rows[0];
 }
 
 async function validate({email, password}) {
@@ -56,53 +66,42 @@ async function validate({email, password}) {
 }
 
 async function del(id) {
-    const query = {
-        text: "DELETE FROM usuarios where id = $1",
-        values: [id]
-    }
-    await dbCtrl.execute(query);
+    const query = SQL`DELETE FROM usuarios WHERE id = ${id}`
+    const userPath = path.join(userResourcePath, `${id}`)
+    const promises = [
+        dbCtrl.execute(query),
+        fs.rmdir(userPath, {recursive: true})
+    ]
+    await Promise.all(promises)
 }
 
 
 async function trainings(id) {
-    const query = {
-        text: "SELECT e.idElemento, e.nombre, e.descripcion \
-               FROM elementos e\
-               WHERE e.idUsuario = $1 AND EXISTS \
-                                        (SELECT * \
-                                         FROM entrenamientos \
-                                         WHERE idElemento = e.idElemento) \
-               ORDER BY e.idElemento ASC",
-        values: [id]
-    }
-    const res = (await dbCtrl.execute(query));
-    const trainingSet = [];
-    for (let i=0; i<res.rows.length; ++i) {
-        trainingSet.push(res.rows[i]);
-    }
-    return trainingSet;
+    const query = SQL`SELECT e.idElemento, e.nombre, e.descripcion
+        FROM elementos e
+        WHERE e.idUsuario = ${id} AND EXISTS
+            (SELECT *
+            FROM entrenamientos
+            WHERE idElemento = e.idElemento)
+        ORDER BY e.idElemento ASC`
+    const res = await dbCtrl.execute(query);
+    return res.rows;
 }
 
 async function diets(id) {
-    const query = {
-        text: "SELECT e.idElemento, e.nombre, e.descripcion \
-               FROM elementos e\
-               WHERE e.idUsuario = $1 AND EXISTS \
-                                        (SELECT * \
-                                         FROM dietas \
-                                         WHERE idElemento = e.idElemento) \
-               ORDER BY e.idElemento ASC",
-        values: [id]
-    }
-    const res = (await dbCtrl.execute(query));
-    const dietSet = [];
-    for (let i=0; i<res.rows.length; ++i) {
-        dietSet.push(res.rows[i]);
-    }
-    return dietSet;
+    const query = SQL`SELECT e.idElemento, e.nombre, e.descripcion
+        FROM elementos e
+        WHERE e.idUsuario = ${id} AND EXISTS
+            (SELECT *
+            FROM dietas
+            WHERE idElemento = e.idElemento)
+        ORDER BY e.idElemento ASC`
+    const res = await dbCtrl.execute(query)
+    return res.rows
 }
 
 async function resetPassword ({email, password}) {
+<<<<<<< HEAD
     const query = {
         text: "SELECT id \
                 FROM usuarios \
@@ -124,6 +123,10 @@ async function resetPassword ({email, password}) {
             result: false,
         }
     } 
+=======
+    const query = SQL`UPDATE usuarios SET password = ${password} WHERE email = ${email}`
+    await dbCtrl.execute(query);
+>>>>>>> f7ebedfe4270b5d6942424256f4fba48ecd3ae6e
 }
 
 async function getInfo(id) {
@@ -142,24 +145,18 @@ async function putInfo(id, info) {
 }
 
 async function putSettings(id, set) {
-    const query = {
-        text: "UPDATE usuarios SET sEdad = $2, sDistancia =$3, sInvitacion = $4, \
-                sSeguidor = $5, nMensaje = $6 \
-                WHERE id = $1",
-        values: [id, set.sEdad, set.sDistancia, set.sInvitacion, set.sSeguidor, set.nMensaje]
-    }
+    const query = SQL`UPDATE usuarios SET sEdad = ${set.sEdad}, sDistancia =${set.sDistancia},
+            sInvitacion = ${set.sInvitacion}, sSeguidor = ${set.sSeguidor}, nMensaje = ${set.nMensaje}
+        WHERE id = ${id}`
     await dbCtrl.execute(query)
 }
 
 async function getSettings(id) {
-    const query = {
-        text: "SELECT sEdad, sDistancia, sInvitacion, sSeguidor, nMensaje \
-                FROM usuarios \
-                WHERE id = $1",
-        values: [id]
-    }
-    const res = (await dbCtrl.execute(query)).rows[0];
-    return res;
+    const query = SQL`SELECT sEdad, sDistancia, sInvitacion, sSeguidor, nMensaje
+        FROM usuarios
+        WHERE id = ${id}`
+    const res = await dbCtrl.execute(query);
+    return res.rows[0];
 }
 
 async function fbLogin(user) {
@@ -174,18 +171,38 @@ async function fbLogin(user) {
     }
 }
 
+async function getProfileImg(id) {
+    const imgDirPath = path.join(userResourcePath, `${id}`, 'profile')
+    const files = await fs.readdir(imgDirPath)
+    return path.resolve(imgDirPath, files[0])
+}
+
+async function setProfileImg(id, img, ext) {
+    const user = await getById(id)
+    if (user === undefined) {
+        throw Error('User does not exist')
+    }
+    const imgDirPath = path.join(userResourcePath, `${id}`, 'profile')
+    await fs.rmdir(imgDirPath, {recursive: true})
+    await fs.mkdir(imgDirPath, {recursive: true})
+    const imgPath = path.join(imgDirPath, `profile.${ext}`)
+    await fs.writeFile(imgPath, img);
+}
 
 module.exports = {
     create,
     validate,
+    fbLogin,
+    getById,
+    getByEmail,
+    getInfo,
+    getSettings,
+    getProfileImg,
+    putInfo,
+    putSettings,
+    setProfileImg,
+    resetPassword,
     del,
     trainings,
     diets,
-    resetPassword,
-    getInfo,
-    putInfo,
-    getSettings,
-    putSettings,
-    getByEmail,
-    fbLogin
 }

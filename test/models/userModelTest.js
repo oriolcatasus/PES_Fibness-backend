@@ -1,13 +1,20 @@
 const assert = require("assert");
-const chai = require("chai");
+const path = require('path')
+const fs = require('fs').promises
 
 const user = require("../../src/models/userModel");
 const training = require("../../src/models/trainingModel");
 const diet = require("../../src/models/dietModel")
 const dbCtrl = require("../../src/ctrls/dbCtrl");
 
+const testConstants = require('../constants')
+const constants = require('../../src/constants')
+const expect = require('../chaiConfig')
+
+const userTestResourcePath = path.join(testConstants.resourcePath, 'user')
+const userResourcePath = path.join(constants.resourcePath, 'user')
+
 require("../rootHooks");
-const expect = chai.expect;
 
 describe("userModel script", function() {
     describe("create function", function() {
@@ -67,37 +74,55 @@ describe("userModel script", function() {
         });
     });
 
+    describe('getById(id)', function() {
+        it('should return the user with the given id', async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                email: 'fake@example.com',
+                password: 'fakeHash'
+            }
+            const res = await user.create(fakeUser)
+            const userRetrieved = await user.getById(res.id)
+            
+            expect(fakeUser.nombre).to.equal(userRetrieved.nombre)
+            expect(fakeUser.email).to.equal(userRetrieved.email)
+            expect(fakeUser.password).to.equal(userRetrieved.password)
+        })
+    })
 
-    describe("delete user", function() {        
-        it ("should return deleted correctly", async function() {
-            let newUser = {
+    describe('getByEmail(email)', function() {
+        it('should return the user with the given email', async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                email: 'fake@example.com',
+                password: 'fakeHash'
+            }
+            await user.create(fakeUser)
+            const userRetrieved = await user.getByEmail(fakeUser.email)
+            
+            expect(fakeUser.nombre).to.equal(userRetrieved.nombre)
+            expect(fakeUser.email).to.equal(userRetrieved.email)
+            expect(fakeUser.password).to.equal(userRetrieved.password)
+        })
+    })
+
+    describe('delete user', function() {        
+        it ('should return deleted correctly', async function() {
+            const fakeUser = {
                 nombre: "Oriol",
                 password: "hash",
                 email: "oriol@example.com",
-            }
-            await user.create(newUser);
-            let newUser2 = {
-                nombre: "Oriol2",
-                password: "hash2",
-                email: "oriol2@example.com",
-            }
-            await user.create(newUser2);
-            
-            let queryGetID = {
-                text: "SELECT id \
-                        FROM usuarios \
-                        WHERE nombre = $1",
-                values: ["Oriol"],
-            };
-            let idTest = (await dbCtrl.execute(queryGetID)).rows[0].id;
-            await user.del(idTest);
+            }            
+            const userCreated = await user.create(fakeUser)
+            const id = userCreated.id
+            const userPath = path.join(constants.resourcePath, 'user', `${id}`)
+            const userPathProfile = path.join(userPath, 'profile')
+            await fs.mkdir(userPathProfile, {recursive: true})
+            await user.del(id)
 
-            let query = {
-                text: "SELECT nombre, password, email \
-                        FROM usuarios" ,
-            };
-            let res = (await dbCtrl.execute(query)).rows;
-            assert.equal(res.length, 1);
+            const userRetrieved = await user.getById(id);
+            expect(userRetrieved).to.be.undefined
+            await expect(fs.access(userPath)).to.eventually.be.rejected
         });
     });
 
@@ -626,5 +651,67 @@ describe("userModel script", function() {
             expect(userDb.nombre).to.equal(fakeFbUser.nombre);
             expect(userDb.email).to.equal(fakeFbUser.email);
         });
-    });
+    })
+
+    describe('setProfileImage(id, img, ext)', function() {
+        it('should set profile image correctly', async function(){
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            const res = await user.create(fakeUser)
+            const id = res.id
+            const pathImg = path.join(userTestResourcePath, 'profile', 'profile.jpg')
+            const img = await fs.readFile(pathImg)
+            const ext = 'jpg'
+            await user.setProfileImg(id, img, ext)
+
+            const pathNewImg = await user.getProfileImg(id)
+            const newImg = await fs.readFile(pathNewImg)
+            expect(img.equals(newImg)).to.be.true;
+
+            const pathUser = path.join(userResourcePath, `${id}`)
+            fs.rmdir(pathUser, {recursive: true})
+        })
+
+        it("should not set profile image if user doesn't exist", async function() {
+            const id = 0;
+            const pathImg = path.join(userTestResourcePath, 'profile', 'profile.jpg')
+            const img = await fs.readFile(pathImg)
+            const ext = 'jpg'
+            await expect(user.setProfileImg(id, img, ext))
+                .to.eventually.be.rejectedWith(Error, 'User does not exist')
+        })
+    })
+
+    describe('getProfileImg(id)', function() {
+        it('should return the profile image', async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            const res = await user.create(fakeUser)
+            const id = res.id
+            const pathImg = path.join(userTestResourcePath, 'profile', 'profile.jpg')
+            const img = await fs.readFile(pathImg)
+            const ext = 'jpg'
+            await user.setProfileImg(id, img, ext)
+
+            const newImgPath = await user.getProfileImg(id)
+            const newImg = await fs.readFile(newImgPath)
+            const result = img.equals(newImg)
+            expect(result).to.be.true;
+
+            const pathUser = path.join(userResourcePath, `${id}`)
+            fs.rmdir(pathUser, {recursive: true})
+        })
+
+        it("should not return the profile image if the user doesn't exist", async function() {
+            const id = 0
+            await expect(user.getProfileImg(id)).to.eventually.be
+                .rejectedWith(Error, "ENOENT: no such file or directory, scandir 'resources/user/0/profile'")
+        })
+    })
 });

@@ -1,13 +1,11 @@
 const supertest = require("supertest");
-const chai = require("chai");
 
 require("../rootHooks");
 
+const expect = require('../chaiConfig')
 const { app } = require("../../src/app");
 
 const request = supertest(app);
-const expect = chai.expect;
-chai.use(require('chai-things'));
 
 describe("Diet route", function() {
     const fakeDiet = {
@@ -22,7 +20,7 @@ describe("Diet route", function() {
             password: "fakeHash"
         }
         const res = await request.post("/user")
-            .set("Accept", "application/json")
+            .set("Content-Type", "application/json")
             .send(fakeUser)
         fakeDiet.idUser = res.body.id;
     });
@@ -30,7 +28,7 @@ describe("Diet route", function() {
     describe("POST /diet", function() {
         it("should create a diet", async function() {            
             const res = await request.post("/diet")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(fakeDiet)
                 .expect(201);
             expect(res.body).to.have.property("idElemento");
@@ -39,7 +37,7 @@ describe("Diet route", function() {
         it("should not create a diet if parameters are missing", async function() {
             const fakeDiet = { }
             await request.post("/diet")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(fakeDiet)
                 .expect(400);
         });
@@ -48,7 +46,7 @@ describe("Diet route", function() {
     describe("DELETE /diet/{id}", async function() {
         it("should delete a diet", async function() {
             const res = await request.post("/diet")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(fakeDiet);
             const idDiet = res.body.idElemento;
             await request.delete(`/diet/${idDiet}`)
@@ -63,7 +61,7 @@ describe("Diet route", function() {
     describe("PUT /diet/{id}", function() {
         it("should update the given diet", async function() {
             const res = await request.post("/diet")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(fakeDiet);
             const idDiet = res.body.idElemento;
             
@@ -72,7 +70,7 @@ describe("Diet route", function() {
                 descripcion: "NewFakeDescription"
             }
             await request.put(`/diet/${idDiet}`)
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(newFakeDiet)    
                 .expect(200);
         });
@@ -85,7 +83,7 @@ describe("Diet route", function() {
     describe("GET /diet/{id}/dia", function() {
         it("should return an array of meals", async function() {
             let res = await request.post("/diet")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(fakeDiet);
             const idDiet = res.body.idElemento;
 
@@ -104,11 +102,11 @@ describe("Diet route", function() {
             };
 
             await request.post("/meal")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(newMeal);
 
             await request.post("/meal")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(newMeal2);
             const dia = "miercoles";
 

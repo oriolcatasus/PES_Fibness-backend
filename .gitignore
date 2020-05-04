@@ -114,3 +114,6 @@ reports/
 
 #VSCode config files
 .vscode/
+
+# Generated resources
+resources/user/*

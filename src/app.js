@@ -2,6 +2,7 @@ const express = require("express");
 
 //db
 const dbCtrl = require("./ctrls/dbCtrl");
+const { maxReqSize } = require('./constants')
 
 //Routes
 const user = require("./routes/user");
@@ -19,6 +20,10 @@ const port = process.env.PORT || 3000;
 const app = express();
 let server;
 
+app.use(express.raw({
+    limit: maxReqSize,
+    type: 'image/*'
+}))
 app.use(express.json());
 
 app.use("/user", user);

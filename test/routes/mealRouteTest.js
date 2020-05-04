@@ -1,13 +1,11 @@
 const supertest = require("supertest");
-const chai = require("chai");
 
 require("../rootHooks");
 
+const expect = require('../chaiConfig')
 const { app } = require("../../src/app");
 
 const request = supertest(app);
-const expect = chai.expect;
-chai.use(require('chai-things'));
 
 describe("Meal route", function() {
     const meal = {
@@ -30,12 +28,12 @@ describe("Meal route", function() {
         }
 
         let res = await request.post("/user")
-            .set("Accept", "application/json")
+            .set("Content-Type", "application/json")
             .send(user)
         diet.idUser = res.body.id;
 
         res = await request.post("/diet")
-            .set("Accept", "application/json")
+            .set("Content-Type", "application/json")
             .send(diet)
         meal.idElemento = res.body.idElemento;
     });
@@ -43,7 +41,7 @@ describe("Meal route", function() {
     describe("POST /meal", function() {
         it("should create a meal", async function() {            
             const res = await request.post("/meal")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(meal)
                 .expect(201);
             expect(res.body).to.have.property("idComida");
@@ -55,7 +53,7 @@ describe("Meal route", function() {
                 idElemento: -1,
             };
             await request.post("/meal")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(fakeMeal)
                 .expect(400);
         });
@@ -64,7 +62,7 @@ describe("Meal route", function() {
     describe("DELETE /meal/{id}", async function() {
         it("should delete a meal", async function() {
             const res = await request.post("/meal")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(meal);
             const idComida = res.body.idComida;
             await request.delete(`/meal/${idComida}`)
@@ -79,7 +77,7 @@ describe("Meal route", function() {
     describe("PUT /meal/{id}", function() {
         it("should update the given meal", async function() {
             const res = await request.post("/meal")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(meal);
             const idComida = res.body.idComida;
             
@@ -88,7 +86,7 @@ describe("Meal route", function() {
                 horaComida: '10:00:00',
             };
             await request.put(`/meal/${idComida}`)
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(newMeal)    
                 .expect(200);
         });
@@ -101,7 +99,7 @@ describe("Meal route", function() {
     describe("GET /meal/{id}", function() {
         it("should return an array of aliments", async function() {
             let res = await request.post("/meal")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(meal);
             const idMeal = res.body.idComida;
 
@@ -120,11 +118,11 @@ describe("Meal route", function() {
             };
 
             await request.post("/aliment")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(newAliment);
 
             await request.post("/aliment")
-                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
                 .send(newAliment2);
 
             res = await request.get(`/meal/${idMeal}/aliments`)
