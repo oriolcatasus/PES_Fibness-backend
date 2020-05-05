@@ -306,4 +306,176 @@ describe("user route", function() {
                 .expect(500)
         })
     })
+
+    describe('POST /user/follow', function() {
+        it('should add a follower', async function() {
+            let res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser)
+            const id = res.body.id
+
+            const fakeUser2 = {
+                nombre: "fakeName2",
+                email: "fake2@example.com",
+                password: "fakeHash2"
+            }
+
+            res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser2)
+            const id2 = res.body.id
+
+            const bodyRequest = {
+                idFollower: id,
+                idFollowed: id2
+            }
+
+            await request.post('/user/follow')
+                .set('Content-Type', 'application/json')
+                .send(bodyRequest)
+                .expect(201);
+        })
+
+        it("should not add a follower if it does not exist", async function() {
+            const bodyRequest = {
+                idFollower: 'fakeID',
+                idFollowed: 'fakeID2'
+            }
+            await request.post('/user/follow')
+                .set('Content-Type', 'application/json')
+                .send(bodyRequest)
+                .expect(400);
+        })
+    })
+
+    describe('DELETE /user/unfollow', function() {
+        it('should delete a follower', async function() {
+            let res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser)
+            const id = res.body.id
+
+            const fakeUser2 = {
+                nombre: "fakeName2",
+                email: "fake2@example.com",
+                password: "fakeHash2"
+            }
+
+            res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser2)
+            const id2 = res.body.id
+
+            const bodyRequest = {
+                idFollower: id,
+                idFollowed: id2
+            }
+
+            await request.post('/user/follow')
+                .set('Content-Type', 'application/json')
+                .send(bodyRequest)
+
+            await request.put('/user/unfollow')
+                .set('Content-Type', 'application/json')
+                .send(bodyRequest)
+                .expect(200);
+        })
+
+        it("should not delete a follower if it does not exist", async function() {
+            const bodyRequest = {
+                idFollower: 'fakeID',
+                idFollowed: 'fakeID2'
+            }
+            await request.put('/user/unfollow')
+                .set('Content-Type', 'application/json')
+                .send(bodyRequest)
+                .expect(400);
+        })
+    })
+
+    describe('GET /user/:id/followers', function() {
+        it('should get the followers of a user', async function() {
+            let res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser)
+            const id = res.body.id
+
+            const fakeUser2 = {
+                nombre: "fakeName2",
+                email: "fake2@example.com",
+                password: "fakeHash2"
+            }
+
+            res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser2)
+            const id2 = res.body.id
+
+            const bodyRequest = {
+                idFollower: id,
+                idFollowed: id2
+            }
+
+            await request.post('/user/follow')
+                .set('Content-Type', 'application/json')
+                .send(bodyRequest)
+
+            res = await request.get(`/user/${id}/followers`)
+                .expect('Content-Type', /json/)
+                .expect(200);
+
+            const followers = res.body;
+            expect(followers).to.be.an('array');
+        })
+
+        it("should not get the followers of a user if it does not exist", async function() {
+
+            await request.get('/user/fakeid/followers')
+                .set('Content-Type', 'application/json')
+                .expect(400);
+        })
+    })
+
+    describe('GET /user/:id/followed', function() {
+        it('should get the people followed by a user', async function() {
+            let res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser)
+            const id = res.body.id
+
+            const fakeUser2 = {
+                nombre: "fakeName2",
+                email: "fake2@example.com",
+                password: "fakeHash2"
+            }
+
+            res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser2)
+            const id2 = res.body.id
+
+            const bodyRequest = {
+                idFollower: id,
+                idFollowed: id2
+            }
+
+            await request.post('/user/follow')
+                .set('Content-Type', 'application/json')
+                .send(bodyRequest)
+
+            res = await request.get(`/user/${id}/followed`)
+                .expect('Content-Type', /json/)
+                .expect(200);
+
+            const followed = res.body;
+            expect(followed).to.be.an('array');
+        })
+
+        it("should not get the followed people by a user if it does not exist", async function() {
+
+            await request.get('/user/fakeid/followed')
+                .set('Content-Type', 'application/json')
+                .expect(400);
+        })
+    })
 });

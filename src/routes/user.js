@@ -138,16 +138,16 @@ router.post('/:id/profile', async function(req, res, next) {
     }
 })
 
-router.post('/user/follow', async function(req, res) {
+router.post('/follow', async function(req, res) {
     try {
         await user.follow(req.body);
-        res.sendStatus(200)
+        res.sendStatus(201)
     } catch(err) {
         res.status(400).send(err.message);
     }
 })
 
-router.post('/user/unfollow', async function(req, res) {
+router.put('/unfollow', async function(req, res) {
     try {
         await user.unfollow(req.body);
         res.sendStatus(200)
@@ -156,5 +156,22 @@ router.post('/user/unfollow', async function(req, res) {
     }
 })
 
+router.get('/:id/followers', async function(req, res) {
+    try {
+        followers = await user.followers(req.params.id);
+        res.status(200).send(followers);
+    } catch(err) {
+        res.status(400).send(err.message);
+    }
+})
+
+router.get('/:id/followed', async function(req, res) {
+    try {
+        followed = await user.followed(req.params.id);
+        res.status(200).send(followed);
+    } catch(err) {
+        res.status(400).send(err.message);
+    }
+})
 
 module.exports = router;
