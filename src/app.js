@@ -11,6 +11,7 @@ const diet = require("./routes/diet")
 const meal = require("./routes/meal")
 const aliment = require("./routes/aliment")
 const exercise = require("./routes/exercise")
+const route = require("./routes/route")
 
 //Middleware
 const errorHandler = require("./middleware/errorHandlers");
@@ -24,6 +25,7 @@ app.use(express.raw({
     limit: maxReqSize,
     type: 'image/*'
 }))
+
 app.use(express.json());
 
 app.use("/user", user);
@@ -32,6 +34,7 @@ app.use("/exercise",exercise);
 app.use("/diet", diet);
 app.use("/meal", meal);
 app.use("/aliment", aliment);
+app.use("/route",route);
 
 app.get("/test", (req, res) => {
     console.log("Hello");
