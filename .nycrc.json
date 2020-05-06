@@ -1,5 +1,9 @@
 {
     "report-dir": "reports",
+    "reporter": [
+        "text",
+        "text-summary"
+    ],
     "include": [
         "src/**/*.js"
     ],

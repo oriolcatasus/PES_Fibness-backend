@@ -32,7 +32,6 @@ pipeline {
                 POSTGRES_USER = 'fibness'
                 POSTGRES_PASSWORD = 'fibness'
                 POSTGRES_DB = 'test'
-                NODE_ENV = 'test'
                 DATABASE_URL = 'postgresql://fibness:fibness@pg:5432/test'
             }
             steps {
@@ -42,7 +41,7 @@ pipeline {
                     docker.image('postgres:latest').withRun('-e POSTGRES_USER -e POSTGRES_PASSWORD -e POSTGRES_DB') { pgc ->
                         echo 'Starting tests'
                         docker.image(TEST_IMAGE_NAME)
-                            .inside("-u root -e NODE_ENV -e DATABASE_URL --link ${pgc.id}:pg \
+                            .inside("-u root -e DATABASE_URL --link ${pgc.id}:pg \
                             -v ${env.WORKSPACE}/reports:/home/api/reports") {
                                 sh 'cd /home/api && ./scripts/wait-for-it.sh pg:5432 -t 60 -- npm run coverage-jenkins'
                         }
@@ -68,10 +67,10 @@ pipeline {
                         enableNewApi: true,
                         zoomCoverageChart: true,
                         maxNumberOfBuilds: 0,
-                        conditionalCoverageTargets: '99, 0, 0',
-                        lineCoverageTargets: '99, 0, 0',
-                        fileCoverageTargets: '99, 0, 0',
-                        methodCoverageTargets: '99, 0, 0'
+                        conditionalCoverageTargets: '99, 80, 0',
+                        lineCoverageTargets: '99, 80, 0',
+                        fileCoverageTargets: '99, 80, 0',
+                        methodCoverageTargets: '99, 80, 0'
                     )
                 }
                 success {
@@ -282,12 +281,11 @@ pipeline {
         }
         success {
             script {
-                def msg = commitInfo() + '\nCongratulations, your commit works!'
                 if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'development') {
-                    msg = msg + "\nAnd it's already **deployed**!"
+                    def msg = commitInfo() + "\nCongratulations, your commit works!\nAnd it's already **deployed**!"
+                    def img = 'https://wompampsupport.azureedge.net/fetchimage?siteId=7575&v=2&jpgQuality=100&width=700&url=https%3A%2F%2Fi.kym-cdn.com%2Fentries%2Ficons%2Ffacebook%2F000%2F027%2F838%2FUntitled-1.jpg'
+                    notifyDiscord(msg, img)
                 }
-                def img = 'https://wompampsupport.azureedge.net/fetchimage?siteId=7575&v=2&jpgQuality=100&width=700&url=https%3A%2F%2Fi.kym-cdn.com%2Fentries%2Ficons%2Ffacebook%2F000%2F027%2F838%2FUntitled-1.jpg'
-                notifyDiscord(msg, img)
             }
         }
         unstable {
