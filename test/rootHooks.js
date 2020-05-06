@@ -1,8 +1,7 @@
-process.env.NODE_ENV = "test";
-process.env.PORT = 3010;
-
+process.env.NODE_ENV = 'test'
+process.env.PORT = 3010
 if (process.env.DATABASE_URL === undefined) {
-    process.env.DATABASE_URL = "postgresql://fibness:fibness@localhost:5432/test"
+    process.env.DATABASE_URL = 'postgresql://fibness:fibness@localhost:5432/test'
 }
 
 const dbCtrl = require("../src/ctrls/dbCtrl");

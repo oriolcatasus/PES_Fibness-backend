@@ -1,25 +1,20 @@
 const { Pool } = require('pg');
-const pgMigrate = require("node-pg-migrate").default;
+const pgMigrate = require('node-pg-migrate').default;
 
-const defaultDatabaseUrl = 'postgres://fibness:fibness@localhost:5432/fibness'
 let pool;
 
 function connect() {
     pool = new Pool({
-        connectionString: getDatabaseUrl()
+        connectionString: process.env.DATABASE_URL
     });
 }
 
 async function migrate() {
     await pgMigrate({
-        databaseUrl: getDatabaseUrl(),
-        direction: "up",
-        dir: "./migrations",
+        databaseUrl: process.env.DATABASE_URL,
+        direction: 'up',
+        dir: './migrations',
     });
-}
-
-function getDatabaseUrl() {
-    return process.env.DATABASE_URL || defaultDatabaseUrl;
 }
 
 async function execute(query) {

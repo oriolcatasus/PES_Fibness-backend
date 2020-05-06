@@ -257,7 +257,7 @@ describe("user route", function() {
                 .set('Content-Type', 'application/json')
                 .send(fakeUser)
             const id = res.body.id
-            const pathImg = path.join(userTestResourcePath, 'profile', 'profile.jpg')
+            const pathImg = path.join(userTestResourcePath, 'profile.jpg')
             const img = await fs.readFile(pathImg)
             await request.post(`/user/${id}/profile`)
                 .set('Content-Type', 'image/jpeg')
@@ -270,7 +270,7 @@ describe("user route", function() {
 
         it('should not set a new profile image for a nonexistant user', async function() {
             const id = 0;
-            const pathImg = path.join(userTestResourcePath, 'profile', 'profile.jpg')
+            const pathImg = path.join(userTestResourcePath, 'profile.jpg')
             const img = await fs.readFile(pathImg)
             await request.post(`/user/${id}/profile`)
                 .set('Content-Type', 'image/jpeg')
@@ -285,7 +285,7 @@ describe("user route", function() {
                 .set('Content-Type', 'application/json')
                 .send(fakeUser)
             const id = res.body.id
-            const pathImg = path.join(userTestResourcePath, 'profile', 'profile.jpg')
+            const pathImg = path.join(userTestResourcePath, 'profile.jpg')
             const img = await fs.readFile(pathImg)
             await request.post(`/user/${id}/profile`)
                 .set('Content-Type', 'image/jpeg')

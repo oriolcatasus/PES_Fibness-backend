@@ -8,5 +8,5 @@ if [ "$NODE_ENV" == "stage" ] || [ "$NODE_ENV" == "production" ]
 then
     npm start;
 else
-    npm run dev;
+    npm run dev-docker;
 fi
