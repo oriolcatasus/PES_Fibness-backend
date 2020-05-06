@@ -694,4 +694,192 @@ describe("userModel script", function() {
                 .rejectedWith(Error, "ENOENT: no such file or directory, scandir 'resources/user/0/profile'")
         })
     })
-});
+
+    describe('followers operations', function() {
+        it('should create a follower', async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const idFr = res.id;
+            
+            const fakeUser2 = {
+                nombre: 'Fake2',
+                password: 'fakeHash2',
+                email: 'fake2@example.com',
+            }
+            res = await user.create(fakeUser2);
+            const idFd = res.id;
+
+            const bodyRequest = {
+                idFollower: idFr,
+                idFollowed: idFd
+            }
+            await user.follow(bodyRequest);
+            const query = {
+                text: 'SELECT * \
+                        FROM seguidores \
+                        WHERE idSeguidor = $1 AND idSeguido = $2',
+                values: [idFr, idFd]
+            };
+            res = await dbCtrl.execute(query);
+            assert.equal(res.rows.length, 1);
+            
+            const infoFollower = (await user.getInfo(idFr));
+            assert.equal(infoFollower.nseguidos, 1);
+
+            const infoFollowed = (await user.getInfo(idFd));
+            assert.equal(infoFollowed.nseguidores, 1);
+        })
+
+        it("should delete a follower", async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const idFr = res.id;
+            
+            const fakeUser2 = {
+                nombre: 'Fake2',
+                password: 'fakeHash2',
+                email: 'fake2@example.com',
+            }
+            res = await user.create(fakeUser2);
+            const idFd = res.id;
+
+            const bodyRequest = {
+                idFollower: idFr,
+                idFollowed: idFd
+            }
+
+            await user.follow(bodyRequest);
+            await user.unfollow(bodyRequest);
+            const query = {
+                text: 'SELECT * \
+                        FROM seguidores \
+                        WHERE idSeguidor = $1 AND idSeguido = $2',
+                values: [idFr, idFd]
+            };
+            res = await dbCtrl.execute(query);
+            assert.equal(res.rows.length, 0);
+
+            const infoFollower = (await user.getInfo(idFr));
+            assert.equal(infoFollower.nseguidos, 0);
+
+            const infoFollowed = (await user.getInfo(idFd));
+            assert.equal(infoFollowed.nseguidores, 0);
+        })
+
+        it("should get the followers of a user", async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const idFr = res.id;
+            
+            const fakeUser2 = {
+                nombre: 'Fake2',
+                password: 'fakeHash2',
+                email: 'fake2@example.com',
+            }
+            res = await user.create(fakeUser2);
+            const idFr2 = res.id;
+
+            const fakeUser3 = {
+                nombre: 'Fake3',
+                password: 'fakeHash3',
+                email: 'fake3@example.com',
+            }
+            res = await user.create(fakeUser3);
+            const idFd = res.id;
+
+            const fakeUser4 = {
+                nombre: 'Fake4',
+                password: 'fakeHash4',
+                email: 'fake4@example.com',
+            }
+            res = await user.create(fakeUser4);
+            const idFr4 = res.id;
+
+            const bodyRequest = {
+                idFollower: idFr,
+                idFollowed: idFd
+            }
+
+            const bodyRequest2 = {
+                idFollower: idFr2,
+                idFollowed: idFd
+            }
+
+            await user.follow(bodyRequest);
+            await user.follow(bodyRequest2);
+
+            res = await user.followers(idFd);
+            
+            assert.equal(res.length, 2);
+            assert.equal(res[0].nombre, fakeUser.nombre);
+            assert.equal(res[1].nombre, fakeUser2.nombre);
+            
+        })
+
+        it("should get the people this user follows", async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const idFr = res.id;
+            
+            const fakeUser2 = {
+                nombre: 'Fake2',
+                password: 'fakeHash2',
+                email: 'fake2@example.com',
+            }
+            res = await user.create(fakeUser2);
+            const idFd2 = res.id;
+
+            const fakeUser3 = {
+                nombre: 'Fake3',
+                password: 'fakeHash3',
+                email: 'fake3@example.com',
+            }
+            res = await user.create(fakeUser3);
+            const idFd3 = res.id;
+
+            const fakeUser4 = {
+                nombre: 'Fake4',
+                password: 'fakeHash4',
+                email: 'fake4@example.com',
+            }
+            res = await user.create(fakeUser4);
+            const idFw4 = res.id;
+
+            const bodyRequest = {
+                idFollower: idFr,
+                idFollowed: idFd2
+            }
+
+            const bodyRequest2 = {
+                idFollower: idFr,
+                idFollowed: idFd3
+            }
+
+            await user.follow(bodyRequest);
+            await user.follow(bodyRequest2);
+
+            res = await user.followed(idFr);
+            
+            assert.equal(res.length, 2);
+            assert.equal(res[0].nombre, fakeUser2.nombre);
+            assert.equal(res[1].nombre, fakeUser3.nombre);
+            
+        })
+    })
+})

@@ -101,8 +101,27 @@ async function diets(id) {
 }
 
 async function resetPassword ({email, password}) {
-    const query = SQL`UPDATE usuarios SET password = ${password} WHERE email = ${email}`
-    await dbCtrl.execute(query);
+    const query = {
+        text: "SELECT id \
+                FROM usuarios \
+                WHERE email = $1",
+        values: [email],
+    };
+    const res = await dbCtrl.execute(query);
+    if (res.rows.length === 1) {
+        const query = {
+            text: "UPDATE usuarios SET password = $2 WHERE email = $1",
+            values: [email, password]
+        }
+        await dbCtrl.execute(query);
+        return {
+            result: true,
+        }
+    } else {
+        return {
+            result: false,
+        }
+    } 
 }
 
 async function getInfo(id) {
@@ -165,6 +184,49 @@ async function setProfileImg(id, img, ext) {
     await fs.writeFile(imgPath, img);
 }
 
+async function follow(body) {
+    let query = SQL`INSERT INTO seguidores(idSeguidor, idSeguido) 
+            values(${body.idFollower}, ${body.idFollowed})`;
+    await dbCtrl.execute(query);
+
+    query = SQL`UPDATE usuarios SET nSeguidores = nSeguidores + 1
+            WHERE id = ${body.idFollowed}`;
+    await dbCtrl.execute(query);
+
+    query = SQL`UPDATE usuarios SET nSeguidos = nSeguidos + 1
+            WHERE id = ${body.idFollower}`;
+    await dbCtrl.execute(query);
+}
+
+async function unfollow(body) {
+    let query = SQL`DELETE FROM seguidores WHERE idSeguidor = ${body.idFollower} AND idSeguido = ${body.idFollowed}`;
+    await dbCtrl.execute(query);
+
+    query = SQL`UPDATE usuarios SET nSeguidores = nSeguidores - 1
+            WHERE id = ${body.idFollowed}`;
+    await dbCtrl.execute(query);
+
+    query = SQL`UPDATE usuarios SET nSeguidos = nSeguidos - 1
+            WHERE id = ${body.idFollower}`;
+    await dbCtrl.execute(query);
+}
+
+async function followers(idFollowed) {
+    let query = SQL`SELECT u.nombre 
+                    FROM usuarios u, seguidores s
+                    WHERE s.idSeguido = ${idFollowed} AND u.id = s.idSeguidor`;
+    const res = await dbCtrl.execute(query);
+    return res.rows;
+}
+
+async function followed(idFollower) {
+    let query = SQL`SELECT u.nombre 
+                    FROM usuarios u, seguidores s
+                    WHERE s.idSeguidor = ${idFollower} AND u.id = s.idSeguido`;
+    const res = await dbCtrl.execute(query);
+    return res.rows;
+}
+
 module.exports = {
     create,
     validate,
@@ -181,4 +243,8 @@ module.exports = {
     del,
     trainings,
     diets,
+    follow,
+    unfollow,
+    followers,
+    followed,
 }
