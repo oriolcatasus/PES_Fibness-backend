@@ -26,13 +26,7 @@ describe("userModel script", function() {
             }
             const creation = await user.create(fakeUser);
 
-            const query = {
-                text: "SELECT id, nombre, password, email \
-                        FROM usuarios \
-                        WHERE email = $1",
-                values: [fakeUser.email],
-            };
-            const userdb = (await dbCtrl.execute(query)).rows[0];
+            const userdb = await user.getByEmail(fakeUser.email)
             assert.strictEqual(creation.created, true);
             assert.strictEqual(creation.id, userdb.id);
             assert.strictEqual(creation.error, undefined);
@@ -141,14 +135,9 @@ describe("userModel script", function() {
                 password: fakeUser.password
             });
 
-            const query = {
-                text: 'SELECT id FROM usuarios \
-                        WHERE email = $1',
-                values: [fakeUser.email]
-            }
-            const id = (await dbCtrl.execute(query)).rows[0].id;
+            const userDb = await user.getByEmail(fakeUser.email);
             assert.strictEqual(validation.result, true);
-            assert.strictEqual(validation.id, id);
+            assert.strictEqual(validation.id, userDb.id);
         });
 
         it("should NOT validate email & password", async function() {
@@ -186,40 +175,31 @@ describe("userModel script", function() {
 
         it("should return set of trainings correctly", async function(){
             //create user
-            let newUser = {
+            const fakeUser = {
                 nombre: "Oriol",
                 password: "hash",
                 email: "oriol@example.com",
             }
-            await user.create(newUser);
-
-            //select id from user in order to create a training (we need it for the foreign key of element)
-            let query = {
-                text: "SELECT id \
-                        FROM usuarios \
-                        WHERE nombre = $1",
-                values: ["Oriol"],
-            };
-            let res = (await dbCtrl.execute(query)).rows[0];
-            idTest = res.id; 
+            const res = await user.create(fakeUser);
+            idUser = res.id; 
 
             //create training 1 (and element)
-            let newTraining = {
+            const newTraining = {
                 nombre: "TrainingTest",
                 descripcion: "TrainingDescription",
-                idUser: idTest,
+                idUser,
             }
             await training.create(newTraining);
 
             //create training 2 (and element)
-            let newTraining2 = {
+            const newTraining2 = {
                 nombre: "TrainingTest2",
                 descripcion: "TrainingDescription",
-                idUser: idTest,
+                idUser,
             }
             await training.create(newTraining2);
 
-            let trainingSet = await user.trainings(idTest);
+            const trainingSet = await user.trainings(idUser);
 
             assert.equal(trainingSet[0].nombre, newTraining.nombre);
             assert.equal(trainingSet[0].descripcion, newTraining.descripcion);
@@ -662,7 +642,7 @@ describe("userModel script", function() {
             }
             const res = await user.create(fakeUser)
             const id = res.id
-            const pathImg = path.join(userTestResourcePath, 'profile', 'profile.jpg')
+            const pathImg = path.join(userTestResourcePath, 'profile.jpg')
             const img = await fs.readFile(pathImg)
             const ext = 'jpg'
             await user.setProfileImg(id, img, ext)
@@ -677,7 +657,7 @@ describe("userModel script", function() {
 
         it("should not set profile image if user doesn't exist", async function() {
             const id = 0;
-            const pathImg = path.join(userTestResourcePath, 'profile', 'profile.jpg')
+            const pathImg = path.join(userTestResourcePath, 'profile.jpg')
             const img = await fs.readFile(pathImg)
             const ext = 'jpg'
             await expect(user.setProfileImg(id, img, ext))
@@ -694,7 +674,7 @@ describe("userModel script", function() {
             }
             const res = await user.create(fakeUser)
             const id = res.id
-            const pathImg = path.join(userTestResourcePath, 'profile', 'profile.jpg')
+            const pathImg = path.join(userTestResourcePath, 'profile.jpg')
             const img = await fs.readFile(pathImg)
             const ext = 'jpg'
             await user.setProfileImg(id, img, ext)
