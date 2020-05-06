@@ -289,7 +289,17 @@ paths:
                 - password
       responses:
         200:
-          description: OK
+          description: Result from the reset (true if it was reseted, false otherwise)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                    example: true
+                required:
+                  - result
   /user/{id}/info:
     get:
       summary: Gets the info of the user
@@ -373,7 +383,7 @@ paths:
         - name: id
           in: path
           required: true
-          description: The id of the user which info should be updated
+          description: The id of the user to get the information from
           schema:
             type: integer
             minimum: 1
@@ -418,48 +428,7 @@ paths:
                     example: 12345
                 required:
                   - id
-  /user/{id}/profile:
-    get:
-      summary: Get the user's profile image
-      tags:
-        - user
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: The id of the user which profile image should be updated
-          schema:
-            type: integer
-            minimum: 1
-      responses:
-        200:
-          description: User's profile image in binary format
-          content:
-            image/*:
-              schema:
-                format: binary
-    post:
-      summary: Set a new profile image
-      tags:
-        - user
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: User's id
-          schema:
-            type: integer
-            minimum: 1
-      requestBody:
-        description: Profile image in binary format
-        required: true
-        content:
-          image/*:
-            schema:
-              format: binary
-      responses:
-        201:
-          description: Created
+      
   /user/{id}/settings:
     get:
       summary: Gets the settings of the user
