@@ -1,7 +1,4 @@
 -- Up Migration
-
-drop table rutas cascade;
-
 create table rutas (
 	idElemento int,
 	origen varchar(50),
