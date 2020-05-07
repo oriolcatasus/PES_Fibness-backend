@@ -5,6 +5,7 @@ const fs = require('fs').promises
 const user = require("../../src/models/userModel");
 const training = require("../../src/models/trainingModel");
 const diet = require("../../src/models/dietModel")
+const route = require("../../src/models/routeModel");
 const dbCtrl = require("../../src/ctrls/dbCtrl");
 
 const testConstants = require('../constants')
@@ -172,6 +173,134 @@ describe("userModel script", function() {
         });
     });
     describe("get operation", function() {
+        it("should return set of routes correctly", async function(){
+            //create user
+            const fakeUser = {
+                nombre: "Oriol",
+                password: "hash",
+                email: "oriol@example.com",
+            }
+            const res = await user.create(fakeUser);
+            idUser = res.id;
+            console.log("the id is:") 
+            console.log(idUser)
+            //create route 1 (and element)
+            console.log("--------------------------------------------------------")
+            const newRoute = {
+                nombre: "RouteTest",
+                descripcion: "RouteDescription",
+                origen: "CoordenateOrigin",
+                destino: "CoordenateDestine",
+                idUser: idUser,
+            }
+            console.log("0--------------------------------------------------------")
+            await route.create(newRoute);
+            console.log("1--------------------------------------------------------")
+
+            let queryGetID = {
+                text: "SELECT idElemento \
+                        FROM elementos \
+                        WHERE nombre = $1 and idUsuario = $2",
+                values: [newRoute.nombre, idUser],
+            };
+            console.log("2--------------------------------------------------------")
+
+            res2 = (await dbCtrl.execute(queryGetID)).rows[0];
+            console.log("3--------------------------------------------------------")
+            idElem1 = res2.idelemento;
+            console.log("4--------------------------------------------------------")
+            console.log("ruta1:")
+            console.log(idElem1);
+            //create route 2 (and element)
+            const newRoute2 = {
+                nombre: "RouteTest2",
+                descripcion: "RouteDescription",
+                origen: "CoordenateOrigin",
+                destino: "CoordenateDestine",
+                idUser: idUser,
+            }
+            console.log("5--------------------------------------------------------")
+            await route.create(newRoute2);
+            console.log("6--------------------------------------------------------")
+
+            let queryGetID2 = {
+                text: "SELECT idElemento \
+                        FROM elementos \
+                        WHERE nombre = $1 and idUsuario = $2",
+                values: [newRoute2.nombre, idUser],
+            };
+            res3 = (await dbCtrl.execute(queryGetID2)).rows[0];
+            idElem2 = res3.idelemento;
+            console.log("ruta2:")
+            console.log(idElem2)
+
+            const routeSet = await user.routes(idUser);
+
+            console.log("hello------------------------------");
+            console.log(routeSet);
+            assert.equal(routeSet[0].nombre, newRoute.nombre);
+            assert.equal(routeSet[0].descripcion, newRoute.descripcion);
+            assert.equal(routeSet[0].origen, newRoute.origen);
+            assert.equal(routeSet[0].destino, newRoute.destino);
+            assert.equal(routeSet[1].nombre, newRoute2.nombre);
+            assert.equal(routeSet[1].descripcion, newRoute2.descripcion);
+            assert.equal(routeSet[1].origen, newRoute2.origen);
+            assert.equal(routeSet[1].destino, newRoute2.destino);
+        });
+        it("should NOT return routes from other users", async function(){
+
+            //create user
+            let newUser = {
+                nombre: "Oriol",
+                password: "hash",
+                email: "oriol@example.com",
+            }
+            await user.create(newUser);
+
+            //create user 2
+            let newUser2 = {
+                nombre: "Oriol2",
+                password: "hash",
+                email: "oriol2@example.com",
+            }
+            await user.create(newUser2);
+
+             //select id from user 1 in order to test that nothing is returned
+            let query = {
+                text: "SELECT id \
+                        FROM usuarios \
+                        WHERE nombre = $1",
+                values: ["Oriol"],
+            };
+            let res = (await dbCtrl.execute(query)).rows[0];
+            idUser = res.id; 
+
+            //select id from user 2 in order to create a training (we need it for the foreign key of element)
+            query = {
+                text: "SELECT id \
+                        FROM usuarios \
+                        WHERE nombre = $1",
+                values: ["Oriol2"],
+            };
+            res = (await dbCtrl.execute(query)).rows[0];
+            idUser2 = res.id; 
+
+            //create training for user2 (and element)
+            let newTraining = {
+                nombre: "RouteTest",
+                descripcion: "RouteDescription",
+                origen: "CoordenateOrigin",
+                destino: "CoordenateDestine",
+                idUser: idUser2,
+            }
+            await training.create(newTraining);
+
+
+            //getting trainings of user1 and making sure there is none
+            let trainingSet = await user.routes(idUser);
+            assert.equal(trainingSet.length, 0);
+        });
+
 
         it("should return set of trainings correctly", async function(){
             //create user
