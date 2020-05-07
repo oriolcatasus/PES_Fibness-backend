@@ -307,7 +307,7 @@ describe("user route", function() {
         })
     })
 
-    describe('POST /user/follow', function() {
+    describe('POST /user/follow/:idFollower/:idFollowed', function() {
         it('should add a follower', async function() {
             let res = await request.post('/user')
                 .set('Content-Type', 'application/json')
@@ -323,32 +323,33 @@ describe("user route", function() {
             res = await request.post('/user')
                 .set('Content-Type', 'application/json')
                 .send(fakeUser2)
-            const id2 = res.body.id
+            const id2 = res.body.id;
 
-            const bodyRequest = {
+            const body = {
                 idFollower: id,
                 idFollowed: id2
             }
 
-            await request.post('/user/follow')
+            await request.post(`/user/follow`)
                 .set('Content-Type', 'application/json')
-                .send(bodyRequest)
+                .send(body)
                 .expect(201);
         })
 
         it("should not add a follower if it does not exist", async function() {
-            const bodyRequest = {
+
+            const body = {
                 idFollower: 'fakeID',
                 idFollowed: 'fakeID2'
             }
-            await request.post('/user/follow')
+
+            await request.post(`/user/follow`)
                 .set('Content-Type', 'application/json')
-                .send(bodyRequest)
                 .expect(400);
         })
     })
 
-    describe('DELETE /user/unfollow', function() {
+    describe('DELETE /user/follow/:idFollower/:idFollowed', function() {
         it('should delete a follower', async function() {
             let res = await request.post('/user')
                 .set('Content-Type', 'application/json')
@@ -366,29 +367,21 @@ describe("user route", function() {
                 .send(fakeUser2)
             const id2 = res.body.id
 
-            const bodyRequest = {
-                idFollower: id,
-                idFollowed: id2
-            }
+            const idFollower = id;
+            const idFollowed = id2;
+            
 
-            await request.post('/user/follow')
+            await request.delete(`/user/follow/${idFollower}/${idFollowed}`)
                 .set('Content-Type', 'application/json')
-                .send(bodyRequest)
-
-            await request.put('/user/unfollow')
-                .set('Content-Type', 'application/json')
-                .send(bodyRequest)
                 .expect(200);
         })
 
         it("should not delete a follower if it does not exist", async function() {
-            const bodyRequest = {
-                idFollower: 'fakeID',
-                idFollowed: 'fakeID2'
-            }
-            await request.put('/user/unfollow')
+            const idFollower = 'fakeID';
+            const idFollowed = 'fakeID2';
+
+            await request.delete(`/user/follow/${idFollower}/${idFollowed}`)
                 .set('Content-Type', 'application/json')
-                .send(bodyRequest)
                 .expect(400);
         })
     })
@@ -411,16 +404,17 @@ describe("user route", function() {
                 .send(fakeUser2)
             const id2 = res.body.id
 
-            const bodyRequest = {
+            const body = {
                 idFollower: id,
                 idFollowed: id2
             }
 
-            await request.post('/user/follow')
+            await request.post(`/user/follow`)
                 .set('Content-Type', 'application/json')
-                .send(bodyRequest)
+                .send(body)
+                .expect(201);
 
-            res = await request.get(`/user/${id}/followers`)
+            res = await request.get(`/user/${id2}/followers`)
                 .expect('Content-Type', /json/)
                 .expect(200);
 
@@ -454,14 +448,15 @@ describe("user route", function() {
                 .send(fakeUser2)
             const id2 = res.body.id
 
-            const bodyRequest = {
+            const body = {
                 idFollower: id,
                 idFollowed: id2
             }
 
-            await request.post('/user/follow')
+            await request.post(`/user/follow`)
                 .set('Content-Type', 'application/json')
-                .send(bodyRequest)
+                .send(body)
+                .expect(201);
 
             res = await request.get(`/user/${id}/followed`)
                 .expect('Content-Type', /json/)
@@ -499,8 +494,7 @@ describe("user route", function() {
 
             res = await request.get(`/user/shortInfo/${id2}`)
                 .expect('Content-Type', /json/)
-                .expect(200);;
-
+                .expect(200);
             const usersInfo = res.body;
             expect(usersInfo).to.be.an('array');
         })

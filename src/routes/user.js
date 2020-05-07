@@ -147,9 +147,9 @@ router.post('/follow', async function(req, res) {
     }
 })
 
-router.put('/unfollow', async function(req, res) {
+router.delete('/follow/:idFollower/:idFollowed', async function(req, res) {
     try {
-        await user.unfollow(req.body);
+        await user.unfollow(req.params.idFollower, req.params.idFollowed);
         res.sendStatus(200)
     } catch(err) {
         res.status(400).send(err.message);

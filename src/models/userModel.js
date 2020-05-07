@@ -198,16 +198,16 @@ async function follow(body) {
     await dbCtrl.execute(query);
 }
 
-async function unfollow(body) {
-    let query = SQL`DELETE FROM seguidores WHERE idSeguidor = ${body.idFollower} AND idSeguido = ${body.idFollowed}`;
+async function unfollow(idFollower, idFollowed) {
+    let query = SQL`DELETE FROM seguidores WHERE idSeguidor = ${idFollower} AND idSeguido = ${idFollowed}`;
     await dbCtrl.execute(query);
 
     query = SQL`UPDATE usuarios SET nSeguidores = nSeguidores - 1
-            WHERE id = ${body.idFollowed}`;
+            WHERE id = ${idFollowed}`;
     await dbCtrl.execute(query);
 
     query = SQL`UPDATE usuarios SET nSeguidos = nSeguidos - 1
-            WHERE id = ${body.idFollower}`;
+            WHERE id = ${idFollower}`;
     await dbCtrl.execute(query);
 }
 

@@ -713,11 +713,12 @@ describe("userModel script", function() {
             res = await user.create(fakeUser2);
             const idFd = res.id;
 
-            const bodyRequest = {
+            const body = {
                 idFollower: idFr,
                 idFollowed: idFd
             }
-            await user.follow(bodyRequest);
+
+            await user.follow(body);
             const query = {
                 text: 'SELECT * \
                         FROM seguidores \
@@ -751,13 +752,15 @@ describe("userModel script", function() {
             res = await user.create(fakeUser2);
             const idFd = res.id;
 
-            const bodyRequest = {
+            const body = {
                 idFollower: idFr,
                 idFollowed: idFd
             }
+            const idFollower = idFr;
+            const idFollowed = idFd;
 
-            await user.follow(bodyRequest);
-            await user.unfollow(bodyRequest);
+            await user.follow(body);
+            await user.unfollow(idFollower, idFollowed);
             const query = {
                 text: 'SELECT * \
                         FROM seguidores \
@@ -807,18 +810,19 @@ describe("userModel script", function() {
             res = await user.create(fakeUser4);
             const idFr4 = res.id;
 
-            const bodyRequest = {
+            let body = {
                 idFollower: idFr,
                 idFollowed: idFd
             }
 
-            const bodyRequest2 = {
+            await user.follow(body);
+
+            body = {
                 idFollower: idFr2,
                 idFollowed: idFd
             }
 
-            await user.follow(bodyRequest);
-            await user.follow(bodyRequest2);
+            await user.follow(body);
 
             res = await user.followers(idFd);
             
@@ -863,18 +867,19 @@ describe("userModel script", function() {
             res = await user.create(fakeUser4);
             const idFw4 = res.id;
 
-            const bodyRequest = {
+            let body = {
                 idFollower: idFr,
                 idFollowed: idFd2
             }
 
-            const bodyRequest2 = {
+            await user.follow(body);
+
+            body = {
                 idFollower: idFr,
                 idFollowed: idFd3
             }
 
-            await user.follow(bodyRequest);
-            await user.follow(bodyRequest2);
+            await user.follow(body);
 
             res = await user.followed(idFr);
             
