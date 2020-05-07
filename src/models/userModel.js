@@ -212,7 +212,7 @@ async function unfollow(body) {
 }
 
 async function followers(idFollowed) {
-    let query = SQL`SELECT u.nombre 
+    let query = SQL`SELECT u.id, u.nombre 
                     FROM usuarios u, seguidores s
                     WHERE s.idSeguido = ${idFollowed} AND u.id = s.idSeguidor`;
     const res = await dbCtrl.execute(query);
@@ -220,9 +220,17 @@ async function followers(idFollowed) {
 }
 
 async function followed(idFollower) {
-    let query = SQL`SELECT u.nombre 
+    let query = SQL`SELECT u.id, u.nombre  
                     FROM usuarios u, seguidores s
                     WHERE s.idSeguidor = ${idFollower} AND u.id = s.idSeguido`;
+    const res = await dbCtrl.execute(query);
+    return res.rows;
+}
+
+async function shortUsersInfo(currentID) {
+    let query = SQL `SELECT u.id, u.nombre
+                    FROM usuarios u
+                    WHERE id <> ${currentID}`;
     const res = await dbCtrl.execute(query);
     return res.rows;
 }
@@ -247,4 +255,5 @@ module.exports = {
     unfollow,
     followers,
     followed,
+    shortUsersInfo,
 }

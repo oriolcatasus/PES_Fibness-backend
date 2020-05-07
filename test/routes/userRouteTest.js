@@ -478,4 +478,31 @@ describe("user route", function() {
                 .expect(400);
         })
     })
+
+    describe('GET /user/shortInfo/:currentID', function() {
+        it('should get the info of all users except one', async function() {
+            let res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser)
+            const id = res.body.id
+
+            const fakeUser2 = {
+                nombre: "fakeName2",
+                email: "fake2@example.com",
+                password: "fakeHash2"
+            }
+
+            res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser2)
+            const id2 = res.body.id
+
+            res = await request.get(`/user/shortInfo/${id2}`)
+                .expect('Content-Type', /json/)
+                .expect(200);;
+
+            const usersInfo = res.body;
+            expect(usersInfo).to.be.an('array');
+        })
+    })
 });

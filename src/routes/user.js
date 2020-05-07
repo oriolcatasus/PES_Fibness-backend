@@ -174,4 +174,13 @@ router.get('/:id/followed', async function(req, res) {
     }
 })
 
+router.get('/shortInfo/:currentID', async function(req, res) {
+    try {
+        usersInfo = await user.shortUsersInfo(req.params.currentID);
+        res.status(200).send(usersInfo);
+    } catch(err) {
+        res.status(400).send(err.message);
+    }
+})
+
 module.exports = router;

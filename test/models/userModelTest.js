@@ -824,7 +824,9 @@ describe("userModel script", function() {
             
             assert.equal(res.length, 2);
             assert.equal(res[0].nombre, fakeUser.nombre);
+            assert.equal(res[0].id, idFr);
             assert.equal(res[1].nombre, fakeUser2.nombre);
+            assert.equal(res[1].id, idFr2);
             
         })
 
@@ -878,7 +880,48 @@ describe("userModel script", function() {
             
             assert.equal(res.length, 2);
             assert.equal(res[0].nombre, fakeUser2.nombre);
+            assert.equal(res[0].id, idFd2);
             assert.equal(res[1].nombre, fakeUser3.nombre);
+            assert.equal(res[1].id, idFd3);
+        })
+
+        it("should get the brief information of all users except the one we pass", async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const currentID = res.id;
+            
+            const fakeUser2 = {
+                nombre: 'Fake2',
+                password: 'fakeHash2',
+                email: 'fake2@example.com',
+            }
+            res = await user.create(fakeUser2);
+
+            const fakeUser3 = {
+                nombre: 'Fake3',
+                password: 'fakeHash3',
+                email: 'fake3@example.com',
+            }
+            res = await user.create(fakeUser3);
+
+            const fakeUser4 = {
+                nombre: 'Fake4',
+                password: 'fakeHash4',
+                email: 'fake4@example.com',
+            }
+            res = await user.create(fakeUser4);
+            let id4 = res.id;
+
+            res = await user.shortUsersInfo(currentID);
+            
+            assert.equal(res.length, 3);
+            assert.equal(res[0].nombre, fakeUser2.nombre);
+            assert.equal(res[1].nombre, fakeUser3.nombre);
+            assert.equal(res[2].id, id4);
             
         })
     })
