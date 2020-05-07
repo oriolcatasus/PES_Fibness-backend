@@ -512,6 +512,172 @@ paths:
       responses:
         200:
           description: OK
+          
+  /user/shortInfo/{currentID}:
+    get:
+      summary: Gets the brief info of all users except the one given
+      description: Returns username and id of all users except for the one that is given
+        - user
+      tags:
+        - user
+      parameters:
+        - name: currentID
+          in: path
+          required: true
+          description: The id of the user to NOT get the info from
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: Information of the users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 5
+                    nombre:
+                      type: string
+                      example: user
+                example:
+                  - id: 7
+                    nombre: user
+                  - id: 8
+                    nombre: user2
+                    
+  /user/{id}/followers:
+    get:
+      summary: Gets the followers of a user
+      description: Returns the followers of a given user
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user to get the followers from
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: Information of the users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 5
+                    nombre:
+                      type: string
+                      example: user
+                example:
+                  - id: 7
+                    nombre: user
+                  - id: 8
+                    nombre: user2
+  /user/{id}/followed:
+    get:
+      summary: Gets the people followed by a user
+      description: Returns all the people that the given user follows
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user to get the people who follows from
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: Information of the users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 5
+                    nombre:
+                      type: string
+                      example: user
+                example:
+                  - id: 7
+                    nombre: user
+                  - id: 8
+                    nombre: user2
+  '/user/follow':
+    post:
+      summary: Creates a following
+      description: The user with idFollower will start following the user with idFollowed
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idFollower:
+                  type: integer
+                  example: 1
+                  description: id of the user that will start following
+                idFollowed:
+                  type: integer
+                  example: 2
+                  description: id of the user that will be followed by the first one
+              required:
+                - idFollower
+                - idFollowed
+      responses:
+        '201':
+          description: Following created successfully
+        '400':
+          description: >-
+            Some required parameters are missing or with an incorrect type
+            
+  '/user/follow/{idFollower}/{idFollowed}':
+    delete:
+      summary: Deletes a following
+      description: The user with idFollower stops following the user with idFollowed 
+      tags:
+        - user
+      parameters:
+        - name: idFollower
+          in: path
+          required: true
+          description: The id of the user that started to follow
+          schema:
+            type: integer
+            minimum: 1
+        - name: idFollowed
+          in: path
+          required: true
+          description: The id of the user that was followed
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Following successfully eliminated
+        '400':
+          description: >-
+            Some required parameters are missing or with an incorrect type
   '/training':
     post:
       summary: Creates a training
