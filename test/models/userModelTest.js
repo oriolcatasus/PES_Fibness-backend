@@ -15,7 +15,7 @@ const expect = require('../chaiConfig')
 const userTestResourcePath = path.join(testConstants.resourcePath, 'user')
 const userResourcePath = path.join(constants.resourcePath, 'user')
 
-require("../rootHooks");
+//require("../rootHooks");
 
 describe("userModel script", function() {
     describe("create function", function() {
@@ -772,13 +772,18 @@ describe("userModel script", function() {
             const res = await user.create(fakeUser)
             const id = res.id
             const pathImg = path.join(userTestResourcePath, 'profile.jpg')
-            const img = await fs.readFile(pathImg)
+            const img = await fs.readFile(pathImg, {encoding: constants.encoding })
             const ext = 'jpg'
             await user.setProfileImg(id, img, ext)
 
-            const pathNewImg = await user.getProfileImg(id)
-            const newImg = await fs.readFile(pathNewImg)
-            expect(img.equals(newImg)).to.be.true;
+            const newImg = await user.getProfileImg(id)
+            const pathNewImg = path.join(userResourcePath, `${id}`, 'profile')
+            const files = await fs.readdir(pathNewImg)
+            const newImgName = files[0]
+            const dotIndex = newImgName.lastIndexOf('.')
+            const newImgExt = newImgName.slice(dotIndex+1)
+            expect(newImg).to.equal(img)
+            expect(newImgExt).to.equal(ext)
 
             const pathUser = path.join(userResourcePath, `${id}`)
             fs.rmdir(pathUser, {recursive: true})
@@ -804,23 +809,33 @@ describe("userModel script", function() {
             const res = await user.create(fakeUser)
             const id = res.id
             const pathImg = path.join(userTestResourcePath, 'profile.jpg')
-            const img = await fs.readFile(pathImg)
+            const img = await fs.readFile(pathImg, {encoding: constants.encoding})
             const ext = 'jpg'
             await user.setProfileImg(id, img, ext)
 
-            const newImgPath = await user.getProfileImg(id)
-            const newImg = await fs.readFile(newImgPath)
-            const result = img.equals(newImg)
-            expect(result).to.be.true;
+            const newImg = await user.getProfileImg(id)
+            expect(newImg).to.equal(img)
 
             const pathUser = path.join(userResourcePath, `${id}`)
             fs.rmdir(pathUser, {recursive: true})
         })
 
+        it('should not return the profile image if the user does not have any', async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            const res = await user.create(fakeUser)
+            const id = res.id
+            await expect(user.getProfileImg(id)).to.eventually.be
+                .rejectedWith(Error, 'User does not have profile image')
+        })
+
         it("should not return the profile image if the user doesn't exist", async function() {
             const id = 0
             await expect(user.getProfileImg(id)).to.eventually.be
-                .rejectedWith(Error, "ENOENT: no such file or directory, scandir 'resources/user/0/profile'")
+                .rejectedWith(Error, "User does not exist")
         })
     })
 
@@ -937,7 +952,6 @@ describe("userModel script", function() {
                 email: 'fake4@example.com',
             }
             res = await user.create(fakeUser4);
-            const idFr4 = res.id;
 
             let body = {
                 idFollower: idFr,
@@ -994,7 +1008,6 @@ describe("userModel script", function() {
                 email: 'fake4@example.com',
             }
             res = await user.create(fakeUser4);
-            const idFw4 = res.id;
 
             let body = {
                 idFollower: idFr,

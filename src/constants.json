@@ -1,4 +1,5 @@
 {
     "maxReqSize": 5242880,
-    "resourcePath": "resources"
+    "resourcePath": "resources",
+    "encoding": "base64"
 }

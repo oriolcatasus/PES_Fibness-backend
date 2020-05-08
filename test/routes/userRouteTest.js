@@ -286,15 +286,13 @@ describe("user route", function() {
                 .send(fakeUser)
             const id = res.body.id
             const pathImg = path.join(userTestResourcePath, 'profile.jpg')
-            const img = await fs.readFile(pathImg)
+            const img = await fs.readFile(pathImg, {encoding: constants.encoding})
             await request.post(`/user/${id}/profile`)
                 .set('Content-Type', 'image/jpeg')
                 .send(img)
 
-            const response = await request.get(`/user/${id}/profile`)
-            
-            const result = img.equals(response.body)
-            expect(result).to.be.true
+            const response = await request.get(`/user/${id}/profile`).expect(200)
+            expect(response.text).to.equal(img)
 
             const pathUser = path.join(userResourcePath, `${id}`)
             fs.rmdir(pathUser, {recursive: true})

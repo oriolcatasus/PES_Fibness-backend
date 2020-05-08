@@ -4,9 +4,9 @@ const fs = require('fs').promises
 const SQL = require('sql-template-strings')
 
 const dbCtrl = require("../ctrls/dbCtrl")
-const {resourcePath} = require('../constants')
+const constants = require('../constants')
 
-const userResourcePath = path.join(resourcePath, 'user')
+const userResourcePath = path.join(constants.resourcePath, 'user')
 
 
 async function create(user) {
@@ -63,6 +63,11 @@ async function validate({email, password}) {
             result: false
         }
     }
+}
+
+async function exists(id) {
+    const user = await getById(id)
+    return user !== undefined
 }
 
 async function del(id) {
@@ -181,20 +186,33 @@ async function fbLogin(user) {
 
 async function getProfileImg(id) {
     const imgDirPath = path.join(userResourcePath, `${id}`, 'profile')
-    const files = await fs.readdir(imgDirPath)
-    return path.resolve(imgDirPath, files[0])
+    let img
+    try {
+        const files = await fs.readdir(imgDirPath)
+        const imgPath = path.resolve(imgDirPath, files[0])
+        img = await fs.readFile(imgPath, { encoding: constants.encoding })
+    } catch (err) {
+        const userExists = await exists(id)
+        if (!userExists) {
+            throw Error('User does not exist')
+        } else {
+            throw Error('User does not have profile image')
+        }        
+    }
+    return img
 }
 
 async function setProfileImg(id, img, ext) {
-    const user = await getById(id)
-    if (user === undefined) {
+    const userExists = await exists(id)
+    if (!userExists) {
         throw Error('User does not exist')
     }
     const imgDirPath = path.join(userResourcePath, `${id}`, 'profile')
     await fs.rmdir(imgDirPath, {recursive: true})
     await fs.mkdir(imgDirPath, {recursive: true})
     const imgPath = path.join(imgDirPath, `profile.${ext}`)
-    await fs.writeFile(imgPath, img);
+    const imgString = img.toString()
+    await fs.writeFile(imgPath, imgString, {encoding: constants.encoding});
 }
 
 async function follow(body) {

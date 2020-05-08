@@ -67,10 +67,10 @@ pipeline {
                         enableNewApi: true,
                         zoomCoverageChart: true,
                         maxNumberOfBuilds: 0,
-                        conditionalCoverageTargets: '99, 80, 0',
-                        lineCoverageTargets: '99, 80, 0',
-                        fileCoverageTargets: '99, 80, 0',
-                        methodCoverageTargets: '99, 80, 0'
+                        conditionalCoverageTargets: '99, 0, 0',
+                        lineCoverageTargets: '99, 0, 0',
+                        fileCoverageTargets: '99, 0, 0',
+                        methodCoverageTargets: '99, 0, 0'
                     )
                 }
                 success {
