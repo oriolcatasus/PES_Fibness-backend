@@ -428,7 +428,50 @@ paths:
                     example: 12345
                 required:
                   - id
-      
+
+  /user/{id}/profile:
+    get:
+      summary: Get the user's profile image
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user which profile image should be updated
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: User's profile image in base64
+          content:
+            image/*:
+              schema:
+                format: bas64
+    post:
+      summary: Set a new profile image
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User's id
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        description: Profile image in base64
+        required: true
+        content:
+          image/*:
+            schema:
+              format: base64
+      responses:
+        201:
+          description: Created
+
   /user/{id}/settings:
     get:
       summary: Gets the settings of the user
