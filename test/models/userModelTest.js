@@ -1071,6 +1071,68 @@ describe("userModel script", function() {
             assert.equal(res[2].id, id4);
             
         })
+
+        it("should get the brief information of all users except the one we pass and the ones blocked", async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const currentID = res.id;
+            
+            const fakeUser2 = {
+                nombre: 'Fake2',
+                password: 'fakeHash2',
+                email: 'fake2@example.com',
+            }
+            res = await user.create(fakeUser2);
+
+            const fakeUser3 = {
+                nombre: 'Fake3',
+                password: 'fakeHash3',
+                email: 'fake3@example.com',
+            }
+            res = await user.create(fakeUser3);
+
+            const fakeUser4 = {
+                nombre: 'Fake4',
+                password: 'fakeHash4',
+                email: 'fake4@example.com',
+            }
+            res = await user.create(fakeUser4);
+            let id4 = res.id;
+
+            const fakeUser5 = {
+                nombre: 'Fake5',
+                password: 'fakeHash5',
+                email: 'fake5@example.com',
+            }
+            res = await user.create(fakeUser5);
+            let id5 = res.id;
+
+            let body = {
+                idBlocker: currentID,
+                idBlocked: id4
+            }
+           
+            await user.block(body);
+
+            body = {
+                idBlocker: currentID,
+                idBlocked: id5
+            }
+           
+            await user.block(body);
+            //await user.unblock(currentID, id5);
+
+            res = await user.shortUsersInfo(currentID);
+            
+            assert.equal(res.length, 2);
+            assert.equal(res[0].nombre, fakeUser2.nombre);
+            assert.equal(res[1].nombre, fakeUser3.nombre);
+            
+        })
     })
 
     describe("blocking operations", function() {

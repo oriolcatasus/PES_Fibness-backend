@@ -261,7 +261,9 @@ async function followed(idFollower) {
 async function shortUsersInfo(currentID) {
     let query = SQL `SELECT u.id, u.nombre
                     FROM usuarios u
-                    WHERE id <> ${currentID}`;
+                    WHERE id <> ${currentID} AND id NOT IN (SELECT idBloqueado
+                                                            FROM bloqueados
+                                                            WHERE idBloqueador = ${currentID})`;
     const res = await dbCtrl.execute(query);
     return res.rows;
 }
