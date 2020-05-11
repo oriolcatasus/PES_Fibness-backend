@@ -278,6 +278,28 @@ async function unblock(idBlocker, idBlocked) {
     await dbCtrl.execute(query);
 }
 
+async function userInfo(id, id2) {
+    let query = SQL `SELECT u.id, u.nombre, u.descripcion, u.fechaDeNacimiento, u.pais, u.nSeguidores,
+                        u.nSeguidos, u.sEdad, u.sSeguidor, u.nMensaje
+                        FROM usuarios u
+                        WHERE id = ${id}`;
+    const res = await dbCtrl.execute(query);
+
+    query = SQL `SELECT *
+                       FROM seguidores
+                       WHERE idSeguidor = ${id2} AND idSeguido = ${id}`
+    const seg = await dbCtrl.execute(query);
+    let sigue = false;
+    if (seg.rows.length == 1) sigue = true;
+    res.rows.forEach(function (element) {
+        element.seguir = sigue;
+      });
+    return res.rows[0];
+}
+
+
+
+
 module.exports = {
     create,
     validate,
@@ -302,4 +324,5 @@ module.exports = {
     shortUsersInfo,
     block,
     unblock,
+    userInfo,
 }

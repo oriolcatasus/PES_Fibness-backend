@@ -575,4 +575,39 @@ describe("user route", function() {
                 .expect(400);
         })
     })
+    describe('GET /user/:id/info/:id2', function() {
+        it('should get the information of a user', async function() {
+            let res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser)
+            const id = res.body.id
+
+            const fakeUser2 = {
+                nombre: "fakeName2",
+                email: "fake2@example.com",
+                password: "fakeHash2"
+            }
+            res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser2)
+            const id2 = res.body.id
+
+            const info = await request.get(`/user/${id}/info/${id2}`)
+                .expect('Content-Type', /json/)
+                .expect(200);
+
+            expect(info.body).to.have.property('seguir');
+            expect(info.body).to.have.property('id');
+            expect(info.body).to.have.property('nmensaje');
+            expect(info.body).to.have.property('descripcion');
+            
+        })
+
+        it("should not get the info of a user if it does not exist", async function() {
+
+            await request.get(`/user/fakeID/info/fakeID`)
+                .set('Content-Type', 'application/json')
+                .expect(400);
+        })
+    })
 });

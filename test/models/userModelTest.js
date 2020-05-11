@@ -1212,4 +1212,38 @@ describe("userModel script", function() {
             assert.equal(res.length, 0);
         });
     });
+    describe("get full user info", function() {
+        it("should successfully return the info of a user", async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const id = res.id;
+            
+            const fakeUser2 = {
+                nombre: 'Fake2',
+                password: 'fakeHash2',
+                email: 'fake2@example.com',
+            }
+            res = await user.create(fakeUser2);
+            const id2 = res.id;
+
+            const body = {
+                idFollower: id2,
+                idFollowed: id
+            }
+
+            await user.follow(body);
+            const info = await user.userInfo(id, id2);
+            console.log(info);
+            info.fechadenacimiento.type;
+
+            assert.equal(info.id, id);
+            assert.equal(info.nombre, fakeUser.nombre);
+            assert.equal(Object.keys(info).length, 11);
+            assert.equal(info.seguir, true);
+        });
+    });
 })

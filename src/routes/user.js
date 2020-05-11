@@ -201,4 +201,13 @@ router.delete('/block/:idBlocker/:idBlocked', async function(req, res) {
     }
 })
 
+router.get('/:id/info/:id2', async function(req, res) {
+    try {
+        const info = await user.userInfo(req.params.id, req.params.id2);
+        res.status(200).send(info);
+    } catch(err) {
+        res.status(400).send(err.message);
+    }
+})
+
 module.exports = router;
