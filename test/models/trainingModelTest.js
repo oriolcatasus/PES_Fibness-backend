@@ -277,6 +277,7 @@ describe("trainingModel script", function() {
                 numSets: 3,
                 numRepeticiones: 2,
                 tiempoDescanso: 1,
+                posicion:3,
             }
             await exercise.create(newExercise);
             //Exercise 2
@@ -288,6 +289,7 @@ describe("trainingModel script", function() {
                 numSets: 4,
                 numRepeticiones: 3,
                 tiempoDescanso: 2,
+                posicion:4,
             }
             await exercise.create(newExercise2);
 
@@ -298,13 +300,15 @@ describe("trainingModel script", function() {
             assert.equal(trainingSet[0].numsets, newExercise.numSets);
             assert.equal(trainingSet[0].numrepeticiones, newExercise.numRepeticiones);
             assert.equal(trainingSet[0].tiempodescanso, newExercise.tiempoDescanso);
-        
+            assert.equal(trainingSet[0].posicion, newExercise.posicion);
             assert.equal(trainingSet[1].nombre, newExercise2.nombre);
             assert.equal(trainingSet[1].descripcion, newExercise2.descripcion);
             assert.equal(trainingSet[1].tiempoejecucion, newExercise2.tiempoEjecucion);
             assert.equal(trainingSet[1].numsets, newExercise2.numSets);
             assert.equal(trainingSet[1].numrepeticiones, newExercise2.numRepeticiones);
             assert.equal(trainingSet[1].tiempodescanso, newExercise2.tiempoDescanso);
+            assert.equal(trainingSet[1].posicion, newExercise2.posicion);
+            
         });
 
     });

@@ -48,7 +48,7 @@ async function update(elemento, idElemento) {
 // For now just returns exercises but it should return also sports
 async function activities(idElemento) {
     const query = {
-        text: "SELECT a.idactividad, a.nombre, a.descripcion,a.tiempoejecucion , e.numsets , e.numrepeticiones , e.tiempodescanso\
+        text: "SELECT a.idactividad, a.nombre, a.descripcion,a.tiempoejecucion , e.numsets , e.numrepeticiones , e.tiempodescanso, e.posicion\
                FROM actividades a inner join ejercicios e on a.idactividad = e.idactividad\
                WHERE a.idEntrenamiento = $1\
                ORDER BY a.idactividad",

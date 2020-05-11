@@ -56,6 +56,7 @@ describe("exerciseModel script", function() {
                 numSets: 3,
                 numRepeticiones: 2,
                 tiempoDescanso: 1,
+                posicion: 2,
             }
             await exercise.create(newExercise);
 
@@ -86,10 +87,9 @@ describe("exerciseModel script", function() {
             assert.equal(newExercise.descripcion, resAct.descripcion);
             assert.equal(newExercise.tiempoEjecucion, resAct.tiempoejecucion);
             assert.equal(newExercise.idEntrenamiento, resAct.identrenamiento);
-
             //get the exercise that we have created
             queryGetExercise = {
-                text: "(SELECT idactividad,numsets,numrepeticiones,tiempodescanso \
+                text: "(SELECT idactividad,numsets,numrepeticiones,tiempodescanso, posicion\
                         FROM ejercicios \
                         WHERE idactividad = $1)",
                 values: [idActi],
@@ -99,6 +99,7 @@ describe("exerciseModel script", function() {
             assert.equal(newExercise.numSets, resExer.numsets);
             assert.equal(newExercise.numRepeticiones, resExer.numrepeticiones);
             assert.equal(newExercise.tiempoDescanso, resExer.tiempodescanso);
+            assert.equal(newExercise.posicion, resExer.posicion);
             assert.equal(idActi,resExer.idactividad);
         });
     });
@@ -151,6 +152,7 @@ describe("exerciseModel script", function() {
                 numSets: 3,
                 numRepeticiones: 2,
                 tiempoDescanso: 1,
+                posicion: 3,
             }
             await exercise.create(newExercise);
 
@@ -235,6 +237,7 @@ describe("exerciseModel script", function() {
                 numSets: 3,
                 numRepeticiones: 2,
                 tiempoDescanso: 1,
+                posicion: 3,
             }
             await exercise.create(newExercise);
 
@@ -257,6 +260,7 @@ describe("exerciseModel script", function() {
                 numSets: 4,
                 numRepeticiones: 3,
                 tiempoDescanso: 2,
+                posicion: 4,
             }
 
             //update training
@@ -280,7 +284,7 @@ describe("exerciseModel script", function() {
 
             //get the exercise that we have modified
             queryGetExercise = {
-                text: "(SELECT idactividad,numsets,numrepeticiones,tiempodescanso \
+                text: "(SELECT idactividad,numsets,numrepeticiones,tiempodescanso, posicion \
                         FROM ejercicios \
                         WHERE idActividad = $1)",
                 values: [idActi],
@@ -290,6 +294,7 @@ describe("exerciseModel script", function() {
             assert.equal(modifiedExercise.numSets, resExer.numsets);
             assert.equal(modifiedExercise.numRepeticiones, resExer.numrepeticiones);
             assert.equal(modifiedExercise.tiempoDescanso, resExer.tiempodescanso);
+            assert.equal(modifiedExercise.posicion, resExer.posicion);
             assert.equal(idActi,resExer.idactividad);
         });
     });
