@@ -16,7 +16,7 @@ async function create(routes) {
     const idElemento = res[0].idelemento;
 
     //create routes
-    query = SQL`INSERT INTO rutas(idElemento, origen, destino) values(${idElemento},${routes.origen},${routes.destino})`
+    query = SQL`INSERT INTO rutas(idElemento, origen, destino, distancia) values(${idElemento},${routes.origen},${routes.destino},${routes.distancia})`
     await dbCtrl.execute(query);
     /*
     stops = routes.stops
@@ -53,7 +53,7 @@ async function update(routes, idElemento) {
     await dbCtrl.execute(query_elemento);
 
     const query_route = SQL `UPDATE rutas
-        SET origen = ${routes.origen}, destino = ${routes.destino}
+        SET origen = ${routes.origen}, destino = ${routes.destino}, distancia = ${routes.distancia}
         WHERE idElemento = ${idElemento}`
     await dbCtrl.execute(query_route); 
 }

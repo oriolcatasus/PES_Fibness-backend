@@ -38,6 +38,7 @@ describe("routeModel script", function() {
                 idUser: idTest,
                 origen:"Coodenateorigen",
                 destino:"Coordenatedestine",
+                distancia: "distancia",
             }
             await route.create(newRoute);
 
@@ -67,7 +68,7 @@ describe("routeModel script", function() {
 
             //same as above but with route
             query = {
-                text: "SELECT idElemento, origen, destino \
+                text: "SELECT idElemento, origen, destino, distancia \
                         FROM  rutas \
                         WHERE idElemento = $1",
                 values: [idElem],
@@ -76,6 +77,7 @@ describe("routeModel script", function() {
             assert.equal(idElem, res.idelemento);
             assert.equal(newRoute.origen, res.origen);
             assert.equal(newRoute.destino, res.destino);
+            assert.equal(newRoute.distancia, res.distancia);
         });
 
         it("should return unique constraint violation", async function() {
@@ -104,6 +106,8 @@ describe("routeModel script", function() {
                 idUser: idTest,
                 origen:"Coodenateorigen",
                 destino:"Coordenatedestine",
+                distancia: "distancia",
+
             }
             await route.create(newRoute);
 
@@ -114,6 +118,7 @@ describe("routeModel script", function() {
                 idUser: idTest,
                 origen:"Coodenateorigen",
                 destino:"Coordenatedestine",
+                distancia: "distancia",
             }
             assert.rejects(() => route.create(newRoute), Error);
         });
@@ -146,6 +151,7 @@ describe("routeModel script", function() {
                 idUser: idTest,
                 origen:"Coodenateorigen",
                 destino:"Coordenatedestine",
+                distancia: "distancia",
             }
             await route.create(newRoute);
 
@@ -204,6 +210,7 @@ describe("routeModel script", function() {
                 idUser: idTest,
                 origen:"Coodenateorigen",
                 destino:"Coordenatedestine",
+                distancia:"distancia",
             }
             await route.create(newRoute);
             //get the automatically generated id for the route in order to access it
@@ -220,6 +227,7 @@ describe("routeModel script", function() {
                 descripcion: "Route_Description",
                 origen:"Coodenate_origen",
                 destino:"Coordenate_destine",
+                distancia:"distancia",
             }
 
             //update route
@@ -240,7 +248,7 @@ describe("routeModel script", function() {
             assert.equal(modifiedRoute.descripcion, res.descripcion);
             assert.equal(newRoute.idUser, res.idusuario);
             let query_ruta = {
-                text: "SELECT origen, destino\
+                text: "SELECT origen, destino, distancia\
                         FROM rutas \
                         WHERE idElemento = $1",
                 values: [idElem],
@@ -248,6 +256,7 @@ describe("routeModel script", function() {
             res = (await dbCtrl.execute(query_ruta)).rows[0]; 
             assert.equal(modifiedRoute.origen, res.origen);
             assert.equal(modifiedRoute.destino, res.destino);
+            assert.equal(modifiedRoute.distancia, res.distancia);
         });
     });
     /*describe("get operation", function() {  

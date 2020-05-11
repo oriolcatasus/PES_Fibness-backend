@@ -81,15 +81,11 @@ async function del(id) {
 }
 
 async function routes(id) {
-    console.log("inside_routes")
     const query = SQL`SELECT *
         FROM elementos e inner join rutas r on e.idelemento = r.idelemento
         WHERE e.idUsuario = ${id}
         ORDER BY e.idElemento ASC`
     const res = await dbCtrl.execute(query);
-    console.log(res);
-    console.log("the answer is");
-
     return res.rows;
 }
 
