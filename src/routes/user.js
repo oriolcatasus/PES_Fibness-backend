@@ -183,4 +183,22 @@ router.get('/shortInfo/:currentID', async function(req, res) {
     }
 })
 
+router.post('/block', async function(req, res) {
+    try {
+        await user.block(req.body);
+        res.sendStatus(201)
+    } catch(err) {
+        res.status(400).send(err.message);
+    }
+})
+
+router.delete('/follow/:idBlocker/:idBlocked', async function(req, res) {
+    try {
+        await user.unfollow(req.params.idBlocker, req.params.idBlocked);
+        res.sendStatus(200)
+    } catch(err) {
+        res.status(400).send(err.message);
+    }
+})
+
 module.exports = router;

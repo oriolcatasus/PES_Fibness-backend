@@ -1,9 +1,11 @@
-'use strict'
+-- Up Migration
 
-module.exports.up = function (next) {
-  next()
-}
+create table bloqueados(
+  idBloqueador int,
+  idBloqueado int,
+  primary key (idBloqueador, idBloqueado),
+  foreign key (idBloqueador) references usuarios(id) on delete cascade,
+  foreign key (idBloqueado) references usuarios(id) on delete cascade
+)
 
-module.exports.down = function (next) {
-  next()
-}
+-- Down Migration

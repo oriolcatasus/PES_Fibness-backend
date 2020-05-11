@@ -266,6 +266,17 @@ async function shortUsersInfo(currentID) {
     return res.rows;
 }
 
+async function block(body) {
+    let query = SQL`INSERT INTO bloqueados(idBloqueador, idBloqueado) 
+            values(${body.idBlocker}, ${body.idBlocked})`;
+    await dbCtrl.execute(query);
+}
+
+async function unblock(idBlocker, idBlocked) {
+    let query = SQL`DELETE FROM bloqueados WHERE idBloqueador = ${idBlocker} AND idBloqueado = ${idBlocked}`;
+    await dbCtrl.execute(query);
+}
+
 module.exports = {
     create,
     validate,
@@ -288,4 +299,6 @@ module.exports = {
     followers,
     followed,
     shortUsersInfo,
+    block,
+    unblock,
 }

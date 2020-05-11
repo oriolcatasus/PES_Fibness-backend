@@ -1072,4 +1072,82 @@ describe("userModel script", function() {
             
         })
     })
+
+    describe("blocking operations", function() {
+        it("should successfully block a user", async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const idBr = res.id;
+            
+            const fakeUser2 = {
+                nombre: 'Fake2',
+                password: 'fakeHash2',
+                email: 'fake2@example.com',
+            }
+            res = await user.create(fakeUser2);
+            const idBd = res.id;
+
+            const body = {
+                idBlocker: idBr,
+                idBlocked: idBd
+            }
+           
+            await user.block(body);
+
+            const query = {
+                text: 'SELECT * \
+                        FROM bloqueados \
+                        WHERE idBloqueador = $1 AND idBloqueado = $2',
+                values: [idBr, idBd]
+            };
+
+            res = (await dbCtrl.execute(query)).rows;
+
+            //make sure the settings have been updated
+            assert.equal(res[0].idbloqueador, idBr);
+            assert.equal(res[0].idbloqueado, idBd);
+        });
+
+        it("should successfully unblock a user", async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const idBr = res.id;
+            
+            const fakeUser2 = {
+                nombre: 'Fake2',
+                password: 'fakeHash2',
+                email: 'fake2@example.com',
+            }
+            res = await user.create(fakeUser2);
+            const idBd = res.id;
+
+            const body = {
+                idBlocker: idBr,
+                idBlocked: idBd
+            }
+           
+            await user.block(body);
+            await user.unblock(idBr, idBd);
+
+            const query = {
+                text: 'SELECT * \
+                        FROM bloqueados \
+                        WHERE idBloqueador = $1 AND idBloqueado = $2',
+                values: [idBr, idBd]
+            };
+
+            res = (await dbCtrl.execute(query)).rows;
+
+            //make sure the settings have been updated
+            assert.equal(res.length, 0);
+        });
+    });
 })
