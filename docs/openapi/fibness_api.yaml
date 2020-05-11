@@ -264,57 +264,6 @@ paths:
                     descripcion: DescriptionTest2
                 required:
                 - dietSet
-  /user/{id}/routes:
-    get:
-      summary: Gives the routes of a user 
-      description: Returns all the routes of the user with given id
-      tags:
-        - user
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: The id of the user, whose's routes we want to get
-          schema:
-            type: integer
-            minimum: 1
-      responses:
-        200:
-          description: Set of the ids, names and descriptions and others of the requested routes
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  idelemento:
-                    type: integer
-                  nombre:
-                    type: string
-                  descripcion:
-                    type: string
-                  origen:
-                    type: string
-                  destino:
-                    type: string
-                  distancia:
-                    type: string
-                example:
-                  - idelemento: 3
-                    nombre: routeTest
-                    descripcion: routeDescription
-                    origen: 42.471615;2.271684
-                    destino: 45.471615;5.271684
-                    distancia: 60
-                    
-                  - idelemento: 4
-                    nombre: routeTest2
-                    descripcion: routeDescription2
-                    origen: 43.471615;3.271684
-                    destino: 46.471615;6.271684
-                    distancia: 70
-                required:
-                      - activitySet
-                              
   /user/resetPassword:
     put:
       summary: Replaces the current password of the user.
@@ -830,6 +779,68 @@ paths:
         '400':
           description: >-
             Some required parameters are missing or with an incorrect type
+            
+  '/user/{id}/info/{id2}':
+    get:
+      summary: Gets the information of a user
+      description: Returns all the information of the given user
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user to get the info from
+          schema:
+            type: integer
+            minimum: 1
+        - name: id2
+          in: path
+          required: true
+          description: The id of the user that we check if is a follower of the user with id
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: Information of the user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 5
+                    nombre:
+                      type: string
+                      example: user
+                    descripcion:
+                      type: string
+                      example: hola
+                    fechadenacimiento:
+                      type: string
+                      example: 21-04-2010
+                    pais:
+                      type: string
+                      example: Alemania
+                    nseguidores:
+                      type: integer
+                      example: 5
+                    nseguidos:
+                      type: integer
+                      example: 10
+                    sedad:
+                      type: boolean
+                      example: true
+                    seguidor:
+                      type: boolean
+                      example: false
+                    smensaje: 
+                      type: boolean
+                      example: true
   '/training':
     post:
       summary: Creates a training
@@ -964,27 +975,24 @@ paths:
                       
                     tiempoDescanso:
                       type: integer
-                    posicion:
-                      type: integer
-                example:
-                  - idactividad: 3
-                    nombre: exerciseTest
-                    descripcion: exerciseDescription
-                    tiempoejecucion: 4
-                    numsets: 3 
-                    numrepeticiones: 2
-                    tiempodescanso: 1
-                    posicion: 3
-                  - idactividad: 4
-                    nombre: exerciseTest_2
-                    descripcion: exerciseDescription_2
-                    tiempoejecucion: 5
-                    numsets: 4 
-                    numrepeticiones: 1
-                    tiempodescanso: 10  
-                    posicion: 4
-                required:
-                  - activitySet
+                      
+                  example:
+                      - idactividad: 3
+                        nombre: exerciseTest
+                        descripcion: exerciseDescription
+                        tiempoejecucion: 4
+                        numsets: 3 
+                        numrepeticiones: 2
+                        tiempodescanso: 1
+                      - idactividad: 4
+                        nombre: exerciseTest_2
+                        descripcion: exerciseDescription_2
+                        tiempoejecucion: 5
+                        numsets: 4 
+                        numrepeticiones: 1
+                        tiempodescanso: 10  
+                  required:
+                    - activitySet
                 
                           
   '/exercise':
@@ -1022,9 +1030,6 @@ paths:
                 tiempoDescanso:
                   type: integer
                   example: 1
-                posicion:
-                  type: integer
-                  example: 4
               required:
                 - idEntrenamiento
                 - nombre
@@ -1033,7 +1038,6 @@ paths:
                 - numSets
                 - numRepeticiones
                 - tiempoDescanso
-                - posicion
                 
       responses:
         '201':
@@ -1105,9 +1109,6 @@ paths:
                 tiempoDescanso:
                   type: integer
                   example: 4
-                posicion:
-                  type: integer
-                  example: 5
               required:
                 - nombre
                 - descripcion
@@ -1115,7 +1116,6 @@ paths:
                 - numSets
                 - numRepeticiones
                 - tiempoDescanso
-                - posicion
       responses:
             '200':
               description: Ok
@@ -1493,118 +1493,3 @@ paths:
       responses:
             200:
               description: Ok
-  '/route':
-    post:
-      summary: Creates a route
-      description: Creates a route with the given description and name associated with the given user
-      tags:
-        - route
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                nombre:
-                  type: string
-                  example: RouteTest
-                descripcion:
-                  type: string
-                  example: RouteDescriptionTest
-                idUser:
-                  type: integer
-                  description: id of the user
-                  example: 2
-                origin:
-                  type: string
-                  example: '42.471615;2.271684'
-                destino:
-                  type: string
-                  example: '45.471615;5.271684'
-                distancia:
-                  type: string
-                  example: '60' 
-              required:
-                - nombre
-                - descripcion
-                - idUser
-                - origen
-                - destino
-                - distancia
-      responses:
-        '201':
-          description: Training created succesfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  idRoute:
-                    type: integer
-                    example: 12345
-                required:
-                  - idRoute
-        '400':
-          description: >-
-            Some required parameters are missing or with an incorrect type
-  '/route/{id}':
-    delete:
-      summary: Deletes a route by id
-      tags:
-        - route
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: The id of the route to delete
-          schema:
-            type: integer
-            minimum: 1
-      responses:
-        '200':
-          description: Ok
-    put:
-      summary: Update a route by id
-      tags:
-        - route
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: The id of the route to update
-          schema:
-            type: integer
-            minimum: 1
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                nombre:
-                  type: string
-                  example: RouteTest
-                descripcion:
-                  type: string
-                  example: RouteDescriptionTest
-                origin:
-                  type: string
-                  example: '42.471615;2.271684'
-                destino:
-                  type: string
-                  example: '45.471615;5.271684'
-                distancia:
-                  type: string
-                  example: '60' 
-              required:
-                - nombre
-                - descripcion
-                - origen
-                - destino
-                - distancia
-      responses:
-            '200':
-              description: Ok
-                          
