@@ -192,7 +192,7 @@ router.post('/block', async function(req, res) {
     }
 })
 
-router.delete('/follow/:idBlocker/:idBlocked', async function(req, res) {
+router.delete('/block/:idBlocker/:idBlocked', async function(req, res) {
     try {
         await user.unfollow(req.params.idBlocker, req.params.idBlocked);
         res.sendStatus(200)

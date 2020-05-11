@@ -558,8 +558,8 @@ paths:
           
   /user/shortInfo/{currentID}:
     get:
-      summary: Gets the brief info of all users except the one given
-      description: Returns username and id of all users except for the one that is given
+      summary: Gets the brief info of all users
+      description: Returns username and id of all users except for the one that is given and the ones that are blocked by the user
         - user
       tags:
         - user
@@ -718,6 +718,64 @@ paths:
       responses:
         '200':
           description: Following successfully eliminated
+        '400':
+          description: >-
+            Some required parameters are missing or with an incorrect type
+  '/user/block':
+    post:
+      summary: Blocks a user
+      description: The user with idBlocker will block the user with idBlocked
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idBlocker:
+                  type: integer
+                  example: 1
+                  description: id of the user that will be blocking
+                idBlocked:
+                  type: integer
+                  example: 2
+                  description: id of the user that will be blocked
+              required:
+                - idBlocker
+                - idBlocked
+      responses:
+        '201':
+          description: User blocked successfully
+        '400':
+          description: >-
+            Some required parameters are missing or with an incorrect type
+            
+  '/user/block/{idBlocker}/{idBlocked}':
+    delete:
+      summary: Unblocks a user
+      description: The user with idBlocker will stop blocking the user with idBlocked 
+      tags:
+        - user
+      parameters:
+        - name: idBlocker
+          in: path
+          required: true
+          description: The id of the user that had blocked
+          schema:
+            type: integer
+            minimum: 1
+        - name: idBlocked
+          in: path
+          required: true
+          description: The id of the user that has beedn blocked
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Blocking removed
         '400':
           description: >-
             Some required parameters are missing or with an incorrect type

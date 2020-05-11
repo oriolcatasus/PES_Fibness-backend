@@ -305,7 +305,7 @@ describe("user route", function() {
         })
     })
 
-    describe('POST /user/follow/:idFollower/:idFollowed', function() {
+    describe('POST /user/follow', function() {
         it('should add a follower', async function() {
             let res = await request.post('/user')
                 .set('Content-Type', 'application/json')
@@ -495,6 +495,84 @@ describe("user route", function() {
                 .expect(200);
             const usersInfo = res.body;
             expect(usersInfo).to.be.an('array');
+        })
+    })
+
+    describe('POST /user/block', function() {
+        it('should block a user', async function() {
+            let res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser)
+            const id = res.body.id
+
+            const fakeUser2 = {
+                nombre: "fakeName2",
+                email: "fake2@example.com",
+                password: "fakeHash2"
+            }
+
+            res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser2)
+            const id2 = res.body.id
+
+            const body = {
+                idBlocker: id,
+                idBlocked: id2
+            }
+
+            res = await request.post(`/user/block`)
+                .set('Content-Type', 'application/json')
+                .send(body)
+                .expect(201);
+        })
+
+        it("should not block somebody if it does not exist", async function() {
+
+            const body = {
+                idFollower: 'fakeID',
+                idFollowed: 'fakeID2'
+            }
+
+            await request.post(`/user/block`)
+                .set('Content-Type', 'application/json')
+                .expect(400);
+        })
+    })
+
+    describe('DELETE /user/block/:idBlocker/:idBlocked', function() {
+        it('should unblock a user', async function() {
+            let res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser)
+            const id = res.body.id
+
+            const fakeUser2 = {
+                nombre: "fakeName2",
+                email: "fake2@example.com",
+                password: "fakeHash2"
+            }
+            res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser2)
+            const id2 = res.body.id
+
+            const idBloquer = id;
+            const idBloqued = id2;
+            
+
+            await request.delete(`/user/block/${idBloquer}/${idBloqued}`)
+                .set('Content-Type', 'application/json')
+                .expect(200);
+        })
+
+        it("should not unblock a user if it does not exist", async function() {
+            const idBloquer = 'fakeID';
+            const idBloqued = 'fakeID2';
+
+            await request.delete(`/user/block/${idBloquer}/${idBloqued}`)
+                .set('Content-Type', 'application/json')
+                .expect(400);
         })
     })
 });
