@@ -158,7 +158,7 @@ router.delete('/follow/:idFollower/:idFollowed', async function(req, res) {
 
 router.get('/:id/followers', async function(req, res) {
     try {
-        followers = await user.followers(req.params.id);
+        const followers = await user.followers(req.params.id);
         res.status(200).send(followers);
     } catch(err) {
         res.status(400).send(err.message);
@@ -167,7 +167,7 @@ router.get('/:id/followers', async function(req, res) {
 
 router.get('/:id/followed', async function(req, res) {
     try {
-        followed = await user.followed(req.params.id);
+        const followed = await user.followed(req.params.id);
         res.status(200).send(followed);
     } catch(err) {
         res.status(400).send(err.message);
@@ -176,7 +176,7 @@ router.get('/:id/followed', async function(req, res) {
 
 router.get('/shortInfo/:currentID', async function(req, res) {
     try {
-        usersInfo = await user.shortUsersInfo(req.params.currentID);
+        const usersInfo = await user.shortUsersInfo(req.params.currentID);
         res.status(200).send(usersInfo);
     } catch(err) {
         res.status(400).send(err.message);

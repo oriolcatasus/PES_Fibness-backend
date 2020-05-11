@@ -12,9 +12,9 @@ const userResourcePath = path.join(constants.resourcePath, 'user')
 async function create(user) {
     let result;
     try {
-        const query = SQL`INSERT INTO usuarios(nombre, password, email) 
-            values(${user.nombre}, ${user.password}, ${user.email})
-            RETURNING id`;
+        const query = SQL`INSERT INTO usuarios(nombre, password, email)
+                        values(${user.nombre}, ${user.password}, ${user.email})
+                        RETURNING id`;
         const res = await dbCtrl.execute(query);
         result = {
             created: true,
@@ -82,16 +82,15 @@ async function del(id) {
 
 async function routes(id) {
     console.log("inside_routes")
-    const query = SQL`SELECT *  
-        FROM elementos e inner join rutas r on e.idelemento = r.idelemento 
+    const query = SQL`SELECT *
+        FROM elementos e inner join rutas r on e.idelemento = r.idelemento
         WHERE e.idUsuario = ${id}
         ORDER BY e.idElemento ASC`
     const res = await dbCtrl.execute(query);
     console.log(res);
     console.log("the answer is");
-    
+
     return res.rows;
-    
 }
 
 async function trainings(id) {
@@ -139,7 +138,7 @@ async function resetPassword ({email, password}) {
         return {
             result: false,
         }
-    } 
+    }
 }
 
 async function getInfo(id) {
@@ -197,7 +196,7 @@ async function getProfileImg(id) {
             throw Error('User does not exist')
         } else {
             throw Error('User does not have profile image')
-        }        
+        }
     }
     return img
 }
@@ -216,7 +215,7 @@ async function setProfileImg(id, img, ext) {
 }
 
 async function follow(body) {
-    let query = SQL`INSERT INTO seguidores(idSeguidor, idSeguido) 
+    let query = SQL`INSERT INTO seguidores(idSeguidor, idSeguido)
             values(${body.idFollower}, ${body.idFollowed})`;
     await dbCtrl.execute(query);
 
@@ -243,7 +242,7 @@ async function unfollow(idFollower, idFollowed) {
 }
 
 async function followers(idFollowed) {
-    let query = SQL`SELECT u.id, u.nombre 
+    const query = SQL`SELECT u.id, u.nombre
                     FROM usuarios u, seguidores s
                     WHERE s.idSeguido = ${idFollowed} AND u.id = s.idSeguidor`;
     const res = await dbCtrl.execute(query);
@@ -251,7 +250,7 @@ async function followers(idFollowed) {
 }
 
 async function followed(idFollower) {
-    let query = SQL`SELECT u.id, u.nombre  
+    const query = SQL`SELECT u.id, u.nombre
                     FROM usuarios u, seguidores s
                     WHERE s.idSeguidor = ${idFollower} AND u.id = s.idSeguido`;
     const res = await dbCtrl.execute(query);
@@ -259,7 +258,7 @@ async function followed(idFollower) {
 }
 
 async function shortUsersInfo(currentID) {
-    let query = SQL `SELECT u.id, u.nombre
+    const query = SQL `SELECT u.id, u.nombre
                     FROM usuarios u
                     WHERE id <> ${currentID} AND id NOT IN (SELECT idBloqueado
                                                             FROM bloqueados
@@ -269,13 +268,13 @@ async function shortUsersInfo(currentID) {
 }
 
 async function block(body) {
-    let query = SQL`INSERT INTO bloqueados(idBloqueador, idBloqueado) 
+    let query = SQL`INSERT INTO bloqueados(idBloqueador, idBloqueado)
             values(${body.idBlocker}, ${body.idBlocked})`;
     await dbCtrl.execute(query);
 }
 
 async function unblock(idBlocker, idBlocked) {
-    let query = SQL`DELETE FROM bloqueados WHERE idBloqueador = ${idBlocker} AND idBloqueado = ${idBlocked}`;
+    const query = SQL`DELETE FROM bloqueados WHERE idBloqueador = ${idBlocker} AND idBloqueado = ${idBlocked}`;
     await dbCtrl.execute(query);
 }
 

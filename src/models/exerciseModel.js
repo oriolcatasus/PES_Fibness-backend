@@ -26,7 +26,7 @@ async function create(exercise) {
 }
 
 async function update(exercise, idActividad) {
-    let query = SQL`UPDATE actividades 
+    let query = SQL`UPDATE actividades
         SET nombre=${exercise.nombre} ,descripcion=${exercise.descripcion}, tiempoejecucion=${exercise.tiempoEjecucion}
         WHERE idactividad = ${idActividad}`
     await dbCtrl.execute(query);

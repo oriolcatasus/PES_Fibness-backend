@@ -55,7 +55,7 @@ async function update(routes, idElemento) {
     const query_route = SQL `UPDATE rutas
         SET origen = ${routes.origen}, destino = ${routes.destino}
         WHERE idElemento = ${idElemento}`
-    await dbCtrl.execute(query_route);    
+    await dbCtrl.execute(query_route); 
 }
 
 module.exports = {
