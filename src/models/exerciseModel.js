@@ -17,8 +17,8 @@ async function create(exercise) {
     const res = (await dbCtrl.execute(query)).rows;
     const idActividad = res[0].idactividad;
     //create exercise
-    query = SQL`INSERT INTO ejercicios(idactividad, numsets, numrepeticiones, tiempodescanso)
-        values(${idActividad}, ${exercise.numSets}, ${exercise.numRepeticiones}, ${exercise.tiempoDescanso})`
+    query = SQL`INSERT INTO ejercicios(idactividad, numsets, numrepeticiones, tiempodescanso, posicion)
+        values(${idActividad}, ${exercise.numSets}, ${exercise.numRepeticiones}, ${exercise.tiempoDescanso},${exercise.posicion})`
     await dbCtrl.execute(query);
     return {
         idExercise: idActividad,
@@ -33,7 +33,7 @@ async function update(exercise, idActividad) {
 
     query = SQL`UPDATE ejercicios
         SET numsets=${exercise.numSets}, numrepeticiones=${exercise.numRepeticiones},
-            tiempodescanso=${exercise.tiempoDescanso}
+            tiempodescanso=${exercise.tiempoDescanso}, posicion=${exercise.posicion}
         WHERE idactividad = ${idActividad}`
     await dbCtrl.execute(query);
 }
