@@ -58,7 +58,7 @@ describe("exerciseModel script", function() {
                 tiempoDescanso: 1,
                 posicion: 2,
             }
-            await exercise.create(newExercise);
+            let idActividad_resp = (await exercise.create(newExercise)).idExercise;
 
             //get the automatically generated id for the exercise in order to access it
             let queryGetID = {
@@ -71,6 +71,7 @@ describe("exerciseModel script", function() {
             res = (await dbCtrl.execute(queryGetID)).rows[0];
             let idActi = res.idactividad;
             
+            assert.equal(idActividad_resp,idActi);
 
             //get the activity that we have created
             queryGetActivity = {

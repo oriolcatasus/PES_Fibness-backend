@@ -1592,11 +1592,11 @@ paths:
               schema:
                 type: object
                 properties:
-                  idRoute:
+                  idElemento:
                     type: integer
                     example: 12345
                 required:
-                  - idRoute
+                  - idElemento
         '400':
           description: >-
             Some required parameters are missing or with an incorrect type

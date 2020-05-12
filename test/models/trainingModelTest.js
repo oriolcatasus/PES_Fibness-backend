@@ -36,7 +36,7 @@ describe("trainingModel script", function() {
                 descripcion: "TrainingDescription",
                 idUser: idTest,
             }
-            await training.create(newTraining);
+            let idElem_resp = (await training.create(newTraining)).idElemento;
 
             //get the automatically generated id for the training in order to access it
             let queryGetID = {
@@ -47,7 +47,7 @@ describe("trainingModel script", function() {
             };
             res = (await dbCtrl.execute(queryGetID)).rows[0];
             idElem = res.idelemento;
-
+            assert.equal(idElem_resp,idElem);
             //get the training that we have created
             query = {
                 text: "SELECT nombre, descripcion, idUsuario \

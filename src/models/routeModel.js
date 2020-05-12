@@ -18,6 +18,11 @@ async function create(routes) {
     //create routes
     query = SQL`INSERT INTO rutas(idElemento, origen, destino, distancia) values(${idElemento},${routes.origen},${routes.destino},${routes.distancia})`
     await dbCtrl.execute(query);
+    
+    const ret = {
+        idElemento: idElemento,
+    }
+    return ret;
     /*
     stops = routes.stops
     for(const stops of stops)

@@ -182,20 +182,16 @@ describe("userModel script", function() {
             }
             const res = await user.create(fakeUser);
             idUser = res.id;
-            console.log("the id is:") 
-            console.log(idUser)
             //create route 1 (and element)
-            console.log("--------------------------------------------------------")
             const newRoute = {
                 nombre: "RouteTest",
                 descripcion: "RouteDescription",
                 origen: "CoordenateOrigin",
                 destino: "CoordenateDestine",
+                distancia: "distancia_1",
                 idUser: idUser,
             }
-            console.log("0--------------------------------------------------------")
             await route.create(newRoute);
-            console.log("1--------------------------------------------------------")
 
             let queryGetID = {
                 text: "SELECT idElemento \
@@ -203,25 +199,18 @@ describe("userModel script", function() {
                         WHERE nombre = $1 and idUsuario = $2",
                 values: [newRoute.nombre, idUser],
             };
-            console.log("2--------------------------------------------------------")
 
             res2 = (await dbCtrl.execute(queryGetID)).rows[0];
-            console.log("3--------------------------------------------------------")
             idElem1 = res2.idelemento;
-            console.log("4--------------------------------------------------------")
-            console.log("ruta1:")
-            console.log(idElem1);
-            //create route 2 (and element)
             const newRoute2 = {
                 nombre: "RouteTest2",
                 descripcion: "RouteDescription",
                 origen: "CoordenateOrigin",
                 destino: "CoordenateDestine",
+                distancia: "distancia_2",
                 idUser: idUser,
             }
-            console.log("5--------------------------------------------------------")
             await route.create(newRoute2);
-            console.log("6--------------------------------------------------------")
 
             let queryGetID2 = {
                 text: "SELECT idElemento \
@@ -231,21 +220,19 @@ describe("userModel script", function() {
             };
             res3 = (await dbCtrl.execute(queryGetID2)).rows[0];
             idElem2 = res3.idelemento;
-            console.log("ruta2:")
-            console.log(idElem2)
 
             const routeSet = await user.routes(idUser);
 
-            console.log("hello------------------------------");
-            console.log(routeSet);
             assert.equal(routeSet[0].nombre, newRoute.nombre);
             assert.equal(routeSet[0].descripcion, newRoute.descripcion);
             assert.equal(routeSet[0].origen, newRoute.origen);
             assert.equal(routeSet[0].destino, newRoute.destino);
+            assert.equal(routeSet[0].distancia, newRoute.distancia);
             assert.equal(routeSet[1].nombre, newRoute2.nombre);
             assert.equal(routeSet[1].descripcion, newRoute2.descripcion);
             assert.equal(routeSet[1].origen, newRoute2.origen);
             assert.equal(routeSet[1].destino, newRoute2.destino);
+            assert.equal(routeSet[1].distancia, newRoute2.distancia);
         });
         it("should NOT return routes from other users", async function(){
 
@@ -286,19 +273,19 @@ describe("userModel script", function() {
             idUser2 = res.id; 
 
             //create training for user2 (and element)
-            let newTraining = {
+            let newRoute = {
                 nombre: "RouteTest",
                 descripcion: "RouteDescription",
                 origen: "CoordenateOrigin",
                 destino: "CoordenateDestine",
                 idUser: idUser2,
             }
-            await training.create(newTraining);
+            await route.create(newRoute);
 
 
             //getting trainings of user1 and making sure there is none
-            let trainingSet = await user.routes(idUser);
-            assert.equal(trainingSet.length, 0);
+            let routeSet = await user.routes(idUser);
+            assert.equal(routeSet.length, 0);
         });
 
 

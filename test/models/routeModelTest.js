@@ -40,8 +40,8 @@ describe("routeModel script", function() {
                 destino:"Coordenatedestine",
                 distancia: "distancia",
             }
-            await route.create(newRoute);
-
+            let idElemento_resp = (await route.create(newRoute)).idElemento;
+            
             //get the automatically generated id for the route in order to access it
             let queryGetID = {
                 text: "SELECT idElemento \
@@ -51,7 +51,8 @@ describe("routeModel script", function() {
             };
             res = (await dbCtrl.execute(queryGetID)).rows[0];
             idElem = res.idelemento;
-
+            // Assert that the id that was return by the creation is the same as the id get by using the query
+            assert.equal(idElemento_resp, idElem);
             //get the route that we have created
             query = {
                 text: "SELECT nombre, descripcion, idUsuario \
