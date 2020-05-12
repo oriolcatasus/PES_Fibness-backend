@@ -1568,7 +1568,7 @@ paths:
                   type: integer
                   description: id of the user
                   example: 2
-                origin:
+                origen:
                   type: string
                   example: '42.471615;2.271684'
                 destino:
@@ -1641,7 +1641,7 @@ paths:
                 descripcion:
                   type: string
                   example: RouteDescriptionTest
-                origin:
+                origen:
                   type: string
                   example: '42.471615;2.271684'
                 destino:

@@ -37,6 +37,15 @@ router.post('/validate', async function(req, res, next) {
     }
 });
 
+router.get('/:id/routes', async function(req, res, next) {
+    try {
+        const routesSet = await user.route(req.params.id);
+        res.status(200).send(routesSet);
+    } catch (err) {
+        next(err);
+    }
+});
+
 router.get('/:id/trainings', async function(req, res, next) {
     try {
         const trainingSet = await user.trainings(req.params.id);
