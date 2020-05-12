@@ -39,7 +39,7 @@ router.post('/validate', async function(req, res, next) {
 
 router.get('/:id/routes', async function(req, res, next) {
     try {
-        const routesSet = await user.route(req.params.id);
+        const routesSet = await user.routes(req.params.id);
         res.status(200).send(routesSet);
     } catch (err) {
         next(err);
