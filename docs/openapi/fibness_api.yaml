@@ -1027,26 +1027,28 @@ paths:
                       
                     tiempoDescanso:
                       type: integer
-                      
-                  example:
-                      - idactividad: 3
-                        nombre: exerciseTest
-                        descripcion: exerciseDescription
-                        tiempoejecucion: 4
-                        numsets: 3 
-                        numrepeticiones: 2
-                        tiempodescanso: 1
-                      - idactividad: 4
-                        nombre: exerciseTest_2
-                        descripcion: exerciseDescription_2
-                        tiempoejecucion: 5
-                        numsets: 4 
-                        numrepeticiones: 1
-                        tiempodescanso: 10  
-                  required:
-                    - activitySet
-                
-                          
+                    posicion:
+                      type: integer
+                example:
+                  - idactividad: 3
+                    nombre: exerciseTest
+                    descripcion: exerciseDescription
+                    tiempoejecucion: 4
+                    numsets: 3 
+                    numrepeticiones: 2
+                    tiempodescanso: 1
+                    posicion: 3
+                  - idactividad: 4
+                    nombre: exerciseTest_2
+                    descripcion: exerciseDescription_2
+                    tiempoejecucion: 5
+                    numsets: 4 
+                    numrepeticiones: 1
+                    tiempodescanso: 10  
+                    posicion: 4
+                required:
+                  - activitySet
+
   '/exercise':
     post:
       summary: Creates an exercise
@@ -1082,6 +1084,9 @@ paths:
                 tiempoDescanso:
                   type: integer
                   example: 1
+                posicion:
+                  type: integer
+                  example: 4
               required:
                 - idEntrenamiento
                 - nombre
@@ -1090,6 +1095,7 @@ paths:
                 - numSets
                 - numRepeticiones
                 - tiempoDescanso
+                - posicion
                 
       responses:
         '201':
@@ -1161,6 +1167,9 @@ paths:
                 tiempoDescanso:
                   type: integer
                   example: 4
+                posicion:
+                  type: integer
+                  example: 5
               required:
                 - nombre
                 - descripcion
@@ -1168,10 +1177,10 @@ paths:
                 - numSets
                 - numRepeticiones
                 - tiempoDescanso
+                - posicion
       responses:
             '200':
               description: Ok
-
               
   '/diet':
     post:
