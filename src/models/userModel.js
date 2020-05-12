@@ -90,7 +90,7 @@ async function routes(id) {
 }
 
 async function trainings(id) {
-    const query = SQL`SELECT e.idElemento, e.nombre, e.descripcion
+    const query = SQL`SELECT e.idElemento, e.nombre, e.descripcion, e.nLikes
         FROM elementos e
         WHERE e.idUsuario = ${id} AND EXISTS
             (SELECT *
@@ -102,7 +102,7 @@ async function trainings(id) {
 }
 
 async function diets(id) {
-    const query = SQL`SELECT e.idElemento, e.nombre, e.descripcion
+    const query = SQL`SELECT e.idElemento, e.nombre, e.descripcion, e.nLikes
         FROM elementos e
         WHERE e.idUsuario = ${id} AND EXISTS
             (SELECT *
@@ -293,6 +293,48 @@ async function userInfo(id, id2) {
     return res.rows[0];
 }
 
+async function like(body) {
+    if (body.type == 'element') {
+        let query = SQL`INSERT INTO likesElementos(idUsuario, idElemento)
+            values(${body.idUser}, ${body.idElement})`;
+        await dbCtrl.execute(query);
+
+    
+        query = SQL`UPDATE elementos SET nLikes = nLikes + 1
+            WHERE idElemento = ${body.idElement}`;
+        await dbCtrl.execute(query);   
+    }
+    else if (body.type == 'comment') {
+        let query = SQL`INSERT INTO likesComentarios(idUsuario, idElemento)
+            values(${body.idUser}, ${body.idElement})`;
+        await dbCtrl.execute(query);
+
+    
+        query = SQL`UPDATE comentarios SET nLikes = nLikes + 1
+            WHERE idElemento = ${body.idElement}`;
+        await dbCtrl.execute(query);   
+    }
+}
+
+async function unlike(idUser, idElement, type) {
+    if (type == 'element') {
+        let query = SQL`DELETE FROM likesElementos WHERE idUsuario = ${idUser} AND idElemento = ${idElement}`;
+        await dbCtrl.execute(query);
+    
+        query = SQL`UPDATE elementos SET nLikes = nLikes - 1
+            WHERE idElemento = ${idElement}`;
+        await dbCtrl.execute(query);  
+    }
+    else if (type == 'comment') {
+        let query = SQL`DELETE FROM likesComentarios WHERE idUsuario = ${idUser} AND idElemento = ${idElement}`;
+        await dbCtrl.execute(query);
+    
+        query = SQL`UPDATE comentarios SET nLikes = nLikes - 1
+            WHERE idComentario = ${idElement}`;
+        await dbCtrl.execute(query);  
+    }
+}
+
 
 
 
@@ -321,4 +363,6 @@ module.exports = {
     block,
     unblock,
     userInfo,
+    like,
+    unlike,
 }

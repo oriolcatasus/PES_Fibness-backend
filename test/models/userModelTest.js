@@ -1231,4 +1231,97 @@ describe("userModel script", function() {
             assert.equal(info.seguir, true);
         });
     });
+
+    describe("like and dislike operations", function() {
+        it("should successfully like an element", async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const id = res.id;
+
+            const newTraining = {
+                nombre: "TrainingTest",
+                descripcion: "TrainingDescription",
+                idUser: id,
+            }
+            const idElem = (await training.create(newTraining)).idElemento;
+
+            const body = {
+                idUser: id,
+                idElement: idElem,
+                type: 'element'
+            }
+
+            await user.like(body);
+
+            const query = {
+                text: 'SELECT * \
+                        FROM likesElementos \
+                        WHERE idUsuario = $1 AND idElemento = $2',
+                values: [id, idElem]
+            };
+
+            res = (await dbCtrl.execute(query)).rows;
+            assert.equal(res.length, 1);
+
+            const trainingSet = await user.trainings(id);
+
+            assert.equal(trainingSet[0].nlikes, 1);
+            assert.equal(trainingSet[0].descripcion, newTraining.descripcion);
+        });
+
+        it("should successfully like a comment", async function() {
+            
+            assert.equal(0, 1);
+        });
+
+        it("should successfully unlike an element", async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const id = res.id;
+
+            const newTraining = {
+                nombre: "TrainingTest",
+                descripcion: "TrainingDescription",
+                idUser: id,
+            }
+            const idElem = (await training.create(newTraining)).idElemento;
+
+            const body = {
+                idUser: id,
+                idElement: idElem,
+                type: 'element'
+            }
+
+            await user.like(body);
+            await user.unlike(id, idElem, 'element');
+
+            const query = {
+                text: 'SELECT * \
+                        FROM likesElementos \
+                        WHERE idUsuario = $1 AND idElemento = $2',
+                values: [id, idElem]
+            };
+
+            res = (await dbCtrl.execute(query)).rows;
+            assert.equal(res.length, 0);
+
+            const trainingSet = await user.trainings(id);
+
+            assert.equal(trainingSet[0].nlikes, 0);
+            assert.equal(trainingSet[0].descripcion, newTraining.descripcion);
+        });
+
+        it("should successfully unlike a comment", async function() {
+            
+            assert.equal(0, 1);
+        });
+    });
 })

@@ -220,4 +220,22 @@ router.get('/:id/info/:id2', async function(req, res) {
     }
 })
 
+router.post('/like', async function(req, res) {
+    try {
+        await user.userInfo(req.body);
+        res.sendStatus(201);
+    } catch(err) {
+        res.status(400).send(err.message);
+    }
+})
+
+router.delete('/like/:idUser/:idElement/:type', async function(req, res) {
+    try {
+        await user.unlike(req.params.idUser, req.params.idElement);
+        res.sendStatus(200)
+    } catch(err) {
+        res.status(400).send(err.message);
+    }
+})
+
 module.exports = router;
