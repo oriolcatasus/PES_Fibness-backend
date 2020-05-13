@@ -567,9 +567,7 @@ describe("user route", function() {
                 .set('Content-Type', 'application/json')
                 .send(body)
                 .expect(201);
-                
-            console.log(res.body);
-            expect(res.body.blockedFollowedBlocker).to.equal(false);
+            expect(res.body.blockerFollowedBlocked).to.equal(false);
         })
 
         it("should not block somebody if it does not exist", async function() {

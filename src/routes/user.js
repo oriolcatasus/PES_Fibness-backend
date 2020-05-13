@@ -196,8 +196,8 @@ router.get('/shortInfo/:currentID', async function(req, res) {
 
 router.post('/block', async function(req, res) {
     try {
-        await user.block(req.body);
-        res.sendStatus(201)
+        const b = await user.block(req.body);
+        res.status(201).send(b);
     } catch(err) {
         res.status(400).send(err.message);
     }
