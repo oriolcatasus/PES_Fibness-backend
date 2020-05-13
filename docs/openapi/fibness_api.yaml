@@ -639,11 +639,16 @@ paths:
                     nombre:
                       type: string
                       example: user
+                    bloqueado:
+                      type: boolean
+                      example: true
                 example:
                   - id: 7
                     nombre: user
+                    bloqueado: false
                   - id: 8
                     nombre: user2
+                    bloqueado: true
                     
   /user/{id}/followers:
     get:
@@ -741,7 +746,20 @@ paths:
                 - idFollowed
       responses:
         '201':
-          description: Following created successfully
+          description: Attempted to create a following
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isBlocked:
+                    type: boolean
+                    example: true
+                    description: true if one of the users has the other blocked (in which case the following
+                                  is not created). False if there is no blocking (the following is created)
+
+                required:
+                  - isBlocked
         '400':
           description: >-
             Some required parameters are missing or with an incorrect type
@@ -799,7 +817,25 @@ paths:
                 - idBlocked
       responses:
         '201':
-          description: User blocked successfully
+          description: Attempted to create a blocking
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  blockerFollowedBlocked:
+                    type: boolean
+                    example: true
+                    description: true if idBlocker followed idBlocked (the following is eliminated). False
+                                  otherwise
+                  blockedFollowedBlocker:
+                    type: boolean
+                    example: false
+                    description: true if idBlocked followed idBlocker (the following is eliminated). False
+                                  otherwise
+                required:
+                  - blockerFollowedBlocked
+                  - blockedFollowedBlocker
         '400':
           description: >-
             Some required parameters are missing or with an incorrect type
