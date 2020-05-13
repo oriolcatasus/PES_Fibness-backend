@@ -151,8 +151,8 @@ router.post('/:id/profile', async function(req, res, next) {
 
 router.post('/follow', async function(req, res) {
     try {
-        await user.follow(req.body);
-        res.sendStatus(201)
+        const isBlocked = await user.follow(req.body);
+        res.status(201).send(isBlocked);
     } catch(err) {
         res.status(400).send(err.message);
     }

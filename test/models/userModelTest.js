@@ -1059,7 +1059,7 @@ describe("userModel script", function() {
             
         })
 
-        it("should get the brief information of all users except the one we pass and the ones blocked", async function() {
+        it("should get the brief information of all users except the one we pass and the ones who blocked", async function() {
             const fakeUser = {
                 nombre: 'Fake',
                 password: 'fakeHash',
@@ -1106,8 +1106,8 @@ describe("userModel script", function() {
             await user.block(body);
 
             body = {
-                idBlocker: currentID,
-                idBlocked: id5
+                idBlocker: id5,
+                idBlocked: currentID
             }
            
             await user.block(body);
@@ -1115,9 +1115,11 @@ describe("userModel script", function() {
 
             res = await user.shortUsersInfo(currentID);
             
-            assert.equal(res.length, 2);
+            assert.equal(res.length, 3);
             assert.equal(res[0].nombre, fakeUser2.nombre);
             assert.equal(res[1].nombre, fakeUser3.nombre);
+            assert.equal(res[2].bloqueado, true);
+            assert.equal(res[2].nombre, fakeUser4.nombre);
             
         })
     })

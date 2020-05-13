@@ -328,10 +328,52 @@ describe("user route", function() {
                 idFollowed: id2
             }
 
-            await request.post(`/user/follow`)
+            res = await request.post(`/user/follow`)
                 .set('Content-Type', 'application/json')
                 .send(body)
                 .expect(201);
+
+            expect(res.body.isBlocked).to.equal(false);
+        })
+
+        it('should not add a follower if it is blocked', async function() {
+            let res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser)
+            const id = res.body.id
+
+            const fakeUser2 = {
+                nombre: "fakeName2",
+                email: "fake2@example.com",
+                password: "fakeHash2"
+            }
+
+            res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser2)
+            const id2 = res.body.id;
+
+            let body = {
+                idBlocker: id,
+                idBlocked: id2
+            }
+
+            res = await request.post(`/user/block`)
+                .set('Content-Type', 'application/json')
+                .send(body)
+                .expect(201);
+
+            body = {
+                idFollower: id,
+                idFollowed: id2
+            }
+
+            res = await request.post(`/user/follow`)
+                .set('Content-Type', 'application/json')
+                .send(body)
+                .expect(201);
+
+            expect(res.body.isBlocked).to.equal(true);
         })
 
         it("should not add a follower if it does not exist", async function() {

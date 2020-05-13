@@ -211,17 +211,31 @@ async function setProfileImg(id, img, ext) {
 }
 
 async function follow(body) {
-    let query = SQL`INSERT INTO seguidores(idSeguidor, idSeguido)
+
+    let query = SQL`SELECT *
+                    FROM bloqueados
+                    WHERE (idBloqueado = ${body.idFollower} AND idBloqueador = ${body.idFollowed}) OR
+                            (idBloqueadoR = ${body.idFollower} AND idBloqueado = ${body.idFollowed})`;
+    const res = await dbCtrl.execute(query);
+    let iB = true;
+
+    if (res.rows.length == 0) {
+        iB = false;
+        query = SQL`INSERT INTO seguidores(idSeguidor, idSeguido)
             values(${body.idFollower}, ${body.idFollowed})`;
-    await dbCtrl.execute(query);
+        await dbCtrl.execute(query);
 
-    query = SQL`UPDATE usuarios SET nSeguidores = nSeguidores + 1
+        query = SQL`UPDATE usuarios SET nSeguidores = nSeguidores + 1
             WHERE id = ${body.idFollowed}`;
-    await dbCtrl.execute(query);
+        await dbCtrl.execute(query);
 
-    query = SQL`UPDATE usuarios SET nSeguidos = nSeguidos + 1
+        query = SQL`UPDATE usuarios SET nSeguidos = nSeguidos + 1
             WHERE id = ${body.idFollower}`;
-    await dbCtrl.execute(query);
+        await dbCtrl.execute(query);
+    }
+    return {
+        isBlocked: iB
+    };
 }
 
 async function unfollow(idFollower, idFollowed) {
@@ -254,12 +268,21 @@ async function followed(idFollower) {
 }
 
 async function shortUsersInfo(currentID) {
-    const query = SQL `SELECT u.id, u.nombre
+    let query = SQL `SELECT u.id, u.nombre
                     FROM usuarios u
-                    WHERE id <> ${currentID} AND id NOT IN (SELECT idBloqueado
+                    WHERE id <> ${currentID} AND id NOT IN (SELECT idBloqueador
                                                             FROM bloqueados
-                                                            WHERE idBloqueador = ${currentID})`;
+                                                            WHERE idBloqueado = ${currentID})`;
     const res = await dbCtrl.execute(query);
+    for (let i=0; i<res.rows.length; ++i) {
+        let blocked = true;
+        query = SQL `SELECT *
+                    FROM bloqueados
+                    WHERE idBloqueador = ${currentID} AND idBloqueado = ${res.rows[i].id}`;
+        const res2 = await dbCtrl.execute(query);
+        if (res2.rows.length == 0) blocked = false;
+        res.rows[i].bloqueado = blocked;
+    }
     return res.rows;
 }
 
