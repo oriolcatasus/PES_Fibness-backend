@@ -215,7 +215,7 @@ async function follow(body) {
     let query = SQL`SELECT *
                     FROM bloqueados
                     WHERE (idBloqueado = ${body.idFollower} AND idBloqueador = ${body.idFollowed}) OR
-                            (idBloqueadoR = ${body.idFollower} AND idBloqueado = ${body.idFollowed})`;
+                            (idBloqueador = ${body.idFollower} AND idBloqueado = ${body.idFollowed})`;
     const res = await dbCtrl.execute(query);
     let iB = true;
 
@@ -290,6 +290,35 @@ async function block(body) {
     let query = SQL`INSERT INTO bloqueados(idBloqueador, idBloqueado)
             values(${body.idBlocker}, ${body.idBlocked})`;
     await dbCtrl.execute(query);
+
+    query = SQL`SELECT *
+                    FROM seguidores
+                    WHERE (idSeguidor = ${body.idBlocker} AND idSeguido = ${body.idBlocked})`;
+    let res = await dbCtrl.execute(query);
+    let brFBd = false;
+
+
+    if (res.rows.length == 1) {
+        unfollow(body.idBlocker, body.idBlocked);
+        brFBd = true;
+    }
+
+
+    query = SQL`SELECT *
+                    FROM seguidores
+                    WHERE (idSeguidor = ${body.idBlocked} AND idSeguido = ${body.idBlocker})`;
+    res = await dbCtrl.execute(query);
+    let bdFBr = false;
+
+    if (res.rows.length == 1) {
+        unfollow(body.idBlocked, body.idBlocker);
+        bdFBr = true;
+    }
+
+    return {
+        blockerFollowedBlocked: brFBd,
+        blockedFollowedBlocker: bdFBr
+    };
 }
 
 async function unblock(idBlocker, idBlocked) {

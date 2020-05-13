@@ -866,6 +866,53 @@ describe("userModel script", function() {
             assert.equal(infoFollowed.nseguidores, 1);
         })
 
+        it('should not create a follower if it is blocked', async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const idFr = res.id;
+            
+            const fakeUser2 = {
+                nombre: 'Fake2',
+                password: 'fakeHash2',
+                email: 'fake2@example.com',
+            }
+            res = await user.create(fakeUser2);
+            const idFd = res.id;
+
+            let body = {
+                idBlocker: idFd,
+                idBlocked: idFr
+            }
+
+            await user.block(body);
+
+            body = {
+                idFollower: idFr,
+                idFollowed: idFd
+            }
+
+            res = await user.follow(body);
+            assert.equal(res.isBlocked, true);
+            const query = {
+                text: 'SELECT * \
+                        FROM seguidores \
+                        WHERE idSeguidor = $1 AND idSeguido = $2',
+                values: [idFr, idFd]
+            };
+            res = await dbCtrl.execute(query);
+            assert.equal(res.rows.length, 0);
+            
+            const infoFollower = (await user.getInfo(idFr));
+            assert.equal(infoFollower.nseguidos, 0);
+
+            const infoFollowed = (await user.getInfo(idFd));
+            assert.equal(infoFollowed.nseguidores, 0);
+        })
+
         it("should delete a follower", async function() {
             const fakeUser = {
                 nombre: 'Fake',
@@ -1161,6 +1208,66 @@ describe("userModel script", function() {
             //make sure the settings have been updated
             assert.equal(res[0].idbloqueador, idBr);
             assert.equal(res[0].idbloqueado, idBd);
+        });
+
+        it("should successfully block a user and delete the following", async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const idBr = res.id;
+            
+            const fakeUser2 = {
+                nombre: 'Fake2',
+                password: 'fakeHash2',
+                email: 'fake2@example.com',
+            }
+            res = await user.create(fakeUser2);
+            const idBd = res.id;
+
+            let body = {
+                idFollower: idBr,
+                idFollowed: idBd
+            }
+            res = await user.follow(body);
+            assert.equal(res.isBlocked, false);
+
+            body = {
+                idFollower: idBd,
+                idFollowed: idBr
+            }
+           
+            res = await user.follow(body);
+            assert.equal(res.isBlocked, false);
+
+            body = {
+                idBlocker: idBr,
+                idBlocked: idBd
+            }
+
+            res = await user.block(body);
+            assert.equal(res.blockerFollowedBlocked, true);
+            assert.equal(res.blockedFollowedBlocker, true);
+
+            const query = {
+                text: 'SELECT * \
+                        FROM bloqueados \
+                        WHERE idBloqueador = $1 AND idBloqueado = $2',
+                values: [idBr, idBd]
+            };
+
+            res = (await dbCtrl.execute(query)).rows;
+
+            assert.equal(res[0].idbloqueador, idBr);
+            assert.equal(res[0].idbloqueado, idBd);
+
+            const infoFollower = (await user.getInfo(idBr));
+            assert.equal(infoFollower.nseguidos, 0);
+
+            const infoFollowed = (await user.getInfo(idBd));
+            assert.equal(infoFollowed.nseguidores, 0);
         });
 
         it("should successfully unblock a user", async function() {
