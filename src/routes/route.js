@@ -29,10 +29,15 @@ router.delete('/:idElemento', async (req, res) => {
 
 //update element (aka name and/or description)
 router.put('/:idElemento', async (req, res) => {
+    console.log("Trying to update a route with id:");
+    console.log(req.params.idElemento);
     try {
         await routes.update(req.body, req.params.idElemento);
+        console.log("It went well")
         res.sendStatus(200);
     } catch (e) {
+        console.log("The error is: ");
+        console.log(this.message);
         res.status(400).send(e.message);
     }
 });

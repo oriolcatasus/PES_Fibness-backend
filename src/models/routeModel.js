@@ -52,15 +52,19 @@ async function del(idElemento) {
 }
 
 async function update(routes, idElemento) {
+    console.log("The new content of the route is:")
+    console.log(routes)
     const query_elemento = SQL`UPDATE elementos
         SET nombre = ${routes.nombre} ,descripcion = ${routes.descripcion}
         WHERE idElemento = ${idElemento}`
     await dbCtrl.execute(query_elemento);
-
+    console.log("the update of the ELEMENT went well");
+    
     const query_route = SQL `UPDATE rutas
         SET origen = ${routes.origen}, destino = ${routes.destino}, distancia = ${routes.distancia}
         WHERE idElemento = ${idElemento}`
-    await dbCtrl.execute(query_route); 
+    await dbCtrl.execute(query_route);
+    console.log("The update of the ROUTE went well") 
 }
 
 module.exports = {
