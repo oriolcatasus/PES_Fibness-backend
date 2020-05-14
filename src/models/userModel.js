@@ -345,7 +345,7 @@ async function userInfo(id, id2) {
 
     query = SQL `SELECT *
                        FROM bloqueados
-                       WHERE idBloqueador = ${id} AND idBloqueado = ${id2}`
+                       WHERE idBloqueador = ${id2} AND idBloqueado = ${id}`
     const blo = await dbCtrl.execute(query);
     let bloqueado = false;
     if (blo.rows.length == 1) bloqueado = true;

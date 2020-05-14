@@ -638,7 +638,7 @@ describe("user route", function() {
             const info = await request.get(`/user/${id}/info/${id2}`)
                 .expect('Content-Type', /json/)
                 .expect(200);
-
+                
             expect(info.body).to.have.property('seguir');
             expect(info.body).to.have.property('id');
             expect(info.body).to.have.property('nmensaje');

@@ -1352,8 +1352,8 @@ describe("userModel script", function() {
             assert.equal(info.bloqueado, false);
 
             body = {
-                idBlocker: id,
-                idBlocked: id2
+                idBlocker: id2,
+                idBlocked: id
             }
 
             await user.block(body);
