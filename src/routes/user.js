@@ -205,7 +205,7 @@ router.post('/block', async function(req, res) {
 
 router.delete('/block/:idBlocker/:idBlocked', async function(req, res) {
     try {
-        await user.unfollow(req.params.idBlocker, req.params.idBlocked);
+        await user.unblock(req.params.idBlocker, req.params.idBlocked);
         res.sendStatus(200)
     } catch(err) {
         res.status(400).send(err.message);

@@ -1293,9 +1293,21 @@ describe("userModel script", function() {
             }
            
             await user.block(body);
+
+            let query = {
+                text: 'SELECT * \
+                        FROM bloqueados \
+                        WHERE idBloqueador = $1 AND idBloqueado = $2',
+                values: [idBr, idBd]
+            };
+
+            res = (await dbCtrl.execute(query)).rows;
+            
+            assert.equal(res.length, 1);
+
             await user.unblock(idBr, idBd);
 
-            const query = {
+            query = {
                 text: 'SELECT * \
                         FROM bloqueados \
                         WHERE idBloqueador = $1 AND idBloqueado = $2',
@@ -1304,7 +1316,6 @@ describe("userModel script", function() {
 
             res = (await dbCtrl.execute(query)).rows;
 
-            //make sure the settings have been updated
             assert.equal(res.length, 0);
         });
     });
