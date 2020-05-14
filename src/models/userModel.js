@@ -342,6 +342,17 @@ async function userInfo(id, id2) {
     res.rows.forEach(function (element) {
         element.seguir = sigue;
       });
+
+    query = SQL `SELECT *
+                       FROM bloqueados
+                       WHERE idBloqueador = ${id} AND idBloqueado = ${id2}`
+    const blo = await dbCtrl.execute(query);
+    let bloqueado = false;
+    if (blo.rows.length == 1) bloqueado = true;
+    res.rows.forEach(function (element) {
+        element.bloqueado = bloqueado;
+    });
+
     return res.rows[0];
 }
 

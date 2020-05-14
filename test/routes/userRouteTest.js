@@ -643,6 +643,7 @@ describe("user route", function() {
             expect(info.body).to.have.property('id');
             expect(info.body).to.have.property('nmensaje');
             expect(info.body).to.have.property('descripcion');
+            expect(info.body).to.have.property('bloqueado');
             
         })
 

@@ -929,6 +929,14 @@ paths:
                     smensaje: 
                       type: boolean
                       example: true
+                    seguir:
+                      type: boolean
+                      example: true
+                      description: checks if id2 follows id
+                    bloqueado:
+                      type: boolean
+                      example: false
+                      description: checks if id has blocked id2
   '/training':
     post:
       summary: Creates a training

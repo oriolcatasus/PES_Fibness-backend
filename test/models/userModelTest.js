@@ -1302,7 +1302,7 @@ describe("userModel script", function() {
             };
 
             res = (await dbCtrl.execute(query)).rows;
-            
+
             assert.equal(res.length, 1);
 
             await user.unblock(idBr, idBd);
@@ -1337,18 +1337,28 @@ describe("userModel script", function() {
             res = await user.create(fakeUser2);
             const id2 = res.id;
 
-            const body = {
+            let body = {
                 idFollower: id2,
                 idFollowed: id
             }
 
             await user.follow(body);
-            const info = await user.userInfo(id, id2);
+            let info = await user.userInfo(id, id2);
 
             assert.equal(info.id, id);
             assert.equal(info.nombre, fakeUser.nombre);
-            assert.equal(Object.keys(info).length, 11);
+            assert.equal(Object.keys(info).length, 12);
             assert.equal(info.seguir, true);
+            assert.equal(info.bloqueado, false);
+
+            body = {
+                idBlocker: id,
+                idBlocked: id2
+            }
+
+            await user.block(body);
+            info = await user.userInfo(id, id2);
+            assert.equal(info.bloqueado, true);
         });
     });
 })
