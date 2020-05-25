@@ -222,7 +222,7 @@ router.get('/:id/info/:id2', async function(req, res) {
 
 router.post('/like', async function(req, res) {
     try {
-        await user.userInfo(req.body);
+        await user.like(req.body);
         res.sendStatus(201);
     } catch(err) {
         res.status(400).send(err.message);
@@ -231,7 +231,25 @@ router.post('/like', async function(req, res) {
 
 router.delete('/like/:idUser/:idElement/:type', async function(req, res) {
     try {
-        await user.unlike(req.params.idUser, req.params.idElement);
+        await user.unlike(req.params.idUser, req.params.idElement, req.params.type);
+        res.sendStatus(200)
+    } catch(err) {
+        res.status(400).send(err.message);
+    }
+})
+
+router.post('/comment', async function(req, res) {
+    try {
+        await user.comment(req.body);
+        res.sendStatus(201);
+    } catch(err) {
+        res.status(400).send(err.message);
+    }
+})
+
+router.delete('/comment/:idComment', async function(req, res) {
+    try {
+        await user.delComment(req.params.idComment);
         res.sendStatus(200)
     } catch(err) {
         res.status(400).send(err.message);

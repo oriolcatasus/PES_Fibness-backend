@@ -62,7 +62,24 @@ async function activities(idElemento) {
     return activitySet;
 }
 
+async function comments(idElemento) {
+    const query = {
+        text: "SELECT idComentario, idUsuario, fecha, texto\
+               FROM comentarios\
+               WHERE idElemento = $1\
+               ORDER BY fecha",
+        values: [idElemento]
+    }
+    const res = await dbCtrl.execute(query)
+    const comments = [];
+    for (let i=0; i<res.rows.length; ++i) {
+        comments.push(res.rows[i]);
+    }
+    return comments;
+}
+
 
 module.exports = {
-    create,update,del,activities
+    create,update,del,activities,
+    comments
 }

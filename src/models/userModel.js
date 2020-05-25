@@ -335,7 +335,28 @@ async function unlike(idUser, idElement, type) {
     }
 }
 
+async function comment(body) {
+    let query = SQL`INSERT INTO comentarios(idUsuario, idElemento, texto)
+        values(${body.idUser}, ${body.idElement}, ${body.text})`;
+    await dbCtrl.execute(query);
 
+
+    query = SQL`UPDATE elementos SET nComentarios = nComentarios + 1
+        WHERE idElemento = ${body.idElement}`;
+    await dbCtrl.execute(query);
+}
+
+async function delComment(idComment) {
+    let query = SQL`SELECT idElemento FROM comentarios WHERE idComentario = ${idComment}`;
+    idElem = (await dbCtrl.execute(query)).rows[0].idelemento;
+
+    query = SQL`DELETE FROM comentarios WHERE idComentario = ${idComment}`;
+    await dbCtrl.execute(query);
+
+    query = SQL`UPDATE elementos SET nComentarios = nComentarios - 1
+        WHERE idElemento = ${idElem}`;
+    await dbCtrl.execute(query);
+}
 
 
 module.exports = {
@@ -365,4 +386,6 @@ module.exports = {
     userInfo,
     like,
     unlike,
+    comment,
+    delComment,
 }

@@ -48,5 +48,15 @@ router.get('/:idElemento/activities', async function(req, res) {
     }
 })
 
+router.get('/:idElemento/comments', async function(req, res) {
+    try {
+        const comments = await training.comments(req.params.idElemento);
+        res.status(200).send(comments);
+    } catch (e) {
+        console.error(e.message);
+        res.status(400).send(e.message);
+    }
+})
+
 
 module.exports = router;
