@@ -1275,7 +1275,58 @@ describe("userModel script", function() {
 
         it("should successfully like a comment", async function() {
             
-            assert.equal(0, 1);
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const id = res.id;
+
+            const newTraining = {
+                nombre: "TrainingTest",
+                descripcion: "TrainingDescription",
+                idUser: id,
+            }
+            const idElem = (await training.create(newTraining)).idElemento;
+
+            const bodyComment = {
+                idUser: id,
+                idElement: idElem,
+                text: "primer comentario"
+            }
+            await user.comment(bodyComment);
+
+            let query = {
+                text: 'SELECT idComentario \
+                        FROM comentarios \
+                        WHERE idUsuario = $1',
+                values: [id]
+            };
+            const idCom = (await dbCtrl.execute(query)).rows[0].idcomentario;
+
+            const bodyLike = {
+                idUser: id,
+                idElement: idCom,
+                type: 'comment'
+            }
+
+            await user.like(bodyLike);
+
+            query = {
+                text: 'SELECT * \
+                        FROM likesComentarios \
+                        WHERE idUsuario = $1 AND idElemento = $2',
+                values: [id, idCom]
+            };
+
+            res = (await dbCtrl.execute(query)).rows;
+            assert.equal(res.length, 1);
+
+            const commentSet = await training.comments(idElem);
+
+            assert.equal(commentSet[0].nlikes, 1);
+            assert.equal(commentSet[0].texto, bodyComment.text);
         });
 
         it("should successfully unlike an element", async function() {
@@ -1321,7 +1372,59 @@ describe("userModel script", function() {
 
         it("should successfully unlike a comment", async function() {
             
-            assert.equal(0, 1);
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const id = res.id;
+
+            const newTraining = {
+                nombre: "TrainingTest",
+                descripcion: "TrainingDescription",
+                idUser: id,
+            }
+            const idElem = (await training.create(newTraining)).idElemento;
+
+            const bodyComment = {
+                idUser: id,
+                idElement: idElem,
+                text: "primer comentario"
+            }
+            await user.comment(bodyComment);
+
+            let query = {
+                text: 'SELECT idComentario \
+                        FROM comentarios \
+                        WHERE idUsuario = $1',
+                values: [id]
+            };
+            const idCom = (await dbCtrl.execute(query)).rows[0].idcomentario;
+
+            const bodyLike = {
+                idUser: id,
+                idElement: idCom,
+                type: 'comment'
+            }
+
+            await user.like(bodyLike);
+            await user.unlike(id, idCom, 'comment');
+
+            query = {
+                text: 'SELECT * \
+                        FROM likesComentarios \
+                        WHERE idUsuario = $1 AND idElemento = $2',
+                values: [id, idCom]
+            };
+
+            res = (await dbCtrl.execute(query)).rows;
+            assert.equal(res.length, 0);
+
+            const commentSet = await training.comments(idElem);
+
+            assert.equal(commentSet[0].nlikes, 0);
+            assert.equal(commentSet[0].texto, bodyComment.text);
         });
     });
 

@@ -64,7 +64,7 @@ async function activities(idElemento) {
 
 async function comments(idElemento) {
     const query = {
-        text: "SELECT idComentario, idUsuario, fecha, texto\
+        text: "SELECT idComentario, idUsuario, fecha, texto, nLikes\
                FROM comentarios\
                WHERE idElemento = $1\
                ORDER BY fecha",

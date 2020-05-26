@@ -308,10 +308,9 @@ async function like(body) {
         let query = SQL`INSERT INTO likesComentarios(idUsuario, idElemento)
             values(${body.idUser}, ${body.idElement})`;
         await dbCtrl.execute(query);
-
     
         query = SQL`UPDATE comentarios SET nLikes = nLikes + 1
-            WHERE idElemento = ${body.idElement}`;
+            WHERE idComentario = ${body.idElement}`;
         await dbCtrl.execute(query);   
     }
 }
