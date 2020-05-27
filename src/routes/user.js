@@ -240,8 +240,8 @@ router.delete('/like/:idUser/:idElement/:type', async function(req, res) {
 
 router.post('/comment', async function(req, res) {
     try {
-        await user.comment(req.body);
-        res.sendStatus(201);
+        com = await user.comment(req.body);
+        res.status(201).send(com);
     } catch(err) {
         res.status(400).send(err.message);
     }

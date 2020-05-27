@@ -44,9 +44,10 @@ router.get('/:idElemento/:dia', async function(req, res, next) {
     } catch (err) {
         res.status(400).send(err.message);
     }
-})
+});
 
-router.get('/:idElemento/comments', async function(req, res) {
+router.get('/:idElemento/comments', async (req, res) => {
+    console.log("hola");
     try {
         const comments = await diet.comments(req.params.idElemento);
         res.status(200).send(comments);
@@ -54,7 +55,7 @@ router.get('/:idElemento/comments', async function(req, res) {
         console.error(e.message);
         res.status(400).send(e.message);
     }
-})
+});
 
 
 

@@ -123,4 +123,54 @@ describe("Diet route", function() {
             await request.get(`/diet/badId/badDia`).expect(400);
         });
     });
+
+    describe("GET /diet/{idElemento}/comments", function() {
+        it("should return an array of comments", async function() {
+            let res = await request.post("/diet")
+                .set("Content-Type", "application/json")
+                .send(fakeDiet);
+            const idDiet = res.body.idElemento;
+
+            const body = {
+                idUser: fakeDiet.idUser,
+                idElement: idDiet,
+                text: 'nice'
+            }
+
+            res = await request.post(`/user/comment`)
+                .set('Content-Type', 'application/json')
+                .send(body)
+                .expect(201);
+            const idCom = res.body.idCom;
+
+            const body2 = {
+                idUser: fakeDiet.idUser,
+                idElement: idDiet,
+                text: 'nice2'
+            }
+
+            res = await request.post(`/user/comment`)
+                .set('Content-Type', 'application/json')
+                .send(body2)
+                .expect(201);
+            const idCom2 = res.body.idCom;
+
+            res = await request.get(`/diet/${idDiet}/comments`)
+                .expect('Content-Type', /json/)
+                .expect(200);
+
+            const comments = res.body;
+            console.log(comments);
+            expect(comments).to.be.an('array');
+            expect(comments[0]).to.have.property("fecha");
+            expect(comments[0].idusuario).to.equal(fakeDiet.idUser);
+            expect(comments[1].texto).to.equal("nice2");
+            //expect(trainings).to.not.be.empty;
+        });
+
+        it("should not get a badly formated id", async function() {
+
+            await request.get(`/diet/xd/comments`).expect(400);
+        });
+    });
 });

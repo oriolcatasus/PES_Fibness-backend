@@ -610,4 +610,185 @@ describe("user route", function() {
                 .expect(400);
         })
     })
+
+    describe('POST /user/like', function() {
+        it('should like a training and a comment', async function() {
+            let res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser)
+            const id = res.body.id
+
+            const newTraining = {
+                nombre: "TrainingTest",
+                descripcion: "TrainingDescription",
+                idUser: id,
+            }
+
+            res = await request.post('/training')
+                .set('Content-Type', 'application/json')
+                .send(newTraining)
+            const idT = res.body.idElemento;
+
+            const body = {
+                idUser: id,
+                idElement: idT,
+                type: 'element'
+            }
+
+            res = await request.post(`/user/like`)
+                .set('Content-Type', 'application/json')
+                .send(body)
+                .expect(201);
+
+            const bodyC = {
+                idUser: id,
+                idElement: idT,
+                text: 'nice'
+            }
+            res = await request.post(`/user/comment`)
+                .set('Content-Type', 'application/json')
+                .send(bodyC)
+                .expect(201);
+            const idCom = res.body.idCom;
+
+            const bodyLC = {
+                idUser: id,
+                idElement: idCom,
+                type: 'comment'
+            }
+
+            res = await request.post(`/user/like`)
+                .set('Content-Type', 'application/json')
+                .send(bodyLC)
+                .expect(201);
+        })
+
+        it("should not like something if it does not exist", async function() {
+
+            const body = {
+                idUser: "xd",
+                idElement: "xd",
+                type: 'element'
+            }
+
+            await request.post(`/user/like`)
+                .set('Content-Type', 'application/json')
+                .send(body)
+                .expect(400);
+        })
+    })
+
+    describe('DELETE /user/like/:idUser/:idElement/:type', function() {
+        it('should unlike a training and a comment', async function() {
+            let res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser)
+            const id = res.body.id
+
+            const newTraining = {
+                nombre: "TrainingTest",
+                descripcion: "TrainingDescription",
+                idUser: id,
+            }
+
+            res = await request.post('/training')
+                .set('Content-Type', 'application/json')
+                .send(newTraining)
+            const idT = res.body.idElemento;
+
+            const body = {
+                idUser: id,
+                idElement: idT,
+                type: 'element'
+            }
+
+            res = await request.post(`/user/like`)
+                .set('Content-Type', 'application/json')
+                .send(body)
+                .expect(201);
+
+            await request.delete(`/user/like/${id}/${idT}/element`)
+                .set('Content-Type', 'application/json')
+                .expect(200);
+
+            const bodyC = {
+                idUser: id,
+                idElement: idT,
+                text: 'nice'
+            }
+            res = await request.post(`/user/comment`)
+                .set('Content-Type', 'application/json')
+                .send(bodyC)
+                .expect(201);
+            const idCom = res.body.idCom;
+
+            const bodyLC = {
+                idUser: id,
+                idElement: idCom,
+                type: 'comment'
+            }
+
+            res = await request.post(`/user/like`)
+                .set('Content-Type', 'application/json')
+                .send(bodyLC)
+                .expect(201);
+
+            await request.delete(`/user/like/${id}/${idCom}/comment`)
+                .set('Content-Type', 'application/json')
+                .expect(200);
+        })
+
+        it("should not unlike something if it does not exist", async function() {
+
+            await request.delete(`/user/like/xd/xd/comment`)
+                .set('Content-Type', 'application/json')
+                .expect(400);
+        })
+    })
+
+    describe('POST /user/comment', function() {
+        it('should create a comment', async function() {
+            let res = await request.post('/user')
+                .set('Content-Type', 'application/json')
+                .send(fakeUser)
+            const id = res.body.id
+
+            const newTraining = {
+                nombre: "TrainingTest",
+                descripcion: "TrainingDescription",
+                idUser: id,
+            }
+
+            res = await request.post('/training')
+                .set('Content-Type', 'application/json')
+                .send(newTraining)
+            const idT = res.body.idElemento;
+
+            const bodyC = {
+                idUser: id,
+                idElement: idT,
+                text: 'nice'
+            }
+            res = await request.post(`/user/comment`)
+                .set('Content-Type', 'application/json')
+                .send(bodyC)
+                .expect(201);
+            const idCom = res.body.idCom;
+
+        })
+
+        it("should not create a comment if params are wrong", async function() {
+
+            const bodyC = {
+                idUser: "xd",
+                idElement: "xd",
+                text: 'nice'
+            }
+            res = await request.post(`/user/comment`)
+                .set('Content-Type', 'application/json')
+                .send(bodyC)
+                .expect(400);
+            const idCom = res.body.idCom;
+        })
+    })
 });

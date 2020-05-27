@@ -61,6 +61,7 @@ async function comments(idElemento) {
         values: [idElemento]
     }
     const res = await dbCtrl.execute(query)
+    console.log("hola");
     const comments = [];
     for (let i=0; i<res.rows.length; ++i) {
         comments.push(res.rows[i]);
