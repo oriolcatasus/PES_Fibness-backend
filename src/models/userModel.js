@@ -90,7 +90,7 @@ async function routes(id) {
 }
 
 async function trainings(id) {
-    const query = SQL`SELECT e.idElemento, e.nombre, e.descripcion, e.nLikes
+    const query = SQL`SELECT e.idElemento, e.nombre, e.descripcion, e.nLikes, e.nComentarios
         FROM elementos e
         WHERE e.idUsuario = ${id} AND EXISTS
             (SELECT *
@@ -102,7 +102,7 @@ async function trainings(id) {
 }
 
 async function diets(id) {
-    const query = SQL`SELECT e.idElemento, e.nombre, e.descripcion, e.nLikes
+    const query = SQL`SELECT e.idElemento, e.nombre, e.descripcion, e.nLikes, e.nComentarios
         FROM elementos e
         WHERE e.idUsuario = ${id} AND EXISTS
             (SELECT *
@@ -334,32 +334,6 @@ async function unlike(idUser, idElement, type) {
     }
 }
 
-async function comment(body) {
-    let query = SQL`INSERT INTO comentarios(idUsuario, idElemento, texto)
-        values(${body.idUser}, ${body.idElement}, ${body.text}) RETURNING idComentario`;
-    res = await dbCtrl.execute(query);
-    result = {
-        idCom: res.rows[0].idcomentario
-    }
-    
-    query = SQL`UPDATE elementos SET nComentarios = nComentarios + 1
-        WHERE idElemento = ${body.idElement}`;
-    await dbCtrl.execute(query);
-
-    return result;
-}
-
-async function delComment(idComment) {
-    let query = SQL`SELECT idElemento FROM comentarios WHERE idComentario = ${idComment}`;
-    idElem = (await dbCtrl.execute(query)).rows[0].idelemento;
-
-    query = SQL`DELETE FROM comentarios WHERE idComentario = ${idComment}`;
-    await dbCtrl.execute(query);
-
-    query = SQL`UPDATE elementos SET nComentarios = nComentarios - 1
-        WHERE idElemento = ${idElem}`;
-    await dbCtrl.execute(query);
-}
 
 
 module.exports = {
@@ -389,6 +363,4 @@ module.exports = {
     userInfo,
     like,
     unlike,
-    comment,
-    delComment,
 }

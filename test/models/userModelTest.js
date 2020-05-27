@@ -7,6 +7,7 @@ const training = require("../../src/models/trainingModel");
 const diet = require("../../src/models/dietModel")
 const route = require("../../src/models/routeModel");
 const dbCtrl = require("../../src/ctrls/dbCtrl");
+const comment = require("../../src/models/commentModel");
 
 const testConstants = require('../constants')
 const constants = require('../../src/constants')
@@ -1295,7 +1296,7 @@ describe("userModel script", function() {
                 idElement: idElem,
                 text: "primer comentario"
             }
-            await user.comment(bodyComment);
+            await comment.comment(bodyComment);
 
             let query = {
                 text: 'SELECT idComentario \
@@ -1323,7 +1324,7 @@ describe("userModel script", function() {
             res = (await dbCtrl.execute(query)).rows;
             assert.equal(res.length, 1);
 
-            const commentSet = await training.comments(idElem);
+            const commentSet = await comment.comments(idElem);
 
             assert.equal(commentSet[0].nlikes, 1);
             assert.equal(commentSet[0].texto, bodyComment.text);
@@ -1392,7 +1393,7 @@ describe("userModel script", function() {
                 idElement: idElem,
                 text: "primer comentario"
             }
-            await user.comment(bodyComment);
+            await comment.comment(bodyComment);
 
             let query = {
                 text: 'SELECT idComentario \
@@ -1421,116 +1422,10 @@ describe("userModel script", function() {
             res = (await dbCtrl.execute(query)).rows;
             assert.equal(res.length, 0);
 
-            const commentSet = await training.comments(idElem);
+            const commentSet = await comment.comments(idElem);
 
             assert.equal(commentSet[0].nlikes, 0);
             assert.equal(commentSet[0].texto, bodyComment.text);
         });
-    });
-
-    describe("comment operations", function() {
-        it("should successfully make a comment", async function() {
-            const fakeUser = {
-                nombre: 'Fake',
-                password: 'fakeHash',
-                email: 'fake@example.com',
-            }
-            let res = await user.create(fakeUser);
-            const id = res.id;
-
-            const newTraining = {
-                nombre: "TrainingTest",
-                descripcion: "TrainingDescription",
-                idUser: id,
-            }
-            const idElem = (await training.create(newTraining)).idElemento;
-
-            const body = {
-                idUser: id,
-                idElement: idElem,
-                text: 'nice'
-            }
-
-            await user.comment(body);
-
-            let query = {
-                text: 'SELECT nComentarios \
-                        FROM elementos \
-                        WHERE idElemento = $1',
-                values: [idElem]
-            };
-
-            res = (await dbCtrl.execute(query)).rows;
-            assert.equal(res[0].ncomentarios, 1);
-
-            query = {
-                text: 'SELECT texto \
-                        FROM comentarios \
-                        WHERE idElemento = $1',
-                values: [idElem]
-            };
-
-            res = (await dbCtrl.execute(query)).rows;
-
-            assert.equal(res[0].texto, 'nice');
-        });
-
-        it("should successfully delete a comment", async function() {
-            
-            const fakeUser = {
-                nombre: 'Fake',
-                password: 'fakeHash',
-                email: 'fake@example.com',
-            }
-            let res = await user.create(fakeUser);
-            const id = res.id;
-
-            const newTraining = {
-                nombre: "TrainingTest",
-                descripcion: "TrainingDescription",
-                idUser: id,
-            }
-            const idElem = (await training.create(newTraining)).idElemento;
-
-            const body = {
-                idUser: id,
-                idElement: idElem,
-                text: 'nice'
-            }
-
-            await user.comment(body);
-
-            let query = {
-                text: 'SELECT idComentario \
-                        FROM comentarios \
-                        WHERE idElemento = $1',
-                values: [idElem]
-            };
-            
-            idCom = (await dbCtrl.execute(query)).rows[0].idcomentario
-            await user.delComment(idCom)
-
-            query = {
-                text: 'SELECT nComentarios \
-                        FROM elementos \
-                        WHERE idElemento = $1',
-                values: [idElem]
-            };
-
-            res = (await dbCtrl.execute(query)).rows;
-            assert.equal(res[0].ncomentarios, 0);
-
-            query = {
-                text: 'SELECT texto \
-                        FROM comentarios \
-                        WHERE idElemento = $1',
-                values: [idElem]
-            };
-
-            res = (await dbCtrl.execute(query)).rows;
-
-            assert.equal(res.length, 0);
-        });
-        
     });
 })

@@ -46,17 +46,6 @@ router.get('/:idElemento/:dia', async function(req, res, next) {
     }
 });
 
-router.get('/:idElemento/comments', async (req, res) => {
-    console.log("hola");
-    try {
-        const comments = await diet.comments(req.params.idElemento);
-        res.status(200).send(comments);
-    } catch (e) {
-        console.error(e.message);
-        res.status(400).send(e.message);
-    }
-});
-
 
 
 module.exports = router;

@@ -3,6 +3,7 @@ const assert = require("assert");
 const user = require("../../src/models/userModel");
 const dbCtrl = require("../../src/ctrls/dbCtrl");
 const route = require("../../src/models/routeModel");
+const comment = require("../../src/models/commentModel");
 
 //const stops = require("../../src/models/stopsModel");
 
@@ -367,7 +368,7 @@ describe("routeModel script", function() {
                 idElement: idElemento_resp,
                 text: "primer comentario"
             }
-            await user.comment(body);
+            await comment.comment(body);
 
             body = {
                 idUser: idTest,
@@ -375,8 +376,8 @@ describe("routeModel script", function() {
                 text: "segundo comentario"
             }
 
-            await user.comment(body);
-            const commentSet = await route.comments(idElemento_resp);
+            await comment.comment(body);
+            const commentSet = await comment.comments(idElemento_resp);
             assert.equal(commentSet[0].idusuario, body.idUser);
             assert.equal(commentSet[0].texto, "primer comentario");
             assert.equal(commentSet[1].texto, "segundo comentario");

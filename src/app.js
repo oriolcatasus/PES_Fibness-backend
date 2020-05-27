@@ -12,6 +12,7 @@ const meal = require("./routes/meal")
 const aliment = require("./routes/aliment")
 const exercise = require("./routes/exercise")
 const route = require("./routes/route")
+const comment = require("./routes/comment")
 
 //Middleware
 const errorHandler = require("./middleware/errorHandlers");
@@ -35,6 +36,7 @@ app.use("/diet", diet);
 app.use("/meal", meal);
 app.use("/aliment", aliment);
 app.use("/route",route);
+app.use("/comment",comment);
 
 app.get("/test", (req, res) => {
     console.log("Hello");

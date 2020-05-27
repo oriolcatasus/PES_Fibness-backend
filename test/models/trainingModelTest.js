@@ -4,6 +4,7 @@ const user = require("../../src/models/userModel");
 const training = require("../../src/models/trainingModel");
 const dbCtrl = require("../../src/ctrls/dbCtrl");
 const exercise = require("../../src/models/exerciseModel");
+const comment = require("../../src/models/commentModel");
 
 require("../rootHooks");
 
@@ -356,7 +357,7 @@ describe("trainingModel script", function() {
                 idElement: idTrainingTest,
                 text: "primer comentario"
             }
-            await user.comment(body);
+            await comment.comment(body);
 
             body = {
                 idUser: idTest,
@@ -364,8 +365,8 @@ describe("trainingModel script", function() {
                 text: "segundo comentario"
             }
 
-            await user.comment(body);
-            const commentSet = await training.comments(idTrainingTest);
+            await comment.comment(body);
+            const commentSet = await comment.comments(idTrainingTest);
             assert.equal(commentSet[0].idusuario, body.idUser);
             assert.equal(commentSet[0].texto, "primer comentario");
             assert.equal(commentSet[1].texto, "segundo comentario");

@@ -645,7 +645,7 @@ describe("user route", function() {
                 idElement: idT,
                 text: 'nice'
             }
-            res = await request.post(`/user/comment`)
+            res = await request.post(`/comment`)
                 .set('Content-Type', 'application/json')
                 .send(bodyC)
                 .expect(201);
@@ -716,7 +716,7 @@ describe("user route", function() {
                 idElement: idT,
                 text: 'nice'
             }
-            res = await request.post(`/user/comment`)
+            res = await request.post(`/comment`)
                 .set('Content-Type', 'application/json')
                 .send(bodyC)
                 .expect(201);
@@ -769,7 +769,7 @@ describe("user route", function() {
                 idElement: idT,
                 text: 'nice'
             }
-            res = await request.post(`/user/comment`)
+            res = await request.post(`/comment`)
                 .set('Content-Type', 'application/json')
                 .send(bodyC)
                 .expect(201);
@@ -784,7 +784,7 @@ describe("user route", function() {
                 idElement: "xd",
                 text: 'nice'
             }
-            res = await request.post(`/user/comment`)
+            res = await request.post(`/comment`)
                 .set('Content-Type', 'application/json')
                 .send(bodyC)
                 .expect(400);

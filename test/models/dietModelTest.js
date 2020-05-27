@@ -3,7 +3,8 @@ const assert = require("assert");
 const user = require("../../src/models/userModel");
 const diet = require("../../src/models/dietModel");
 const dbCtrl = require("../../src/ctrls/dbCtrl");
-const meal = require("../../src/models/mealModel")
+const meal = require("../../src/models/mealModel");
+const comment = require("../../src/models/commentModel");
 
 require("../rootHooks");
 
@@ -359,7 +360,7 @@ describe("dietModel script", function() {
                 idElement: idDietTest,
                 text: "primer comentario"
             }
-            await user.comment(body);
+            await comment.comment(body);
 
             body = {
                 idUser: idTest,
@@ -367,8 +368,8 @@ describe("dietModel script", function() {
                 text: "segundo comentario"
             }
 
-            await user.comment(body);
-            const commentSet = await diet.comments(idDietTest);
+            await comment.comment(body);
+            const commentSet = await comment.comments(idDietTest);
             assert.equal(commentSet[0].idusuario, body.idUser);
             assert.equal(commentSet[0].texto, "primer comentario");
             assert.equal(commentSet[1].texto, "segundo comentario");

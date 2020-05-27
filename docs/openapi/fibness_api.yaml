@@ -18,6 +18,8 @@ tags:
     description: Operations about meals
   - name: aliment
     description: Operations about aliments
+  - name: comment
+    description: Operations about comments
 paths:
   /user:
     post:
@@ -216,13 +218,21 @@ paths:
                       type: string
                     descripcion:
                       type: string
+                    nlikes:
+                      type: integer
+                    ncomentarios:
+                      type: integer
                 example:
                   - idelemento: 28
                     nombre: TrainingTest
                     descripcion: DescriptionTest
+                    nlikes: 20
+                    ncomentarios: 2
                   - idelemento: 40
                     nombre: TrainingTest2
                     descripcion: DescriptionTest2
+                    nlikes: 20
+                    ncomentarios: 2
                 required:
                 - trainingSet
   /user/{id}/diets:
@@ -255,13 +265,21 @@ paths:
                       type: string
                     descripcion:
                       type: string
+                    nlikes:
+                      type: integer
+                    ncomentarios:
+                      type: integer
                 example:
                   - idelemento: 23
                     nombre: DietTest
                     descripcion: DescriptionTest
+                    nlikes: 20
+                    ncomentarios: 2
                   - idelemento: 69
                     nombre: DietTest2
                     descripcion: DescriptionTest2
+                    nlikes: 20
+                    ncomentarios: 2
                 required:
                 - dietSet
   /user/{id}/routes:
@@ -298,6 +316,10 @@ paths:
                     type: string
                   distancia:
                     type: string
+                  nlikes:
+                    type: integer
+                  ncomentarios:
+                    type: integer
                 example:
                   - idelemento: 3
                     nombre: routeTest
@@ -305,6 +327,8 @@ paths:
                     origen: 42.471615;2.271684
                     destino: 45.471615;5.271684
                     distancia: 60
+                    nlikes: 20
+                    ncomentarios: 2
                     
                   - idelemento: 4
                     nombre: routeTest2
@@ -312,6 +336,9 @@ paths:
                     origen: 43.471615;3.271684
                     destino: 46.471615;6.271684
                     distancia: 70
+                    nlikes: 20
+                    ncomentarios: 2
+                    
                 required:
                       - activitySet
   
@@ -893,6 +920,75 @@ paths:
                     smensaje: 
                       type: boolean
                       example: true
+  '/user/like':
+    post:
+      summary: Likes an element or a comment
+      description: The user will indicate that it likes a comment or an element (training, route or diet)
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idUser:
+                  type: integer
+                  example: 1
+                  description: id of the user that will like something
+                idElement:
+                  type: integer
+                  example: 2
+                  description: id of the element OR COMMENT that wil be liked
+                type:
+                  type: string
+                  example: "comment"
+                  description: indicates if the idElement corresponds to an element (training, diet or route)
+                                or to a comment (type = "element" or "comment" respectively)
+              required:
+                - idUser
+                - idElement
+                - type
+      responses:
+        '201':
+          description: Like created successfully
+        '400':
+          description: >-
+            Some required parameters are missing or with an incorrect type
+  '/user/like/{idUser}/{idElement}/{type}':
+    delete:
+      summary: Unlikes a comment or element
+      description: The user with indicate that it no longer likes an element or comment 
+      tags:
+        - user
+      parameters:
+        - name: idUser
+          in: path
+          required: true
+          description: The id of the user will stop licking
+          schema:
+            type: integer
+            minimum: 1
+        - name: idElement
+          in: path
+          required: true
+          description: The id of the elemento that no longer will be licked by the user
+          schema:
+            type: integer
+            minimum: 1
+        - name: type
+          in: path
+          required: true
+          description: indicates whether the idElement references an element or comment
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Like removed
+        '400':
+          description: >-
+            Some required parameters are missing or with an incorrect type
   '/training':
     post:
       summary: Creates a training
@@ -1659,3 +1755,107 @@ paths:
       responses:
             '200':
               description: Ok
+  '/comment/':
+    post:
+      summary: Creates a comment
+      description: The user will create a comment on an elemetn
+      tags:
+        - comment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idUser:
+                  type: integer
+                  example: 1
+                  description: id of the user that will create the comment
+                idElement:
+                  type: integer
+                  example: 2
+                  description: id of the element OR COMMENT that will contain the comment
+                text:
+                  type: string
+                  example: "nice"
+                  description: text of the comment
+              required:
+                - idUser
+                - idElement
+                - text
+      responses:
+        '201':
+          description: Comment created succesfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  idCom:
+                    type: integer
+                    example: 12345
+                required:
+                  - idCom
+        '400':
+          description: >-
+            Some required parameters are missing or with an incorrect type
+  '/comment/{idComment}':
+    delete:
+      summary: Deletes a comment 
+      description: The comment will be eliminated
+      tags:
+        - comment
+      parameters:
+        - name: idComment
+          in: path
+          required: true
+          description: The id of the comment to be deleted
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Comment removed
+        '400':
+          description: >-
+            Some required parameters are missing or with an incorrect type
+  '/comment/{idElemento}/comments':
+    get:
+      summary: Gets all the comments of an element
+      description: Returns all the information of the comments of an element
+      tags:
+        - comment
+      parameters:
+        - name: idElemento
+          in: path
+          required: true
+          description: The id of the element to get the comments from
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: Information of the comments of the element
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    idcomentario:
+                      type: integer
+                      example: 5
+                    idusuario:
+                      type: integer
+                      example: 3
+                    fecha:
+                      type: string
+                      example: '2020-05-26T22:00:00.000Z'
+                    texto:
+                      type: string
+                      example: "nice"
+                    nlikes:
+                      type: integer
+                      example: 2
