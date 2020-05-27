@@ -3,7 +3,8 @@ const assert = require("assert");
 const user = require("../../src/models/userModel");
 const diet = require("../../src/models/dietModel");
 const dbCtrl = require("../../src/ctrls/dbCtrl");
-const meal = require("../../src/models/mealModel")
+const meal = require("../../src/models/mealModel");
+const comment = require("../../src/models/commentModel");
 
 require("../rootHooks");
 
@@ -315,4 +316,64 @@ describe("dietModel script", function() {
             assert.equal(res[1].nombre, newMeal.nombre);
         })
     })
+
+    describe("comment operations", function() {
+        it("should return set of comments correctly", async function(){
+            //create user
+            let newUser = {
+                nombre: "Oriol",
+                password: "hash",
+                email: "oriol@example.com",
+            }
+            await user.create(newUser);
+
+            //select id from user in order to create a training (we need it for the foreign key of element)
+            let query = {
+                text: "SELECT id \
+                        FROM usuarios \
+                        WHERE nombre = $1",
+                values: ["Oriol"],
+            };
+            let res = (await dbCtrl.execute(query)).rows[0];
+            let idTest = res.id; 
+
+            //create diet  (and element)
+            let newDiet = {
+                nombre: "DietTest",
+                descripcion: "DietDescription",
+                idUser: idTest,
+            }
+            await diet.create(newDiet);
+
+            //get the automatically generated id for the training in order to access it
+            let queryGetID = {
+                text: "SELECT idElemento \
+                        FROM elementos \
+                        WHERE nombre = $1 and idUsuario = $2",
+                values: [newDiet.nombre, idTest],
+            };
+            res = (await dbCtrl.execute(queryGetID)).rows[0];
+            idDietTest = res.idelemento;
+
+            let body = {
+                idUser: idTest,
+                idElement: idDietTest,
+                text: "primer comentario"
+            }
+            await comment.comment(body);
+
+            body = {
+                idUser: idTest,
+                idElement: idDietTest,
+                text: "segundo comentario"
+            }
+
+            await comment.comment(body);
+            const commentSet = await comment.comments(idDietTest);
+            assert.equal(commentSet[0].idusuario, body.idUser);
+            assert.equal(commentSet[0].texto, "primer comentario");
+            assert.equal(commentSet[1].texto, "segundo comentario");
+        });
+
+    });
 });

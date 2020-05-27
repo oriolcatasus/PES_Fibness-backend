@@ -7,6 +7,7 @@ const training = require("../../src/models/trainingModel");
 const diet = require("../../src/models/dietModel")
 const route = require("../../src/models/routeModel");
 const dbCtrl = require("../../src/ctrls/dbCtrl");
+const comment = require("../../src/models/commentModel");
 
 const testConstants = require('../constants')
 const constants = require('../../src/constants')
@@ -1359,6 +1360,202 @@ describe("userModel script", function() {
             await user.block(body);
             info = await user.userInfo(id, id2);
             assert.equal(info.bloqueado, true);
+        });
+    });
+
+    describe("like and dislike operations", function() {
+        it("should successfully like an element", async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const id = res.id;
+
+            const newTraining = {
+                nombre: "TrainingTest",
+                descripcion: "TrainingDescription",
+                idUser: id,
+            }
+            const idElem = (await training.create(newTraining)).idElemento;
+
+            const body = {
+                idUser: id,
+                idElement: idElem,
+                type: 'element'
+            }
+
+            await user.like(body);
+
+            const query = {
+                text: 'SELECT * \
+                        FROM likesElementos \
+                        WHERE idUsuario = $1 AND idElemento = $2',
+                values: [id, idElem]
+            };
+
+            res = (await dbCtrl.execute(query)).rows;
+            assert.equal(res.length, 1);
+
+            const trainingSet = await user.trainings(id);
+
+            assert.equal(trainingSet[0].nlikes, 1);
+            assert.equal(trainingSet[0].descripcion, newTraining.descripcion);
+        });
+
+        it("should successfully like a comment", async function() {
+            
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const id = res.id;
+
+            const newTraining = {
+                nombre: "TrainingTest",
+                descripcion: "TrainingDescription",
+                idUser: id,
+            }
+            const idElem = (await training.create(newTraining)).idElemento;
+
+            const bodyComment = {
+                idUser: id,
+                idElement: idElem,
+                text: "primer comentario"
+            }
+            await comment.comment(bodyComment);
+
+            let query = {
+                text: 'SELECT idComentario \
+                        FROM comentarios \
+                        WHERE idUsuario = $1',
+                values: [id]
+            };
+            const idCom = (await dbCtrl.execute(query)).rows[0].idcomentario;
+
+            const bodyLike = {
+                idUser: id,
+                idElement: idCom,
+                type: 'comment'
+            }
+
+            await user.like(bodyLike);
+
+            query = {
+                text: 'SELECT * \
+                        FROM likesComentarios \
+                        WHERE idUsuario = $1 AND idElemento = $2',
+                values: [id, idCom]
+            };
+
+            res = (await dbCtrl.execute(query)).rows;
+            assert.equal(res.length, 1);
+
+            const commentSet = await comment.comments(idElem);
+
+            assert.equal(commentSet[0].nlikes, 1);
+            assert.equal(commentSet[0].texto, bodyComment.text);
+        });
+
+        it("should successfully unlike an element", async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const id = res.id;
+
+            const newTraining = {
+                nombre: "TrainingTest",
+                descripcion: "TrainingDescription",
+                idUser: id,
+            }
+            const idElem = (await training.create(newTraining)).idElemento;
+
+            const body = {
+                idUser: id,
+                idElement: idElem,
+                type: 'element'
+            }
+
+            await user.like(body);
+            await user.unlike(id, idElem, 'element');
+
+            const query = {
+                text: 'SELECT * \
+                        FROM likesElementos \
+                        WHERE idUsuario = $1 AND idElemento = $2',
+                values: [id, idElem]
+            };
+
+            res = (await dbCtrl.execute(query)).rows;
+            assert.equal(res.length, 0);
+
+            const trainingSet = await user.trainings(id);
+
+            assert.equal(trainingSet[0].nlikes, 0);
+            assert.equal(trainingSet[0].descripcion, newTraining.descripcion);
+        });
+
+        it("should successfully unlike a comment", async function() {
+            
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const id = res.id;
+
+            const newTraining = {
+                nombre: "TrainingTest",
+                descripcion: "TrainingDescription",
+                idUser: id,
+            }
+            const idElem = (await training.create(newTraining)).idElemento;
+
+            const bodyComment = {
+                idUser: id,
+                idElement: idElem,
+                text: "primer comentario"
+            }
+            await comment.comment(bodyComment);
+
+            let query = {
+                text: 'SELECT idComentario \
+                        FROM comentarios \
+                        WHERE idUsuario = $1',
+                values: [id]
+            };
+            const idCom = (await dbCtrl.execute(query)).rows[0].idcomentario;
+
+            const bodyLike = {
+                idUser: id,
+                idElement: idCom,
+                type: 'comment'
+            }
+
+            await user.like(bodyLike);
+            await user.unlike(id, idCom, 'comment');
+
+            query = {
+                text: 'SELECT * \
+                        FROM likesComentarios \
+                        WHERE idUsuario = $1 AND idElemento = $2',
+                values: [id, idCom]
+            };
+
+            res = (await dbCtrl.execute(query)).rows;
+            assert.equal(res.length, 0);
+
+            const commentSet = await comment.comments(idElem);
+
+            assert.equal(commentSet[0].nlikes, 0);
+            assert.equal(commentSet[0].texto, bodyComment.text);
         });
     });
 })

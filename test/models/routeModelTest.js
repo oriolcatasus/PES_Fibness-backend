@@ -3,6 +3,7 @@ const assert = require("assert");
 const user = require("../../src/models/userModel");
 const dbCtrl = require("../../src/ctrls/dbCtrl");
 const route = require("../../src/models/routeModel");
+const comment = require("../../src/models/commentModel");
 
 //const stops = require("../../src/models/stopsModel");
 
@@ -320,4 +321,67 @@ describe("routeModel script", function() {
         });
 
     });*/
+
+    describe("comment operations", function() {
+        it("should return set of comments correctly", async function(){
+            //create user
+            let newUser = {
+                nombre: "Oriol",
+                password: "hash",
+                email: "oriol@example.com",
+            }
+            await user.create(newUser);
+            
+            //select id from user in order to create a route (we need it for the foreign key of element)
+            let query = {
+                text: "SELECT id \
+                        FROM usuarios \
+                        WHERE nombre = $1",
+                values: ["Oriol"],
+            };
+            let res = (await dbCtrl.execute(query)).rows[0];
+            idTest = res.id; 
+
+            //create route (and element)
+            let newRoute = {
+                nombre: "RouteTest",
+                descripcion: "RouteDescription",
+                idUser: idTest,
+                origen:"Coodenateorigen",
+                destino:"Coordenatedestine",
+                distancia: "distancia",
+            }
+            let idElemento_resp = (await route.create(newRoute)).idElemento;
+            
+            //get the automatically generated id for the route in order to access it
+            let queryGetID = {
+                text: "SELECT idElemento \
+                        FROM elementos \
+                        WHERE nombre = $1 and idUsuario = $2",
+                values: [newRoute.nombre, idTest],
+            };
+            res = (await dbCtrl.execute(queryGetID)).rows[0];
+            idElem = res.idelemento;
+
+            let body = {
+                idUser: idTest,
+                idElement: idElemento_resp,
+                text: "primer comentario"
+            }
+            await comment.comment(body);
+
+            body = {
+                idUser: idTest,
+                idElement: idElemento_resp,
+                text: "segundo comentario"
+            }
+
+            await comment.comment(body);
+            const commentSet = await comment.comments(idElemento_resp);
+            assert.equal(commentSet[0].idusuario, body.idUser);
+            assert.equal(commentSet[0].texto, "primer comentario");
+            assert.equal(commentSet[1].texto, "segundo comentario");
+        });
+
+    });
 });

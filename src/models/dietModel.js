@@ -52,9 +52,10 @@ async function dayMeals(idElemento, day) {
     return (await dbCtrl.execute(query)).rows;
 }
 
+
 module.exports = {
     create,
     del,
     update,
-    dayMeals
+    dayMeals,
 }

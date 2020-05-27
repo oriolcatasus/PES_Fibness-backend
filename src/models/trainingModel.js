@@ -64,5 +64,5 @@ async function activities(idElemento) {
 
 
 module.exports = {
-    create,update,del,activities
+    create,update,del,activities,
 }
