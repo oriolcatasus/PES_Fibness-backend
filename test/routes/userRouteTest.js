@@ -98,6 +98,21 @@ describe("user route", function() {
         });
     });
 
+    describe("GET /user/:id/routes", function() {
+        it.skip("should return an array of routes", async function() {
+            let res = await request.post("/user")
+                .set("Content-Type", "application/json")
+                .send(fakeUser);
+            const idUser = res.body.id;
+            res = await request.get(`/user/${idUser}/routes`)
+                .expect('Content-Type', /json/)
+                .expect(200);
+            const trainings = res.body;
+            expect(trainings).to.be.an('array');
+            //expect(trainings).to.not.be.empty;
+        });
+    });
+
     describe("POST /user/resetPassword", function(){
         it("should reset the password of a user", async function() {
             await request.post(`/user`)
