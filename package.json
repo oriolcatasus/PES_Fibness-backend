@@ -22,6 +22,7 @@
     "url": "https://github.com/oriolcatasus/PES_Fibness-backend/issues"
   },
   "homepage": "https://github.com/oriolcatasus/PES_Fibness-backend#readme",
+  "private": true,
   "dependencies": {
     "express": "^4.17.1",
     "node-pg-migrate": "^4.8.0",
@@ -33,12 +34,12 @@
     "chai-as-promised": "^7.1.1",
     "chai-things": "^0.2.0",
     "dotenv": "^8.2.0",
-    "mocha": "^7.1.2",
+    "mocha": "^7.2.0",
     "mocha-jenkins-reporter": "^0.4.3",
     "mocha-multi-reporters": "^1.1.7",
     "mocha-sonarqube-reporter": "^1.0.1",
-    "nodemon": "^2.0.3",
-    "nyc": "^15.0.1",
+    "nodemon": "^2.0.4",
+    "nyc": "^15.1.0",
     "supertest": "^4.0.2"
   }
 }
