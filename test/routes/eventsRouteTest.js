@@ -82,6 +82,58 @@ describe('Event route test', function() {
         })
     })
 
+    describe('GET /event/:id/participants', function() {
+        it('should return 2 participants', async function() {
+            let res = await request.post('/event')
+                .set('Content-Type', 'application/json')
+                .set('Accept', 'application/json')
+                .send(fakeEvent)
+            fakeEvent.id = res.body.id
+            const fakeParticipants = [
+                {
+                    nombre: 'FakeParticipant1',
+                    password: 'fakeParticipantHash1',
+                    email: 'fake@participant1.com',
+                },
+                {
+                    nombre: 'FakeParticipant2',
+                    password: 'fakeParticipantHash2',
+                    email: 'fake@participant2.com',
+                }
+            ]
+            let promises = fakeParticipants.map(value => {
+                return request.post('/user')
+                    .set('Content-Type', 'application/json')
+                    .set('Accept', 'application/json')
+                    .send(value)
+            })
+            res = await Promise.all(promises)
+            res.forEach((value, index) => {
+                fakeParticipants[index].id = value.body.id
+            })
+            promises = fakeParticipants.map(value => {
+                return request.post(`/event/${fakeEvent.id}/join`)
+                    .set('Content-Type', 'application/json')
+                    .send({ idusuario: value.id })
+            })
+            await Promise.all(promises)
+            res = await request.get(`/event/${fakeEvent.id}/participants`)
+                .set('Accept', 'application/json')
+                .expect('Content-Type', /json/)
+                .expect(200)
+            expect(res.body).to.have.length(3)
+            expect(res.body).to.all.have.property('id')
+            expect(res.body).to.all.have.property('nombre')
+        })
+
+        it('should not return participants from an invalid event', async function() {
+            fakeEvent.id = 'badId'
+            await request.get(`/event/${fakeEvent.id}/participants`)
+                .set('Accept', 'application/json')
+                .expect(500)
+        })
+    })
+
     describe('POST /event', function() {
         it('should create an event', async function() {
             const res = await request.post('/event')
@@ -109,8 +161,8 @@ describe('Event route test', function() {
                 .set('Content-Type', 'application/json')
                 .set('Accept', 'application/json')
                 .send(fakeEvent)
-            const id = res.body.id
-            res = await request.get(`/event/${id}`)
+            fakeEvent.id = res.body.id
+            res = await request.get(`/event/${fakeEvent.id}`)
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
                 .expect(200)
@@ -123,8 +175,8 @@ describe('Event route test', function() {
         })
 
         it('should not retrieve an event with an incorrect id', async function() {
-            const badId = 'badId'
-            await request.get(`/event/${badId}`)
+            fakeEvent.id = 'badId'
+            await request.get(`/event/${fakeEvent.id}`)
                 .set('Accept', 'application/json')
                 .expect(500)
         })
@@ -145,16 +197,16 @@ describe('Event route test', function() {
                 .set('Content-Type', 'application/json')
                 .set('Accept', 'application/json')
                 .send(fakeEvent)
-            const id = res.body.id            
-            await request.put(`/event/${id}`)
+            fakeEvent.id = res.body.id            
+            await request.put(`/event/${fakeEvent.id}`)
                 .set('Content-Type', 'application/json')
                 .send(newEvent)
                 .expect(200)
         })
 
         it('should not edit an event with an incorrect id', async function() {
-            const badId = 'badId'
-            await request.put(`/event/${badId}`)
+            fakeEvent.id = 'badId'
+            await request.put(`/event/${fakeEvent.id}`)
                 .set('Content-Type', 'application/json')
                 .send(newEvent)
                 .expect(500)
@@ -167,14 +219,14 @@ describe('Event route test', function() {
                 .set('Content-Type', 'application/json')
                 .set('Accept', 'application/json')
                 .send(fakeEvent)
-            const id = res.body.id
-            await request.delete(`/event/${id}`)
+            fakeEvent.id = res.body.id
+            await request.delete(`/event/${fakeEvent.id}`)
                 .expect(200)
         })
 
         it('should not delete an event with a bad formatted id', async function() {
-            const badId = 'badId'
-            await request.delete(`/event/${badId}`)
+            fakeEvent.id = 'badId'
+            await request.delete(`/event/${fakeEvent.id}`)
                 .expect(500)
         })
     })
@@ -186,16 +238,16 @@ describe('Event route test', function() {
                 .set('Content-Type', 'application/json')
                 .set('Accept', 'application/json')
                 .send(fakeEvent)
-            const id = res.body.id
-            await request.post(`/event/${id}/join`)
+            fakeEvent.id = res.body.id
+            await request.post(`/event/${fakeEvent.id}/join`)
                 .set('Content-Type', 'application/json')
                 .send(fakeParticipation)
                 .expect(201)
         })
 
         it('should not let the user join an invalid event', async function() {
-            const id = 0
-            await request.post(`/event/${id}/join`)
+            fakeEvent.id = 0
+            await request.post(`/event/${fakeEvent.id}/join`)
                 .set('Content-Type', 'application/json')
                 .send(fakeParticipation)
                 .expect(500)
@@ -209,17 +261,17 @@ describe('Event route test', function() {
                 .set('Content-Type', 'application/json')
                 .set('Accept', 'application/json')
                 .send(fakeEvent)
-            const id = res.body.id
-            await request.post(`/event/${id}/join`)
+            fakeEvent.id = res.body.id
+            await request.post(`/event/${fakeEvent.id}/join`)
                 .set('Content-Type', 'application/json')
                 .send(fakeParticipation)
-            await request.delete(`/event/${id}/join/${fakeParticipation.idusuario}`)
+            await request.delete(`/event/${fakeEvent.id}/join/${fakeParticipation.idusuario}`)
                 .expect(200)            
         })
 
         it('should not remove a user from an inexistant eventt', async function() {
-            const id = 0
-            await request.delete(`/event/${id}/join/${fakeParticipation.idusuario}`)
+            fakeEvent.id = 0
+            await request.delete(`/event/${fakeEvent.id}/join/${fakeParticipation.idusuario}`)
                 .expect(500)
         })
     })

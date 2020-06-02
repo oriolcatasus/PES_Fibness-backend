@@ -49,6 +49,15 @@ router.delete('/:id', async function(req, res, next) {
     }
 })
 
+router.get('/:id/participants', async function(req, res, next) {
+    try {
+        const participants = await event.participants(req.params.id)
+        res.status(200).send(participants)
+    } catch (err) {
+        next(err)
+    }
+})
+
 router.post('/:id/join', async function(req, res, next) {
     try {
         await event.join(req.params.id, req.body)

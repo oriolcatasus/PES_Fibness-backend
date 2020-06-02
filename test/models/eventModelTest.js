@@ -7,6 +7,12 @@ const user = require('../../src/models/userModel');
 
 describe('Event model', function() {
 
+    const fakeUser = {
+        nombre: 'Fake',
+        password: 'fakeHash',
+        email: 'fake@example.com',
+    }
+
     const fakeEvent = {
         titulo: 'FakeTitulo',
         descripcion: 'FakeDescripcion',
@@ -21,13 +27,8 @@ describe('Event model', function() {
     }
 
     beforeEach(async function() {
-        const fakeUser = {
-            nombre: 'Fake',
-            password: 'fakeHash',
-            email: 'fake@example.com',
-        }
         result = await user.create(fakeUser)
-        fakeEvent.idcreador = result.id
+        fakeEvent.idcreador = fakeUser.id = result.id
         const fakeParticipant = {
             nombre: 'FakeParticipant',
             password: 'fakeParticipantsHash',
@@ -136,7 +137,60 @@ describe('Event model', function() {
             expect(events).to.be.empty
         })
     })
+    
+    describe('getParticipants', function() {
+        it('should get 2 participants', async function() {
+            let res = await event.create(fakeEvent)
+            fakeEvent.id = res.id
+            const fakeParticipants = [
+                {
+                    nombre: 'FakeParticipant1',
+                    password: 'fakeParticipantHash1',
+                    email: 'fake@participant1.com',
+                },
+                {
+                    nombre: 'FakeParticipant2',
+                    password: 'fakeParticipantHash2',
+                    email: 'fake@participant2.com',
+                }
+            ]
+            let promisesArray = fakeParticipants.map(value => user.create(value))
+            res = await Promise.all(promisesArray)
+            res.forEach((value, index) => {
+                fakeParticipants[index].id = value.id
+            })            
+            promisesArray = fakeParticipants.map(value => event.join(fakeEvent.id, { idusuario:value.id }))
+            res = await Promise.all(promisesArray)
+            const participants = await event.participants(fakeEvent.id)
 
+            expect(participants).to.have.length(3)
+            expect(participants).to.include.something.like({
+                id: fakeUser.id,
+                nombre: fakeUser.nombre,
+            })
+            expect(participants).to.include.something.like({
+                id: fakeParticipants[0].id,
+                nombre: fakeParticipants[0].nombre,
+            })
+            expect(participants).to.include.something.like({
+                id: fakeParticipants[1].id,
+                nombre: fakeParticipants[1].nombre,
+            })
+        })
+
+        it('should get 1 participant, the creator', async function() {
+            let res = await event.create(fakeEvent)
+            fakeEvent.id = res.id
+            const participants = await event.participants(fakeEvent.id)
+
+            expect(participants).to.have.length(1)
+            expect(participants).to.include.something.like({
+                id: fakeUser.id,
+                nombre: fakeUser.nombre,
+            })
+        })
+    })
+    
     describe('join', function() {
         it('should let a user join an event', async function() {
             let result = await event.create(fakeEvent)

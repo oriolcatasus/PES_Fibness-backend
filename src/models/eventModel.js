@@ -31,8 +31,17 @@ async function getAll() {
         SELECT *
         FROM eventos
         ORDER BY fecha DESC, hora DESC`
-    const result = await dbCtrl.execute(query)
-    return result.rows
+    const res = await dbCtrl.execute(query)
+    return res.rows
+}
+
+async function participants(id) {
+    const query = SQL`
+        SELECT u.id, u.nombre
+        FROM participacionevento pe INNER JOIN usuarios u ON pe.idusuario = u.id
+        WHERE pe.idevento=${id}`
+    const res = await dbCtrl.execute(query)
+    return res.rows
 }
 
 async function del(id) {
@@ -76,10 +85,11 @@ async function disjoin(id, idParticipant) {
 
 module.exports = {
     create,
+    get,
+    getAll,
+    participants,
     del,
     edit,
-    get,
     join,
-    disjoin,
-    getAll
+    disjoin
 }

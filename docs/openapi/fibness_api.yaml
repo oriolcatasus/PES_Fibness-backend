@@ -2163,8 +2163,36 @@ paths:
             minimum: 1
       responses:
         200:
-          description: User removed successfully from event        
-  '/statistics':
+          description: User removed successfully from event 
+  /event/{id}/participants:
+    get:
+      summary: Returns all participants from an event
+      tags:
+        - event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the event
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: Array of users participation the given event
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    minimum: 1
+                    example: 12345
+                  nombre:
+                    type: string
+                    example: Oriol
+  /statistics:
     post:
       summary: Creates/updates a new stadistic
       description: Creates/updates the daily statistic of steps of a given user. If it's call for the first time in the day a statistic is created otherwise the meters of dstRecorrida parameter are added to the one of the existing statistic.<br>Remember that the distance parameter should be expressed in meters.

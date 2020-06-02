@@ -1846,5 +1846,31 @@ describe("userModel script", function() {
             expect(eventsdb[3]).to.be.like(fakeEvents[1])
             expect(eventsdb[4]).to.be.like(fakeEvents[0])
         })
+
+        it('should return 0 events', async function() {
+            const fakeUser2 = {
+                nombre: 'Fake2',
+                password: 'fakeHash2',
+                email: 'fake2@example.com'
+            }
+            let result = await Promise.all([
+                user.create(fakeUser),
+                user.create(fakeUser2)
+            ])
+            fakeUser.id = result[0].id
+            fakeUser2.id = result[1].id
+            const fakeEvent = {
+                titulo: `FakeTitulo`,
+                descripcion: 'FakeDescripcion',
+                fecha: '2019-02-29',
+                hora: '00:00',
+                localizacion: 'fake',
+                idcreador: fakeUser2.id
+            }
+            await event.create(fakeEvent)
+            const eventsdb = await user.getEventsCreated(fakeUser.id)
+            
+            expect(eventsdb).to.be.empty
+        })
     })
 })
