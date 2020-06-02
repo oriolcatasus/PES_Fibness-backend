@@ -14,6 +14,7 @@ const exercise = require("./routes/exercise")
 const route = require("./routes/route")
 const comment = require("./routes/comment")
 const event = require('./routes/event')
+const statistic = require('./routes/statistic')
 
 //Middleware
 const errorHandler = require("./middleware/errorHandlers");
@@ -39,6 +40,7 @@ app.use("/aliment", aliment);
 app.use("/route", route);
 app.use("/comment", comment);
 app.use('/event', event)
+app.use("/statistic", statistic)
 
 app.get("/test", (req, res) => {
     console.log("Hello");
