@@ -1,6 +1,7 @@
 const chai = require('chai')
 
-//Middleware
+//Middlewares
+chai.use(require('chai-like'))
 chai.use(require('chai-things'))
 chai.use(require('chai-as-promised')) //Must be the last one
 

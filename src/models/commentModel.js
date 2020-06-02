@@ -1,12 +1,6 @@
-const path = require('path')
-const fs = require('fs').promises
-
 const SQL = require('sql-template-strings')
 
 const dbCtrl = require("../ctrls/dbCtrl")
-const constants = require('../constants')
-
-const userResourcePath = path.join(constants.resourcePath, 'user')
 
 async function comment(body) {
     let query = SQL`INSERT INTO comentarios(idUsuario, idElemento, texto)

@@ -4,6 +4,14 @@ const event = require('../models/eventModel')
 
 const router = express.Router()
 
+router.get('/', async function(req, res, next) {
+    try {
+        const events = await event.getAll()
+        res.status(200).send(events)
+    } catch (err) {
+        next(err)
+    }
+})
 
 router.post('/', async function(req, res, next) {
     try {
@@ -44,6 +52,15 @@ router.delete('/:id', async function(req, res, next) {
 router.post('/:id/join', async function(req, res, next) {
     try {
         await event.join(req.params.id, req.body)
+        res.sendStatus(201)
+    } catch (err) {
+        next(err)
+    }
+})
+
+router.delete('/:idEvent/join/:idUser', async function(req, res, next) {
+    try {
+        await event.disjoin(req.params.idEvent, req.params.idUser)
         res.sendStatus(200)
     } catch (err) {
         next(err)
@@ -51,4 +68,4 @@ router.post('/:id/join', async function(req, res, next) {
 })
 
 
-module.exports = router;
+module.exports = router

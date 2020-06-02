@@ -1063,11 +1063,15 @@ describe("userModel script", function() {
 
             res = await user.followed(idFr);
             
-            assert.equal(res.length, 2);
-            assert.equal(res[0].nombre, fakeUser2.nombre);
-            assert.equal(res[0].id, idFd2);
-            assert.equal(res[1].nombre, fakeUser3.nombre);
-            assert.equal(res[1].id, idFd3);
+            expect(res).to.have.length(2)
+            expect(res).to.include.something.like({
+                id: idFd2,
+                nombre: fakeUser2.nombre
+            })
+            expect(res).to.include.something.like({
+                id: idFd3,
+                nombre: fakeUser3.nombre
+            })
         })
 
         it("should get the brief information of all users except the one we pass", async function() {
@@ -1077,37 +1081,43 @@ describe("userModel script", function() {
                 email: 'fake@example.com',
             }
             let res = await user.create(fakeUser);
-            const currentID = res.id;
-            
+            const currentID = res.id;            
             const fakeUser2 = {
                 nombre: 'Fake2',
                 password: 'fakeHash2',
                 email: 'fake2@example.com',
             }
             res = await user.create(fakeUser2);
-
+            const id2 = res.id;
             const fakeUser3 = {
                 nombre: 'Fake3',
                 password: 'fakeHash3',
                 email: 'fake3@example.com',
             }
             res = await user.create(fakeUser3);
-
+            const id3 = res.id;
             const fakeUser4 = {
                 nombre: 'Fake4',
                 password: 'fakeHash4',
                 email: 'fake4@example.com',
             }
             res = await user.create(fakeUser4);
-            let id4 = res.id;
-
+            const id4 = res.id;
             res = await user.shortUsersInfo(currentID);
             
-            assert.equal(res.length, 3);
-            assert.equal(res[0].nombre, fakeUser2.nombre);
-            assert.equal(res[1].nombre, fakeUser3.nombre);
-            assert.equal(res[2].id, id4);
-            
+            expect(res).to.be.lengthOf(3)
+            expect(res).to.include.something.like({
+                id: id2,
+                nombre: fakeUser2.nombre
+            })
+            expect(res).to.include.something.like({
+                id: id3,
+                nombre: fakeUser3.nombre
+            })
+            expect(res).to.include.something.like({
+                id: id4,
+                nombre: fakeUser4.nombre
+            })           
         })
 
         it("should get the brief information of all users except the one we pass and the ones who blocked", async function() {
@@ -1117,8 +1127,7 @@ describe("userModel script", function() {
                 email: 'fake@example.com',
             }
             let res = await user.create(fakeUser);
-            const currentID = res.id;
-            
+            const currentID = res.id;            
             const fakeUser2 = {
                 nombre: 'Fake2',
                 password: 'fakeHash2',
@@ -1132,46 +1141,43 @@ describe("userModel script", function() {
                 email: 'fake3@example.com',
             }
             res = await user.create(fakeUser3);
-
             const fakeUser4 = {
                 nombre: 'Fake4',
                 password: 'fakeHash4',
                 email: 'fake4@example.com',
             }
             res = await user.create(fakeUser4);
-            let id4 = res.id;
-
+            const id4 = res.id;
             const fakeUser5 = {
                 nombre: 'Fake5',
                 password: 'fakeHash5',
                 email: 'fake5@example.com',
             }
             res = await user.create(fakeUser5);
-            let id5 = res.id;
-
+            const id5 = res.id;
             let body = {
                 idBlocker: currentID,
                 idBlocked: id4
-            }
-           
+            }           
             await user.block(body);
-
             body = {
                 idBlocker: id5,
                 idBlocked: currentID
-            }
-           
+            }           
             await user.block(body);
-            //await user.unblock(currentID, id5);
-
             res = await user.shortUsersInfo(currentID);
             
-            assert.equal(res.length, 3);
-            assert.equal(res[0].nombre, fakeUser2.nombre);
-            assert.equal(res[1].nombre, fakeUser3.nombre);
-            assert.equal(res[2].bloqueado, true);
-            assert.equal(res[2].nombre, fakeUser4.nombre);
-            
+            expect(res).to.be.lengthOf(3)
+            expect(res).to.include.something.like({
+                nombre: fakeUser2.nombre
+            })
+            expect(res).to.include.something.like({
+                nombre: fakeUser3.nombre
+            })
+            expect(res).to.include.something.like({
+                nombre: fakeUser4.nombre,
+                bloqueado: true
+            })            
         })
     })
 

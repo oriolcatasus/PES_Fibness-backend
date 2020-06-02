@@ -343,7 +343,42 @@ paths:
                     
                 required:
                       - activitySet
-  
+
+  /user/{id}/statistics:
+    get:
+      summary: Gives the statistic of a user 
+      description: Returns all the statistics from a user during the current week
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user, whose's statistic we want to get
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: Set of the dates, distances of the requested statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dia:
+                    type: string
+                  dstrecorrida:
+                    type: string
+                example:
+                  - dia: 'lunes'
+                    dstrecorrida: '60'
+                 
+                  - dia: 'martes'
+                    dstrecorrida: '100'
+                    
+                required:
+                      - activitySet  
   
   /user/resetPassword:
     put:
@@ -1699,7 +1734,7 @@ paths:
   '/route':
     post:
       summary: Creates a route
-      description: Creates a route with the given description and name associated with the given user
+      description: Creates a route associated to the given user. <br>The distance parameter should be expressed in meters.
       tags:
         - route
       requestBody:
@@ -1769,6 +1804,7 @@ paths:
           description: Ok
     put:
       summary: Update a route by id
+      description: Updates a route.<br>The distance parameter should be expressed in meters.
       tags:
         - route
       parameters:
@@ -1915,6 +1951,41 @@ paths:
                       type: integer
                       example: 2
   /event:
+    get:
+      summary: Returns all events
+      description: Returns all events ordered by data
+      tags:
+        - event
+      responses:
+        200:
+          description: Returns all events ordered by data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1234
+                  titulo:
+                    type: string
+                    example: Partido de futbol
+                  descripcion:
+                    type: string
+                    example: Hola
+                  fecha:
+                    type: string
+                    example: '2020-06-02'
+                  hora:
+                    type: string
+                    example: '23:59'
+                  localizacion:
+                    type: string
+                    example: '2.0941546718608492;41.323306159501385'
+                  idcreador:
+                    type: integer
+                    minimum: 1
+                    example: 456
     post:
       summary: Creates an event
       tags:
@@ -2097,3 +2168,58 @@ paths:
       responses:
         201:
           description:  Participation created successfully
+  /event/{idEvent}/join/{idUser}:
+    delete:
+      summary: Removes a user from an event
+      tags:
+        - event
+      parameters:
+        - name: idEvent
+          in: path
+          required: true
+          description: The id of the event
+          schema:
+            type: integer
+            minimum: 1
+        - name: idUser
+          in: path
+          required: true
+          description: The id of the user
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: User removed successfully from event        
+  '/statistics':
+    post:
+      summary: Creates/updates a new stadistic
+      description: Creates/updates the daily statistic of steps of a given user. If it's call for the first time in the day a statistic is created otherwise the meters of dstRecorrida parameter are added to the one of the existing statistic.<br>Remember that the distance parameter should be expressed in meters.
+      tags:
+        - statistic
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idUser:
+                  type: integer
+                  description: id of the user
+                  example: 2
+                dstRecorrida:
+                  type: string
+                  example: '60'
+              required:
+                - idUse
+                - dstRecorrida
+      responses:
+        '201':
+          description: statistic created succesfully
+        '200':
+          description: statistic update succesfully
+        '400':
+          description: >-
+            Some required parameters are missing or with an incorrect type
+    

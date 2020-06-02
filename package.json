@@ -24,6 +24,7 @@
   "homepage": "https://github.com/oriolcatasus/PES_Fibness-backend#readme",
   "private": true,
   "dependencies": {
+    "chai-like": "^1.1.1",
     "express": "^4.17.1",
     "node-pg-migrate": "^4.8.0",
     "pg": "^7.18.2",

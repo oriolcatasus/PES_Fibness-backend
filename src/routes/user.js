@@ -140,8 +140,6 @@ router.post('/:id/profile', async function(req, res, next) {
         const id = req.params.id
         const img = req.body
         const ext = req.get('Content-Type').split('/')[1]
-        console.log(req.get('Content-Type'))
-        console.log(img)
         await user.setProfileImg(id, img, ext)
         res.sendStatus(201)
     } catch (err) {
