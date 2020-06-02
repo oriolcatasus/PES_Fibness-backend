@@ -1731,17 +1731,34 @@ describe("userModel script", function() {
             }
             await user.importE(body);
 
-            /*queryGetID = {
+            queryGetID = {
                 text: "SELECT idElemento \
                         FROM elementos \
                         WHERE nombre = $1 and idUsuario = $2",
-                values: [newTraining.nombre, id2],
+                values: [newDiet.nombre, id2],
             };
             res = (await dbCtrl.execute(queryGetID)).rows[0];
-            newTraining = res.idelemento;
+            newDietID = res.idelemento;
 
-            oldExercise = await training.activities(idTrainingTest);
-            newExercise = await training.activities(newTraining); */
+            oldMeals = await diet.dayMeals(idElem, "martes");
+            newMeals = await diet.dayMeals(newDietID, "martes"); 
+            //console.log("oldMeals:")
+            //console.log(oldMeals);
+            //console.log("newMeals:")
+            //console.log(newMeals);
+
+            oldAliments = await meal.aliments(idMeal);
+            newAliments = await meal.aliments(newMeals[0].idcomida)
+            //console.log("oldAliments:")
+            //console.log(oldAliments);
+            //console.log("newAliments:")
+            //console.log(newAliments);
+
+
+            assert.equal(oldMeals.length, newMeals.length);
+            assert.equal(oldMeals[0].nombre, newMeals[0].nombre);
+            assert.notEqual(oldMeals[0].idcomida, newMeals[0].idcomida);
+            assert.equal(oldAliments[0].descripcion, newAliments[0].descripcion);
 
         });
     });

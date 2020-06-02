@@ -45,7 +45,6 @@ async function del(idActividad) {
 }
 
 async function importE(body) {
-    console.log(body);
     let query = {
         text: "SELECT idActividad, nombre, descripcion, tiempoEjecucion\
                FROM actividades\
@@ -53,7 +52,6 @@ async function importE(body) {
         values: [body.oldId]
     }
     let res = await dbCtrl.execute(query)
-    console.log(res.rows);
     let res2;
 
     for (let i=0; i<res.rows.length; ++i) {
@@ -64,7 +62,6 @@ async function importE(body) {
             values: [res.rows[i].idactividad]
         }
         res2 = await dbCtrl.execute(query);
-        console.log(res2.rows);
 
         let exercise = {
             nombre: res.rows[i].nombre,

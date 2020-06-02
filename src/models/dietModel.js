@@ -61,7 +61,6 @@ async function importE(body) {
         values: [body.idElement]
     }
     let res = await dbCtrl.execute(query);
-    console.log(res.rows);
 
     const diet = {
         nombre: res.rows[0].nombre,
