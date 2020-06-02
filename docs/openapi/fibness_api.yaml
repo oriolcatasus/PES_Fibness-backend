@@ -2097,3 +2097,26 @@ paths:
       responses:
         201:
           description:  Participation created successfully
+  /event/{idEvent}/join/{idUser}:
+    delete:
+      summary: Removes a user from an event
+      tags:
+        - event
+      parameters:
+        - name: idEvent
+          in: path
+          required: true
+          description: The id of the event
+          schema:
+            type: integer
+            minimum: 1
+        - name: idUser
+          in: path
+          required: true
+          description: The id of the user
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: User removed successfully from event

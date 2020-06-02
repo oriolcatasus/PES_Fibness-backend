@@ -26,7 +26,7 @@ describe('Event model', function() {
             password: 'fakeHash',
             email: 'fake@example.com',
         }
-        let result = await user.create(fakeUser)
+        result = await user.create(fakeUser)
         fakeEvent.idcreador = result.id
         const fakeParticipant = {
             nombre: 'FakeParticipant',
@@ -40,13 +40,13 @@ describe('Event model', function() {
     describe('create', function() {
         it('should create a new event', async function() {
             let result = await event.create(fakeEvent)
-            const idEvent = result.id
+            fakeEvent.id = result.id
 
-            const eventDb = await event.get(idEvent)
+            const eventDb = await event.get(fakeEvent.id)
             const query = SQL`
                 SELECT *
                 FROM participacionevento
-                WHERE idusuario=${fakeEvent.idcreador} and idevento=${idEvent}`
+                WHERE idusuario=${fakeEvent.idcreador} and idevento=${fakeEvent.id}`
             result = await dbCtrl.execute(query)
             expect(fakeEvent.titulo).to.equal(eventDb.titulo)
             expect(fakeEvent.descripcion).to.equal(eventDb.descripcion)
@@ -54,15 +54,15 @@ describe('Event model', function() {
             expect(fakeEvent.hora).to.equal(eventDb.hora)
             expect(fakeEvent.localizacion).to.equal(eventDb.localizacion)
             expect(fakeEvent.idcreador).to.equal(eventDb.idcreador)
-            expect(result.rows.length).to.equal(1)
+            expect(result.rows).to.be.lengthOf(1)
         })
     })
 
     describe('get', function() {
         it('should retrieve an event', async function() {
             let result = await event.create(fakeEvent)
-            const idEvent = result.id
-            const eventDb = await event.get(idEvent)
+            fakeEvent.id = result.id
+            const eventDb = await event.get(fakeEvent.id)
             
             expect(fakeEvent.titulo).to.equal(eventDb.titulo)
             expect(fakeEvent.descripcion).to.equal(eventDb.descripcion)
@@ -75,16 +75,38 @@ describe('Event model', function() {
 
     describe('join', function() {
         it('should let a user join an event', async function() {
-            result = await event.create(fakeEvent)
-            const idEvent = result.id            
-            await event.join(idEvent, fakeParticipation)
+            let result = await event.create(fakeEvent)
+            fakeEvent.id = result.id            
+            await event.join(fakeEvent.id, fakeParticipation)
 
             const query = SQL`
                 SELECT *
                 FROM participacionevento
-                WHERE idevento=${idEvent} and idusuario=${fakeParticipation.idusuario}`
+                WHERE idevento=${fakeEvent.id} and idusuario=${fakeParticipation.idusuario}`
             result = await dbCtrl.execute(query)
-            expect(result.rows.length).to.equal(1)
+            expect(result.rows).to.be.lengthOf(1)
+        })
+    })
+
+    describe('disjoin', function() {
+        it('should remove a user from an event', async function() {
+            let result = await event.create(fakeEvent)
+            fakeEvent.id = result.id
+            await event.join(fakeEvent.id, fakeParticipation)
+            await event.disjoin(fakeEvent.id, fakeParticipation.idusuario)
+
+            const query = SQL`
+                SELECT *
+                FROM participacionevento
+                WHERE idevento=${fakeEvent.id} and idusuario=${fakeParticipation.idusuario}`
+            result = await dbCtrl.execute(query)
+            expect(result.rows).to.be.empty
+        })
+
+        it('should not remove the event creator', async function() {
+            let result = await event.create(fakeEvent)
+            fakeEvent.id = result.id
+            await expect(event.disjoin(fakeEvent.id, fakeEvent.idcreador)).to.be.eventually.rejected
         })
     })
 
@@ -101,7 +123,7 @@ describe('Event model', function() {
                 WHERE idevento=${idEvent}`
             result = await dbCtrl.execute(query)
             expect(eventDb).to.be.undefined
-            expect(result.rows.length).to.equal(0)
+            expect(result.rows).to.be.empty
         })
 
         it('should delete an event with participants', async function() {
@@ -117,7 +139,7 @@ describe('Event model', function() {
                 WHERE idevento=${idEvent}`
             result = await dbCtrl.execute(query)
             expect(eventDb).to.be.undefined
-            expect(result.rows.length).to.equal(0)
+            expect(result.rows).to.be.empty
         })
     })
     

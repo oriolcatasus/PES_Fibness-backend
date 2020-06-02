@@ -53,11 +53,23 @@ async function join(id, { idusuario }) {
     await dbCtrl.execute(query)
 }
 
+async function disjoin(id, idParticipant) {
+    const event = await get(id)
+    if (event.idcreador === idParticipant) {
+        throw Error('Creator of an event cannot be removed as a participant')
+    }
+    const query = SQL`
+        DELETE FROM participacionevento
+        WHERE idevento=${id} and idusuario=${idParticipant}`
+    await dbCtrl.execute(query)
+}
+
 
 module.exports = {
     create,
     del,
     edit,
     get,
-    join
+    join,
+    disjoin
 }

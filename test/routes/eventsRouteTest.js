@@ -16,6 +16,23 @@ describe('Event route test', function() {
         idcreador: null
     }
 
+    let fakeParticipation
+
+    async function createFakeParticipation(index) {
+        const fakeParticipant = {
+            nombre: `FakeParticipant-${index}`,
+            password: 'fakeParticipantsHash',
+            email: `fake_${index}@participant.com`,
+        }
+        const res = await request.post('/user')
+            .set('Content-Type', 'application/json')
+            .set('Accept', 'application/json')
+            .send(fakeParticipant)
+        return {
+            idusuario: res.body.id
+        }
+    }
+
     beforeEach(async function() {
         const fakeUser = {
             nombre: 'Fake',
@@ -27,6 +44,7 @@ describe('Event route test', function() {
             .set('Accept', 'application/json')
             .send(fakeUser)
         fakeEvent.idcreador = res.body.id
+        fakeParticipation = await createFakeParticipation(0)
     })
 
     describe('POST /event', function() {
@@ -128,40 +146,45 @@ describe('Event route test', function() {
 
     describe('POST /event/:id/join', function() {
 
-        const fakeParticipation = {
-            idusuario: null
-        }
-    
-        beforeEach(async function() {
-            const fakeParticipant = {
-                nombre: 'FakeParticipant',
-                password: 'fakeParticipantsHash',
-                email: 'fake@participant.com',
-            }
-            const res = await request.post('/user')
-                .set('Content-Type', 'application/json')
-                .set('Accept', 'application/json')
-                .send(fakeParticipant)
-            fakeParticipation.idusuario = res.body.id
-        })
-
         it('should let the user join the event', async function() {
-            let res = await request.post('/event')
+            const res = await request.post('/event')
                 .set('Content-Type', 'application/json')
                 .set('Accept', 'application/json')
                 .send(fakeEvent)
             const id = res.body.id
-            res = await request.post(`/event/${id}/join`)
+            await request.post(`/event/${id}/join`)
                 .set('Content-Type', 'application/json')
                 .send(fakeParticipation)
-                .expect(200)
+                .expect(201)
         })
 
         it('should not let the user join an invalid event', async function() {
             const id = 0
-            res = await request.post(`/event/${id}/join`)
+            await request.post(`/event/${id}/join`)
                 .set('Content-Type', 'application/json')
                 .send(fakeParticipation)
+                .expect(500)
+        })
+    })
+
+    describe('DELETE /event/:id/join', function() {
+
+        it('should remove a user from an event', async function() {
+            const res = await request.post('/event')
+                .set('Content-Type', 'application/json')
+                .set('Accept', 'application/json')
+                .send(fakeEvent)
+            const id = res.body.id
+            await request.post(`/event/${id}/join`)
+                .set('Content-Type', 'application/json')
+                .send(fakeParticipation)
+            await request.delete(`/event/${id}/join/${fakeParticipation.idusuario}`)
+                .expect(200)            
+        })
+
+        it('should not remove a user from an inexistant eventt', async function() {
+            const id = 0
+            await request.delete(`/event/${id}/join/${fakeParticipation.idusuario}`)
                 .expect(500)
         })
     })
