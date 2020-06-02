@@ -1,4 +1,5 @@
 const SQL = require('sql-template-strings')
+const meal = require('../models/mealModel.js')
 
 const dbCtrl = require("../ctrls/dbCtrl");
 
@@ -52,10 +53,37 @@ async function dayMeals(idElemento, day) {
     return (await dbCtrl.execute(query)).rows;
 }
 
+async function importE(body) {
+    let query = {
+        text: "SELECT nombre, descripcion\
+               FROM elementos\
+               WHERE idElemento = $1",
+        values: [body.idElement]
+    }
+    let res = await dbCtrl.execute(query);
+    console.log(res.rows);
+
+    const diet = {
+        nombre: res.rows[0].nombre,
+        descripcion: res.rows[0].descripcion,
+        idUser: body.idUser,
+    }
+
+    let newID = await create(diet);
+
+    body = {
+        newId : newID.idElemento,
+        oldId : body.idElement
+    }
+    await meal.importE(body);
+
+}
+
 
 module.exports = {
     create,
     del,
     update,
     dayMeals,
+    importE
 }

@@ -5,6 +5,8 @@ const SQL = require('sql-template-strings')
 
 const dbCtrl = require("../ctrls/dbCtrl")
 const constants = require('../constants')
+const training = require('../models/trainingModel.js')
+const diet = require('../models/dietModel.js')
 
 const userResourcePath = path.join(constants.resourcePath, 'user')
 
@@ -397,6 +399,18 @@ async function unlike(idUser, idElement, type) {
     }
 }
 
+async function importE(body) {
+    if (body.type == "training") {
+        await training.importE(body);
+    }
+    else if (body.type == "diet") {
+        await diet.importE(body);
+    }
+    else if (body.type == "route") {
+
+    }
+}
+
 
 
 module.exports = {
@@ -426,4 +440,5 @@ module.exports = {
     userInfo,
     like,
     unlike,
+    importE
 }

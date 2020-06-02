@@ -8,6 +8,9 @@ const diet = require("../../src/models/dietModel")
 const route = require("../../src/models/routeModel");
 const dbCtrl = require("../../src/ctrls/dbCtrl");
 const comment = require("../../src/models/commentModel");
+const exercise = require("../../src/models/exerciseModel");
+const meal = require("../../src/models/mealModel");
+const aliment = require("../../src/models/alimentModel");
 
 const testConstants = require('../constants')
 const constants = require('../../src/constants')
@@ -1556,6 +1559,190 @@ describe("userModel script", function() {
 
             assert.equal(commentSet[0].nlikes, 0);
             assert.equal(commentSet[0].texto, bodyComment.text);
+        });
+    });
+
+    describe("import operations", function() {
+        it("should successfully import", async function() {
+            const fakeUser = {
+                nombre: 'Fake',
+                password: 'fakeHash',
+                email: 'fake@example.com',
+            }
+            let res = await user.create(fakeUser);
+            const id = res.id;
+            
+            const fakeUser2 = {
+                nombre: 'Fake2',
+                password: 'fakeHash2',
+                email: 'fake2@example.com',
+            }
+            res = await user.create(fakeUser2);
+            const id2 = res.id;
+
+            //create training  (and element)
+            let newTraining = {
+                nombre: "TrainingTest",
+                descripcion: "TrainingDescription",
+                idUser: id,
+            }
+            await training.create(newTraining);
+
+            //get the automatically generated id for the training in order to access it
+            let queryGetID = {
+                text: "SELECT idElemento \
+                        FROM elementos \
+                        WHERE nombre = $1 and idUsuario = $2",
+                values: [newTraining.nombre, id],
+            };
+            res = (await dbCtrl.execute(queryGetID)).rows[0];
+            idTrainingTest = res.idelemento;
+
+             //create exercise( and activity)
+             let newExercise = {
+                nombre: "exerciseTest",
+                descripcion: "exerciseDescription",
+                tiempoEjecucion: 4,
+                idEntrenamiento: idTrainingTest,
+                numSets: 3,
+                numRepeticiones: 2,
+                tiempoDescanso: 1,
+                posicion: 2,
+            }
+            let idActividad_resp = (await exercise.create(newExercise)).idExercise;
+
+            //create exercise( and activity) 2
+            newExercise = {
+                nombre: "exerciseTest2",
+                descripcion: "exerciseDescription2",
+                tiempoEjecucion: 42,
+                idEntrenamiento: idTrainingTest,
+                numSets: 32,
+                numRepeticiones: 22,
+                tiempoDescanso: 12,
+                posicion: 3,
+            }
+            idActividad_resp = (await exercise.create(newExercise)).idExercise;
+
+            //get the automatically generated id for the exercise in order to access it
+            queryGetID = {
+                text: "SELECT idactividad \
+                       FROM actividades \
+                       WHERE nombre = $1 and idEntrenamiento = $2\
+                       ORDER BY idActividad DESC",
+                values: [newExercise.nombre,newExercise.idEntrenamiento],
+            };
+            res = (await dbCtrl.execute(queryGetID)).rows[0];
+            let idActi = res.idactividad;
+
+            let body = {
+                type: "training",
+                idElement: idTrainingTest,
+                idUser: id2
+            }
+
+            await user.importE(body);
+
+            queryGetID = {
+                text: "SELECT idElemento \
+                        FROM elementos \
+                        WHERE nombre = $1 and idUsuario = $2",
+                values: [newTraining.nombre, id2],
+            };
+            res = (await dbCtrl.execute(queryGetID)).rows[0];
+            newTraining = res.idelemento;
+
+            oldExercise = await training.activities(idTrainingTest);
+            newExercise = await training.activities(newTraining);
+
+            /*console.log ("oldExercise");
+            console.log(oldExercise);
+            console.log("newExercise");
+            console.log(newExercise); */
+
+            assert.equal(oldExercise.length, newExercise.length);
+            assert.equal(oldExercise[0].nombre, newExercise[0].nombre);
+            assert.notEqual(oldExercise[0].idactividad, newExercise[0].idactividad);
+            assert.equal(oldExercise[1].numrepeticiones, newExercise[1].numrepeticiones);
+
+
+            //create diet (and element)
+            let newDiet = {
+                nombre: "DietTest",
+                descripcion: "DietDescription",
+                idUser: id,
+            }
+            idDiet = await diet.create(newDiet);
+
+            //get the automatically generated id for the diet in order to access it
+            queryGetID = {
+                text: "SELECT idElemento \
+                        FROM elementos \
+                        WHERE nombre = $1 and idUsuario = $2",
+                values: [newDiet.nombre, id],
+            };
+            res = (await dbCtrl.execute(queryGetID)).rows[0];
+            idElem = res.idelemento;
+
+            //create a meal
+            let newMeal = {
+                nombre: "MealTest",
+                horaComida: '22:00:00',
+                idElemento: idElem,
+                tipoDia: "miercoles",
+            };
+
+            idMeal = (await meal.create(newMeal)).idComida;
+
+            //create an aliment
+            let newAliment = {
+                nombre: "AlimentTest",
+                descripcion: "descriptionTest",
+                calorias: '300',
+                idComida: idMeal,
+            };
+
+            idAliment = (await aliment.create(newAliment)).idAlimento;
+
+            //create a meal 2
+            newMeal = {
+                nombre: "MealTest2",
+                horaComida: '23:00:00',
+                idElemento: idElem,
+                tipoDia: "martes",
+            };
+
+            idMeal = (await meal.create(newMeal)).idComida;
+
+            //create an aliment 2
+            newAliment = {
+                nombre: "AlimentTest2",
+                descripcion: "descriptionTest2",
+                calorias: '500',
+                idComida: idMeal,
+            };
+
+            idAliment = (await aliment.create(newAliment)).idAlimento;
+
+            body = {
+                type: "diet",
+                idElement: idDiet.idElemento,
+                idUser: id2
+            }
+            await user.importE(body);
+
+            /*queryGetID = {
+                text: "SELECT idElemento \
+                        FROM elementos \
+                        WHERE nombre = $1 and idUsuario = $2",
+                values: [newTraining.nombre, id2],
+            };
+            res = (await dbCtrl.execute(queryGetID)).rows[0];
+            newTraining = res.idelemento;
+
+            oldExercise = await training.activities(idTrainingTest);
+            newExercise = await training.activities(newTraining); */
+
         });
     });
 })

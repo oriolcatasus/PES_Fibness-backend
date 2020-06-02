@@ -239,4 +239,14 @@ router.delete('/like/:idUser/:idElement/:type', async function(req, res) {
     }
 })
 
+router.post('/import', async function(req, res) {
+    try {
+        await user.importE(req.body);
+        res.sendStatus(201);
+    } catch(err) {
+        res.status(400).send(err.message);
+    }
+})
+
+
 module.exports = router;

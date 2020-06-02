@@ -1,4 +1,5 @@
 const dbCtrl = require("../ctrls/dbCtrl");
+const exercise = require('../models/exerciseModel.js')
 
 async function del(idElemento) {
     const query = {
@@ -62,7 +63,41 @@ async function activities(idElemento) {
     return activitySet;
 }
 
+async function importE(body) {
+    let query = {
+        text: "SELECT nombre, descripcion\
+               FROM elementos\
+               WHERE idElemento = $1",
+        values: [body.idElement]
+    }
+    let res = await dbCtrl.execute(query);
+    //console.log(res.rows);
+
+    query = {
+        text: "INSERT INTO elementos (nombre, descripcion, idUsuario) values($1, $2, $3) RETURNING idElemento",
+        values: [res.rows[0].nombre, res.rows[0].descripcion, body.idUser]
+    }
+    res = await dbCtrl.execute(query);
+
+    //console.log(res.rows);
+
+    query = {
+        text: "INSERT INTO entrenamientos (idElemento) values($1)",
+        values: [res.rows[0].idelemento]
+    }
+
+    await dbCtrl.execute(query);
+
+    body = {
+        newId : res.rows[0].idelemento,
+        oldId : body.idElement
+    }
+    await exercise.importE(body);
+
+}
+
 
 module.exports = {
     create,update,del,activities,
+    importE
 }

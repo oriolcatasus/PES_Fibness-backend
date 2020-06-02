@@ -46,6 +46,45 @@ async function aliments(idComida) {
     return alimentsSet;
 }
 
+async function importE(body) {
+    console.log(body); /*
+    let query = {
+        text: "SELECT idActividad, nombre, descripcion, tiempoEjecucion\
+               FROM actividades\
+               WHERE idEntrenamiento = $1",
+        values: [body.oldId]
+    }
+    let res = await dbCtrl.execute(query)
+    console.log(res.rows);
+    let res2;
+
+    for (let i=0; i<res.rows.length; ++i) {
+        query = {
+            text: "SELECT numSets, numRepeticiones, tiempoDescanso, posicion\
+                   FROM ejercicios\
+                   WHERE idActividad = $1",
+            values: [res.rows[i].idactividad]
+        }
+        res2 = await dbCtrl.execute(query);
+        console.log(res2.rows);
+
+        let exercise = {
+            nombre: res.rows[i].nombre,
+            descripcion: res.rows[i].descripcion,
+            tiempoEjecucion: res.rows[i].tiempoejecucion,
+            idEntrenamiento: body.newId,
+            numSets: res2.rows[0].numsets,
+            numRepeticiones: res2.rows[0].numrepeticiones,
+            tiempoDescanso: res2.rows[0].tiempodescanso,
+            posicion: res2.rows[0].posicion
+        }
+
+        await create(exercise);
+    } */
+    
+
+}
+
 module.exports = {
-    create, del, update, aliments
+    create, del, update, aliments, importE
 }
