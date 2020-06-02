@@ -41,5 +41,14 @@ router.delete('/:id', async function(req, res, next) {
     }
 })
 
+router.post('/:id/join', async function(req, res, next) {
+    try {
+        await event.join(req.params.id, req.body)
+        res.sendStatus(200)
+    } catch (err) {
+        next(err)
+    }
+})
+
 
 module.exports = router;

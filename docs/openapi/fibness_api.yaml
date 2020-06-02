@@ -2069,3 +2069,31 @@ paths:
       responses:
         200:
           description: Event deleted succesfully
+  /event/{id}/join:
+    post:
+      summary: Lets a user join an event
+      tags:
+        - event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the event
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idusuario:
+                  description: User joinig the event
+                  type: integer
+                  minimum: 1
+                  example: 1234
+      responses:
+        201:
+          description:  Participation created successfully
