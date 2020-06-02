@@ -14,7 +14,6 @@ async function create(routes) {
     }
     else{
         let dstrecorridatotal = parseInt(query[0].dstrecorrida)
-        cnsole.log(dstrecorridatotal);
         dstrecorridatotal += parseInt(routes.dstRecorrida);
         dstrecorridatotal = dstrecorridatotal.toString();
         let updatequery = SQL `UPDATE estadisticas SET dstRecorrida=${dstrecorridatotal} WHERE idUsuario=${routes.idUser} and fecha=CURRENT_DATE `;
