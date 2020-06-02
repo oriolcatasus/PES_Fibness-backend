@@ -20,7 +20,7 @@ describe("statisticModel script", function() {
             }
             await user.create(newUser);
             
-            //select id from user in order to create a route (we need it for the foreign key of element)
+            //select id from user in order to create a statistic (we need it for the foreign key of element)
             let query = {
                 text: "SELECT id \
                         FROM usuarios \
@@ -37,12 +37,11 @@ describe("statisticModel script", function() {
             }
             await statistic.create(newStatistic)
 
-            //get the automatically generated id for the route in order to access it
-            let queryGetID = {
+            let queryestatistics= {
                 text: "SELECT * FROM estadisticas WHERE idUsuario=$1 and fecha=CURRENT_DATE",
                 values: [newStatistic.idUser],
             };
-            res = (await dbCtrl.execute(queryGetID)).rows[0];
+            res = (await dbCtrl.execute(queryestatistics)).rows[0];
                 
             assert.equal(newStatistic.idUser, res.idusuario);
             assert.equal(newStatistic.dstRecorrida, res.dstrecorrida);
@@ -59,7 +58,7 @@ describe("statisticModel script", function() {
             }
             await user.create(newUser);
             
-            //select id from user in order to create a route (we need it for the foreign key of element)
+            //select id from user in order to create/update a statistic (we need it for the foreign key of element)
             let query = {
                 text: "SELECT id \
                         FROM usuarios \
@@ -83,12 +82,11 @@ describe("statisticModel script", function() {
             //It should add 600 meters to the previos 400 meters
             await statistic.create(newStatistic2)
 
-            //get the automatically generated id for the route in order to access it
-            let queryGetID = {
+            let queryestatistics = {
                 text: "SELECT * FROM estadisticas WHERE idUsuario=$1 and fecha=CURRENT_DATE",
                 values: [newStatistic.idUser],
             };
-            res = (await dbCtrl.execute(queryGetID)).rows[0];
+            res = (await dbCtrl.execute(queryestatistics)).rows[0];
             let dstRecorridaTotal = parseInt(newStatistic) + parseInt(newStatistic2);
             dstRecorridaTotal = dstRecorridaTotal.toString();
             assert.equal(newStatistic2.idUser, res.idusuario);
