@@ -1699,7 +1699,7 @@ paths:
   '/route':
     post:
       summary: Creates a route
-      description: Creates a route with the given description and name associated with the given user
+      description: Creates a route associated to the given user. <br>The distance parameter should be expressed in meters.
       tags:
         - route
       requestBody:
@@ -1769,6 +1769,7 @@ paths:
           description: Ok
     put:
       summary: Update a route by id
+      description: Updates a route.<br>The distance parameter should be expressed in meters.
       tags:
         - route
       parameters:
@@ -2119,4 +2120,36 @@ paths:
             minimum: 1
       responses:
         200:
-          description: User removed successfully from event
+          description: User removed successfully from event        
+  '/statistics':
+    post:
+      summary: Creates/updates a new stadistic
+      description: Creates/updates the daily statistic of steps of a given user. If it's call for the first time in the day a statistic is created otherwise the meters of dstRecorrida parameter are added to the one of the existing statistic.<br>Remember that the distance parameter should be expressed in meters.
+      tags:
+        - statistic
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idUser:
+                  type: integer
+                  description: id of the user
+                  example: 2
+                dstRecorrida:
+                  type: string
+                  example: '60'
+              required:
+                - idUse
+                - dstRecorrida
+      responses:
+        '201':
+          description: statistic created succesfully
+        '200':
+          description: statistic update succesfully
+        '400':
+          description: >-
+            Some required parameters are missing or with an incorrect type
+    
