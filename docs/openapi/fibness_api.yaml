@@ -2192,7 +2192,7 @@ paths:
                   nombre:
                     type: string
                     example: Oriol
-  /statistics:
+  /statistic:
     post:
       summary: Creates/updates a new stadistic
       description: Creates/updates the daily statistic of steps of a given user. If it's call for the first time in the day a statistic is created otherwise the meters of dstRecorrida parameter are added to the one of the existing statistic.<br>Remember that the distance parameter should be expressed in meters.
