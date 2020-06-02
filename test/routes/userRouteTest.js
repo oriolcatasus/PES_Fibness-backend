@@ -850,4 +850,51 @@ describe("user route", function() {
             const idCom = res.body.idCom;
         })
     })
+
+    describe('GET /user/id/events/created', function() {
+        it('should get all events created by the user', async function() {
+            let res = await request.post('/user')
+                    .set('Content-Type', 'application/json')
+                    .send(fakeUser)
+            fakeUser.id = res.body.id
+            const fakeEvents = [
+                {
+                    titulo: 'FakeTitulo',
+                    descripcion: 'FakeDescripcion',
+                    fecha: '2020-03-01',
+                    hora: '10:00',
+                    localizacion: 'fake',
+                    idcreador: fakeUser.id
+                },
+                {
+                    titulo: 'FakeTitulo2',
+                    descripcion: 'FakeDescripcion2',
+                    fecha: '2020-03-01',
+                    hora: '10:01',
+                    localizacion: 'fake',
+                    idcreador: fakeUser.id
+                }
+            ]
+            const promises = fakeEvents.map(function(value) {
+                return request.post('/event')
+                    .set('Content-Type', 'application/json')
+                    .set('Accept', 'application/json')
+                    .send(value)
+            })
+            await Promise.all(promises)
+
+            res = await request.get(`/user/${fakeUser.id}/events/created`)
+                .set('Accept', 'application/json')
+                .expect('Content-Type', /json/)
+                .expect(200)
+            expect(res.body).to.have.length(2)
+            expect(res.body).to.all.have.property('id')
+            expect(res.body).to.all.have.property('titulo')
+            expect(res.body).to.all.have.property('descripcion')
+            expect(res.body).to.all.have.property('fecha')
+            expect(res.body).to.all.have.property('hora')
+            expect(res.body).to.all.have.property('localizacion')
+            expect(res.body).to.all.have.property('idcreador')
+        })
+    })
 });

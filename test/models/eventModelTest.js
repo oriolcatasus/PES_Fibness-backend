@@ -10,7 +10,7 @@ describe('Event model', function() {
     const fakeEvent = {
         titulo: 'FakeTitulo',
         descripcion: 'FakeDescripcion',
-        fecha: '29-02-2020',
+        fecha: '2020-02-29',
         hora: '00:00',
         localizacion: 'fake',
         idcreador: null
@@ -75,9 +75,23 @@ describe('Event model', function() {
 
     describe('getAll', function() {
         it('should get 4 events', async function() {
-            let result = await event.create(fakeEvent)
-            fakeEvent.id = result.id
             const fakeEvents = [
+                {
+                    titulo: 'FakeTitulo5',
+                    descripcion: 'FakeDescripcion5',
+                    fecha: '2019-03-01',
+                    hora: '11:00',
+                    localizacion: 'fake2',
+                    idcreador: fakeEvent.idcreador
+                },
+                {
+                    titulo: 'FakeTitulo',
+                    descripcion: 'FakeDescripcion',
+                    fecha: '2020-02-29',
+                    hora: '00:00',
+                    localizacion: 'fake',
+                    idcreador: fakeEvent.idcreador
+                },
                 {
                     titulo: 'FakeTitulo2',
                     descripcion: 'FakeDescripcion2',
@@ -103,20 +117,18 @@ describe('Event model', function() {
                     idcreador: fakeEvent.idcreador
                 }
             ]
-            const results = await Promise.all([
-                event.create(fakeEvents[0]),
-                event.create(fakeEvents[1]),
-                event.create(fakeEvents[2]),
-            ])
+            const promisesArray = fakeEvents.map(value => event.create(value))
+            const results = await Promise.all(promisesArray)
             results.forEach((value, i) => {
                 fakeEvents[i].id = value.id
             })
-            const events = await event.getAll()
-            expect(events).to.have.length(4)
-            expect(events[0]).to.be.like(fakeEvents[2])
-            expect(events[1]).to.be.like(fakeEvents[1])
-            expect(events[2]).to.be.like(fakeEvents[0])
-            expect(events[3]).to.be.like(fakeEvent)
+            const eventsdb = await event.getAll()
+            expect(eventsdb).to.have.length(5)
+            expect(eventsdb[0]).to.be.like(fakeEvents[4])
+            expect(eventsdb[1]).to.be.like(fakeEvents[3])
+            expect(eventsdb[2]).to.be.like(fakeEvents[2])
+            expect(eventsdb[3]).to.be.like(fakeEvents[1])
+            expect(eventsdb[4]).to.be.like(fakeEvents[0])
         })
 
         it('should get 0 events', async function() {

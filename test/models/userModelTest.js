@@ -11,6 +11,7 @@ const comment = require("../../src/models/commentModel");
 const exercise = require("../../src/models/exerciseModel");
 const meal = require("../../src/models/mealModel");
 const aliment = require("../../src/models/alimentModel");
+const event = require('../../src/models/eventModel')
 
 const testConstants = require('../constants')
 const constants = require('../../src/constants')
@@ -22,15 +23,16 @@ const userResourcePath = path.join(constants.resourcePath, 'user')
 //require("../rootHooks");
 
 describe("userModel script", function() {
-    describe("create function", function() {
-        it("should return user created correctly", async function() {
-            const fakeUser = {
-                nombre: "Fake",
-                password: "fakeHash",
-                email: "fake@example.com",
-            }
-            const creation = await user.create(fakeUser);
+    
+    const fakeUser = {
+        nombre: "Fake",
+        password: "fakeHash",
+        email: "fake@example.com",
+    }
 
+    describe("create function", function() {
+        it("should return user created correctly", async function() {            
+            const creation = await user.create(fakeUser);
             const userdb = await user.getByEmail(fakeUser.email)
             assert.strictEqual(creation.created, true);
             assert.strictEqual(creation.id, userdb.id);
@@ -1329,6 +1331,7 @@ describe("userModel script", function() {
             assert.equal(res.length, 0);
         });
     });
+
     describe("get full user info", function() {
         it("should successfully return the info of a user", async function() {
             const fakeUser = {
@@ -1576,12 +1579,11 @@ describe("userModel script", function() {
                 email: 'fake@example.com',
             }
             let res = await user.create(fakeUser);
-            const id = res.id;
-            
+            const id = res.id;    
             const fakeUser2 = {
                 nombre: 'Fake2',
                 password: 'fakeHash2',
-                email: 'fake2@example.com',
+                email: 'fake2@example.com'
             }
             res = await user.create(fakeUser2);
             const id2 = res.id;
@@ -1768,4 +1770,81 @@ describe("userModel script", function() {
 
         });
     });
+    describe('getEventsCreated', function() {
+        it('should get 4 events created by the user', async function() {
+            const fakeUser2 = {
+                nombre: 'Fake2',
+                password: 'fakeHash2',
+                email: 'fake2@example.com'
+            }
+            let result = await Promise.all([
+                user.create(fakeUser),
+                user.create(fakeUser2)
+            ])
+            fakeUser.id = result[0].id
+            fakeUser2.id = result[1].id
+            const fakeEvents = [
+                {
+                    titulo: `FakeTitulo`,
+                    descripcion: 'FakeDescripcion',
+                    fecha: '2019-02-29',
+                    hora: '00:00',
+                    localizacion: 'fake',
+                    idcreador: fakeUser.id
+                },
+                {
+                    titulo: `FakeTitulo`,
+                    descripcion: 'FakeDescripcion',
+                    fecha: '2020-02-29',
+                    hora: '00:00',
+                    localizacion: 'fake',
+                    idcreador: fakeUser.id
+                },
+                {
+                    titulo: `FakeTitulo2`,
+                    descripcion: 'FakeDescripcion2',
+                    fecha: '2020-03-01',
+                    hora: '10:00',
+                    localizacion: 'fake',
+                    idcreador: fakeUser.id
+                },
+                {
+                    titulo: `FakeTitulo3`,
+                    descripcion: 'FakeDescripcion3',
+                    fecha: '2020-03-01',
+                    hora: '10:01',
+                    localizacion: 'fake',
+                    idcreador: fakeUser.id
+                },
+                {
+                    titulo: `FakeTitulo4`,
+                    descripcion: 'FakeDescripcion4',
+                    fecha: '2020-03-01',
+                    hora: '11:01',
+                    localizacion: 'fake',
+                    idcreador: fakeUser.id
+                },
+                {
+                    titulo: `FakeTitulo5`,
+                    descripcion: 'FakeDescripcion5',
+                    fecha: '2020-03-01',
+                    hora: '12:01',
+                    localizacion: 'fake',
+                    idcreador: fakeUser2.id
+                }
+            ]
+            const promisesArray = fakeEvents.map(value => event.create(value))
+            result = await Promise.all(promisesArray)
+            result.forEach((value, index) => {
+                fakeEvents[index].id = value.id
+            })
+            const eventsdb = await user.getEventsCreated(fakeUser.id)
+            expect(eventsdb).to.have.length(5)
+            expect(eventsdb[0]).to.be.like(fakeEvents[4])
+            expect(eventsdb[1]).to.be.like(fakeEvents[3])
+            expect(eventsdb[2]).to.be.like(fakeEvents[2])
+            expect(eventsdb[3]).to.be.like(fakeEvents[1])
+            expect(eventsdb[4]).to.be.like(fakeEvents[0])
+        })
+    })
 })

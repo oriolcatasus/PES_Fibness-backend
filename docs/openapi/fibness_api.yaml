@@ -135,22 +135,6 @@ paths:
                     example: 12345
                 required:
                   - id
-  /user/{id}:
-    delete:
-      summary: Deletes a user by id
-      tags:
-        - user
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: The id of the user to delete
-          schema:
-            type: integer
-            minimum: 1
-      responses:
-        200:
-          description: Ok
   /user/validate:
     post:
       summary: Validates the given user
@@ -190,6 +174,22 @@ paths:
                     example: 1234
                 required:
                   - result
+  /user/{id}:
+    delete:
+      summary: Deletes a user by id
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user to delete
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: Ok
   /user/{id}/trainings:
     get:
       summary: Gives the trainings of a user
@@ -340,10 +340,31 @@ paths:
                     distancia: 70
                     nlikes: 20
                     ncomentarios: 2
-                    
                 required:
                       - activitySet
-
+  /user/{id}/events/created:
+    get:
+      summary: Returns all events created by the user
+      description: Returns all events created by the user ordered by data
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user, whose's statistic we want to get
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: Returns all events created by the user ordered by data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
   /user/{id}/statistics:
     get:
       summary: Gives the statistic of a user 
@@ -1962,30 +1983,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    example: 1234
-                  titulo:
-                    type: string
-                    example: Partido de futbol
-                  descripcion:
-                    type: string
-                    example: Hola
-                  fecha:
-                    type: string
-                    example: '2020-06-02'
-                  hora:
-                    type: string
-                    example: '23:59'
-                  localizacion:
-                    type: string
-                    example: '2.0941546718608492;41.323306159501385'
-                  idcreador:
-                    type: integer
-                    minimum: 1
-                    example: 456
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
     post:
       summary: Creates an event
       tags:
@@ -2054,34 +2054,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  titulo:
-                    type: string
-                    example: Partido de futbol
-                  descripcion:
-                    type: string
-                    example: Hola
-                  fecha:
-                    type: string
-                    example: '2020-06-02'
-                  hora:
-                    type: string
-                    example: '23:59'
-                  localizacion:
-                    type: string
-                    example: '2.0941546718608492;41.323306159501385'
-                  idcreador:
-                    type: integer
-                    minimum: 1
-                    example: 1234
-                required:
-                  - titulo
-                  - descripcion
-                  - fecha
-                  - hora
-                  - localizacion
-                  - idcreador
+                $ref: '#/components/schemas/Event'
     put:
       summary: Edits an event
       tags:
@@ -2222,4 +2195,38 @@ paths:
         '400':
           description: >-
             Some required parameters are missing or with an incorrect type
-    
+components:
+  schemas:
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1234
+        titulo:
+          type: string
+          example: Partido de futbol
+        descripcion:
+          type: string
+          example: Hola
+        fecha:
+          type: string
+          example: '2020-06-02'
+        hora:
+          type: string
+          example: '23:59'
+        localizacion:
+          type: string
+          example: '2.0941546718608492;41.323306159501385'
+        idcreador:
+          type: integer
+          minimum: 1
+          example: 456
+      required:
+        - id
+        - titulo
+        - descripcion
+        - fecha
+        - hora
+        - localizacion
+        - idcreador

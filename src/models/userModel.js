@@ -411,6 +411,15 @@ async function importE(body) {
     }
 }
 
+async function getEventsCreated(id) {
+    const query = SQL`
+        SELECT *
+        FROM eventos
+        WHERE idcreador=${id}
+        ORDER BY fecha DESC, hora DESC`
+    const res = await dbCtrl.execute(query)
+    return res.rows
+}
 
 
 module.exports = {
@@ -440,5 +449,6 @@ module.exports = {
     userInfo,
     like,
     unlike,
-    importE
+    importE,
+    getEventsCreated
 }

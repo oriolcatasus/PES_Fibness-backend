@@ -65,7 +65,7 @@ describe('Event route test', function() {
                 request.post('/event')
                     .set('Content-Type', 'application/json')
                     .set('Accept', 'application/json')
-                    .send(fakeEvent)
+                    .send(fakeEvent2)
             ])
             const res = await request.get('/event')
                 .set('Accept', 'application/json')

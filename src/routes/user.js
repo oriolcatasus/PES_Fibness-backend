@@ -246,5 +246,14 @@ router.post('/import', async function(req, res) {
     }
 })
 
+router.get('/:id/events/created', async function(req, res, next) {
+    try {
+        const events = await user.getEventsCreated(req.params.id)
+        res.status(200).send(events)
+    } catch(err) {
+        next(err)
+    }
+})
+
 
 module.exports = router;

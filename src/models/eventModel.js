@@ -30,7 +30,7 @@ async function getAll() {
     const query = SQL`
         SELECT *
         FROM eventos
-        ORDER BY fecha, hora DESC`
+        ORDER BY fecha DESC, hora DESC`
     const result = await dbCtrl.execute(query)
     return result.rows
 }
