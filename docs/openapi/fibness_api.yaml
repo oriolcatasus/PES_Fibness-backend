@@ -343,7 +343,42 @@ paths:
                     
                 required:
                       - activitySet
-  
+
+  /user/{id}/statistics:
+    get:
+      summary: Gives the statistic of a user 
+      description: Returns all the statistics from a user during the current week
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user, whose's statistic we want to get
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: Set of the dates, distances of the requested statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dia:
+                    type: string
+                  dstrecorrida:
+                    type: string
+                example:
+                  - dia: 'lunes'
+                    dstrecorrida: '60'
+                 
+                  - dia: 'martes'
+                    dstrecorrida: '100'
+                    
+                required:
+                      - activitySet  
   
   /user/resetPassword:
     put:
