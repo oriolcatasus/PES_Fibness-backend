@@ -26,6 +26,15 @@ async function get(id) {
     return res.rows[0]
 }
 
+async function getAll() {
+    const query = SQL`
+        SELECT *
+        FROM eventos
+        ORDER BY fecha, hora DESC`
+    const result = await dbCtrl.execute(query)
+    return result.rows
+}
+
 async function del(id) {
     let query = SQL`
         DELETE FROM participacionevento
@@ -71,5 +80,6 @@ module.exports = {
     edit,
     get,
     join,
-    disjoin
+    disjoin,
+    getAll
 }

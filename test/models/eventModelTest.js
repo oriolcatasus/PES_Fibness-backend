@@ -10,7 +10,7 @@ describe('Event model', function() {
     const fakeEvent = {
         titulo: 'FakeTitulo',
         descripcion: 'FakeDescripcion',
-        fecha: '29/02/2020',
+        fecha: '29-02-2020',
         hora: '00:00',
         localizacion: 'fake',
         idcreador: null
@@ -54,7 +54,7 @@ describe('Event model', function() {
             expect(fakeEvent.hora).to.equal(eventDb.hora)
             expect(fakeEvent.localizacion).to.equal(eventDb.localizacion)
             expect(fakeEvent.idcreador).to.equal(eventDb.idcreador)
-            expect(result.rows).to.be.lengthOf(1)
+            expect(result.rows).to.have.length(1)
         })
     })
 
@@ -73,6 +73,58 @@ describe('Event model', function() {
         })
     })
 
+    describe('getAll', function() {
+        it('should get 4 events', async function() {
+            let result = await event.create(fakeEvent)
+            fakeEvent.id = result.id
+            const fakeEvents = [
+                {
+                    titulo: 'FakeTitulo2',
+                    descripcion: 'FakeDescripcion2',
+                    fecha: '2020-03-01',
+                    hora: '10:00',
+                    localizacion: 'fake',
+                    idcreador: fakeEvent.idcreador
+                },
+                {
+                    titulo: 'FakeTitulo3',
+                    descripcion: 'FakeDescripcion3',
+                    fecha: '2020-03-01',
+                    hora: '10:01',
+                    localizacion: 'fake',
+                    idcreador: fakeEvent.idcreador
+                },
+                {
+                    titulo: 'FakeTitulo4',
+                    descripcion: 'FakeDescripcion4',
+                    fecha: '2020-03-01',
+                    hora: '11:00',
+                    localizacion: 'fake2',
+                    idcreador: fakeEvent.idcreador
+                }
+            ]
+            const results = await Promise.all([
+                event.create(fakeEvents[0]),
+                event.create(fakeEvents[1]),
+                event.create(fakeEvents[2]),
+            ])
+            results.forEach((value, i) => {
+                fakeEvents[i].id = value.id
+            })
+            const events = await event.getAll()
+            expect(events).to.have.length(4)
+            expect(events[0]).to.be.like(fakeEvents[2])
+            expect(events[1]).to.be.like(fakeEvents[1])
+            expect(events[2]).to.be.like(fakeEvents[0])
+            expect(events[3]).to.be.like(fakeEvent)
+        })
+
+        it('should get 0 events', async function() {
+            const events = await event.getAll()
+            expect(events).to.be.empty
+        })
+    })
+
     describe('join', function() {
         it('should let a user join an event', async function() {
             let result = await event.create(fakeEvent)
@@ -84,7 +136,7 @@ describe('Event model', function() {
                 FROM participacionevento
                 WHERE idevento=${fakeEvent.id} and idusuario=${fakeParticipation.idusuario}`
             result = await dbCtrl.execute(query)
-            expect(result.rows).to.be.lengthOf(1)
+            expect(result.rows).to.have.length(1)
         })
     })
 

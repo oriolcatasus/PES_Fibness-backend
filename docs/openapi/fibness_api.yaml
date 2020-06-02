@@ -1951,6 +1951,41 @@ paths:
                       type: integer
                       example: 2
   /event:
+    get:
+      summary: Returns all events
+      description: Returns all events ordered by data
+      tags:
+        - event
+      responses:
+        200:
+          description: Returns all events ordered by data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1234
+                  titulo:
+                    type: string
+                    example: Partido de futbol
+                  descripcion:
+                    type: string
+                    example: Hola
+                  fecha:
+                    type: string
+                    example: '2020-06-02'
+                  hora:
+                    type: string
+                    example: '23:59'
+                  localizacion:
+                    type: string
+                    example: '2.0941546718608492;41.323306159501385'
+                  idcreador:
+                    type: integer
+                    minimum: 1
+                    example: 456
     post:
       summary: Creates an event
       tags:

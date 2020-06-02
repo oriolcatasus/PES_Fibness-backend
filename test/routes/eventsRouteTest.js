@@ -47,6 +47,41 @@ describe('Event route test', function() {
         fakeParticipation = await createFakeParticipation(0)
     })
 
+    describe('GET /event', function() {
+        it('should return a list of events', async function() {            
+            const fakeEvent2 = {
+                titulo: 'FakeTitulo2',
+                descripcion: 'FakeDescripcion2',
+                fecha: '2020-03-01',
+                hora: '10:00',
+                localizacion: 'fake',
+                idcreador: fakeEvent.idcreador
+            }
+            await Promise.all([
+                request.post('/event')
+                    .set('Content-Type', 'application/json')
+                    .set('Accept', 'application/json')
+                    .send(fakeEvent),
+                request.post('/event')
+                    .set('Content-Type', 'application/json')
+                    .set('Accept', 'application/json')
+                    .send(fakeEvent)
+            ])
+            const res = await request.get('/event')
+                .set('Accept', 'application/json')
+                .expect('Content-Type', /json/)
+                .expect(200)
+            expect(res.body).to.have.length(2)
+            expect(res.body).to.all.have.property('id')
+            expect(res.body).to.all.have.property('titulo')
+            expect(res.body).to.all.have.property('descripcion')
+            expect(res.body).to.all.have.property('fecha')
+            expect(res.body).to.all.have.property('hora')
+            expect(res.body).to.all.have.property('localizacion')
+            expect(res.body).to.all.have.property('idcreador')
+        })
+    })
+
     describe('POST /event', function() {
         it('should create an event', async function() {
             const res = await request.post('/event')

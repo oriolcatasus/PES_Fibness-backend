@@ -1060,11 +1060,15 @@ describe("userModel script", function() {
 
             res = await user.followed(idFr);
             
-            assert.equal(res.length, 2);
-            assert.equal(res[0].nombre, fakeUser2.nombre);
-            assert.equal(res[0].id, idFd2);
-            assert.equal(res[1].nombre, fakeUser3.nombre);
-            assert.equal(res[1].id, idFd3);
+            expect(res).to.have.length(2)
+            expect(res).to.include.something.like({
+                id: idFd2,
+                nombre: fakeUser2.nombre
+            })
+            expect(res).to.include.something.like({
+                id: idFd3,
+                nombre: fakeUser3.nombre
+            })
         })
 
         it("should get the brief information of all users except the one we pass", async function() {
