@@ -22,6 +22,8 @@ tags:
     description: Operations about comments
   - name: event
     description: Operations about events
+  - name: likeelemento
+    description: Operations about likes on elements
 paths:
   /user:
     post:
@@ -2286,6 +2288,37 @@ paths:
         '400':
           description: >-
             Some required parameters are missing or with an incorrect type
+
+  /likeelemento/{idElemento}/{idUsuario}:
+      get:
+        summary: Indicats if idUsuario has voted idElemento
+        tags:
+          - likeelemento
+        parameters:
+          - name: idElemento
+            in: path
+            required: true
+            description: The id of the element
+            schema:
+              type: integer
+              minimum: 1
+          - name: idUsuario
+            in: path
+            required: true
+            description: The id of the user
+            schema:
+              type: integer
+              minimum: 1
+        responses:
+          200:
+            description: Boolean that indicates if the user has liked the element
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    like:
+                      type: boolean
 components:
   schemas:
     Event:
