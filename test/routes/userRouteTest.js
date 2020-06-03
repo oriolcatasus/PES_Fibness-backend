@@ -852,22 +852,11 @@ describe("user route", function() {
     })
 
     describe('GET /user/id/events', function() {
-        it('should get all events joined by the user', async function() {
-            const fakeUser2 = {
-                nombre: 'Fake2',
-                password: 'fakeHash2',
-                email: 'fake2@example.com'
-            }
-            let res = await Promise.all([
-                request.post('/user')
+        it('should get all events created by the user', async function() {
+            let res = await request.post('/user')
                     .set('Content-Type', 'application/json')
-                    .send(fakeUser),
-                    request.post('/user')
-                    .set('Content-Type', 'application/json')
-                    .send(fakeUser2),
-            ])
-            fakeUser.id = res[0].body.id
-            fakeUser2.id = res[1].body.id
+                    .send(fakeUser)
+            fakeUser.id = res.body.id
             const fakeEvent = {
                 titulo: 'FakeTitulo',
                 descripcion: 'FakeDescripcion',
@@ -881,14 +870,7 @@ describe("user route", function() {
                 .set('Accept', 'application/json')
                 .send(fakeEvent)
             fakeEvent.id = res.body.id
-            const participation = {
-                idusuario: fakeUser2.id
-            }
-            await request.post(`/event/${fakeEvent.id}/join`)
-                .set('Content-Type', 'application/json')   
-                .send(participation)
-            
-            res = await request.get(`/user/${fakeUser2.id}/events`)
+            res = await request.get(`/user/${fakeUser.id}/events`)
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
                 .expect(200)

@@ -1772,17 +1772,8 @@ describe("userModel script", function() {
     });
     describe('getEvents', function() {
         it('should get events ordered descending by date and hour', async function() {
-            const fakeUser2 = {
-                nombre: 'Fake2',
-                password: 'fakeHash2',
-                email: 'fake2@example.com'
-            }
-            let result = await Promise.all([
-                user.create(fakeUser),
-                user.create(fakeUser2)
-            ])
-            fakeUser.id = result[0].id
-            fakeUser2.id = result[1].id
+            let res = await user.create(fakeUser)
+            fakeUser.id = res.id
             const fakeEvents = [
                 {
                     titulo: `FakeTitulo`,
@@ -1826,16 +1817,11 @@ describe("userModel script", function() {
                 }
             ]
             let promises = fakeEvents.map(value => event.create(value))
-            result = await Promise.all(promises)
-            result.forEach((value, index) => {
+            res = await Promise.all(promises)
+            res.forEach((value, index) => {
                 fakeEvents[index].id = value.id
             })
-            const participation = {
-                idusuario: fakeUser2.id
-            }
-            promises = fakeEvents.map(value => event.join(value.id, participation))
-            await Promise.all(promises)
-            const eventsdb = await user.getEvents(fakeUser2.id)
+            const eventsdb = await user.getEvents(fakeUser.id)
             
             expect(eventsdb).to.have.length(5)
             expect(eventsdb[0]).to.be.like(fakeEvents[4])
@@ -1875,12 +1861,61 @@ describe("userModel script", function() {
                     idcreador: fakeUser.id
                 },
                 {
-                    titulo: `FakeTitulo`,
-                    descripcion: 'FakeDescripcion',
+                    titulo: `FakeTitulo2`,
+                    descripcion: 'FakeDescripcion2',
                     fecha: '2020-02-29',
                     hora: '00:00',
                     localizacion: 'fake',
+                    idcreador: fakeUser2.id
+                }
+            ]
+            let promises = fakeEvents.map(value => event.create(value))
+            result = await Promise.all(promises)
+            result.forEach((value, index) => {
+                fakeEvents[index].id = value.id
+            })
+            const eventsdb = await user.getEvents(fakeUser2.id)
+            
+            expect(eventsdb).to.have.length(1)
+            expect(eventsdb[0]).to.be.like(fakeEvents[1])
+        })
+
+        it('should return only the events created by the user, not which they participate', async function() {
+            const fakeUser2 = {
+                nombre: 'Fake2',
+                password: 'fakeHash2',
+                email: 'fake2@example.com'
+            }
+            let result = await Promise.all([
+                user.create(fakeUser),
+                user.create(fakeUser2)
+            ])
+            fakeUser.id = result[0].id
+            fakeUser2.id = result[1].id
+            const fakeEvents = [
+                {
+                    titulo: 'FakeTitulo',
+                    descripcion: 'FakeDescripcion',
+                    fecha: '2019-02-29',
+                    hora: '00:00',
+                    localizacion: 'fake',
                     idcreador: fakeUser.id
+                },
+                {
+                    titulo: 'FakeTitulo2',
+                    descripcion: 'FakeDescripcion2',
+                    fecha: '2020-02-29',
+                    hora: '00:00',
+                    localizacion: 'fake',
+                    idcreador: fakeUser2.id
+                },
+                {
+                    titulo: 'FakeTitulo3',
+                    descripcion: 'FakeDescripcion3',
+                    fecha: '2020-02-29',
+                    hora: '00:00',
+                    localizacion: 'fake',
+                    idcreador: fakeUser2.id
                 }
             ]
             let promises = fakeEvents.map(value => event.create(value))
@@ -1889,13 +1924,13 @@ describe("userModel script", function() {
                 fakeEvents[index].id = value.id
             })
             const participation = {
-                idusuario: fakeUser2.id
+                idusuario: fakeUser.id
             }
             await event.join(fakeEvents[1].id, participation)
-            const eventsdb = await user.getEvents(fakeUser2.id)
+            const eventsdb = await user.getEvents(fakeUser.id)
             
             expect(eventsdb).to.have.length(1)
-            expect(eventsdb[0]).to.be.like(fakeEvents[1])
+            expect(eventsdb[0]).to.be.like(fakeEvents[0])
         })
     })
 })

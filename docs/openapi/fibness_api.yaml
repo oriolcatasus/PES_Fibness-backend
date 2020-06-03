@@ -344,8 +344,8 @@ paths:
                       - activitySet
   /user/{id}/events:
     get:
-      summary: Returns all events joined by the user
-      description: Returns all events joined by the user ordered by data
+      summary: Returns all events created by the user
+      description: Returns all events created by the user ordered by data
       tags:
         - user
       parameters:
@@ -358,7 +358,7 @@ paths:
             minimum: 1
       responses:
         200:
-          description: Returns all events joined by the user ordered by data
+          description: Returns all events created by the user ordered by data
           content:
             application/json:
               schema:
