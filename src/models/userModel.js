@@ -413,11 +413,11 @@ async function importE(body) {
     }
 }
 
-async function getEventsCreated(id) {
+async function getEvents(id) {
     const query = SQL`
         SELECT *
-        FROM eventos
-        WHERE idcreador=${id}
+        FROM participacionevento pe INNER JOIN eventos e ON pe.idevento = e.id
+        WHERE idusuario=${id}
         ORDER BY fecha DESC, hora DESC`
     const res = await dbCtrl.execute(query)
     return res.rows
@@ -452,5 +452,5 @@ module.exports = {
     like,
     unlike,
     importE,
-    getEventsCreated
+    getEvents
 }

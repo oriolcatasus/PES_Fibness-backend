@@ -851,43 +851,48 @@ describe("user route", function() {
         })
     })
 
-    describe('GET /user/id/events/created', function() {
-        it('should get all events created by the user', async function() {
-            let res = await request.post('/user')
+    describe('GET /user/id/events', function() {
+        it('should get all events joined by the user', async function() {
+            const fakeUser2 = {
+                nombre: 'Fake2',
+                password: 'fakeHash2',
+                email: 'fake2@example.com'
+            }
+            let res = await Promise.all([
+                request.post('/user')
                     .set('Content-Type', 'application/json')
-                    .send(fakeUser)
-            fakeUser.id = res.body.id
-            const fakeEvents = [
-                {
-                    titulo: 'FakeTitulo',
-                    descripcion: 'FakeDescripcion',
-                    fecha: '2020-03-01',
-                    hora: '10:00',
-                    localizacion: 'fake',
-                    idcreador: fakeUser.id
-                },
-                {
-                    titulo: 'FakeTitulo2',
-                    descripcion: 'FakeDescripcion2',
-                    fecha: '2020-03-01',
-                    hora: '10:01',
-                    localizacion: 'fake',
-                    idcreador: fakeUser.id
-                }
-            ]
-            const promises = fakeEvents.map(function(value) {
-                return request.post('/event')
+                    .send(fakeUser),
+                    request.post('/user')
                     .set('Content-Type', 'application/json')
-                    .set('Accept', 'application/json')
-                    .send(value)
-            })
-            await Promise.all(promises)
-
-            res = await request.get(`/user/${fakeUser.id}/events/created`)
+                    .send(fakeUser2),
+            ])
+            fakeUser.id = res[0].body.id
+            fakeUser2.id = res[1].body.id
+            const fakeEvent = {
+                titulo: 'FakeTitulo',
+                descripcion: 'FakeDescripcion',
+                fecha: '2020-03-01',
+                hora: '10:00',
+                localizacion: 'fake',
+                idcreador: fakeUser.id
+            }
+            res = await request.post('/event')
+                .set('Content-Type', 'application/json')
+                .set('Accept', 'application/json')
+                .send(fakeEvent)
+            fakeEvent.id = res.body.id
+            const participation = {
+                idusuario: fakeUser2.id
+            }
+            await request.post(`/event/${fakeEvent.id}/join`)
+                .set('Content-Type', 'application/json')   
+                .send(participation)
+            
+            res = await request.get(`/user/${fakeUser2.id}/events`)
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
                 .expect(200)
-            expect(res.body).to.have.length(2)
+            expect(res.body).to.have.length(1)
             expect(res.body).to.all.have.property('id')
             expect(res.body).to.all.have.property('titulo')
             expect(res.body).to.all.have.property('descripcion')
@@ -895,6 +900,13 @@ describe("user route", function() {
             expect(res.body).to.all.have.property('hora')
             expect(res.body).to.all.have.property('localizacion')
             expect(res.body).to.all.have.property('idcreador')
+        })
+
+        it('should not return events from an incorrect user', async function() {
+            fakeUser.id = 'badId'
+            await request.get(`/user/${fakeUser.id}/events`)
+                .set('Accept', 'application/json')
+                .expect(500)
         })
     })
 });

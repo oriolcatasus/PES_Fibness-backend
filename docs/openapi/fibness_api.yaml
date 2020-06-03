@@ -342,23 +342,23 @@ paths:
                     ncomentarios: 2
                 required:
                       - activitySet
-  /user/{id}/events/created:
+  /user/{id}/events:
     get:
-      summary: Returns all events created by the user
-      description: Returns all events created by the user ordered by data
+      summary: Returns all events joined by the user
+      description: Returns all events joined by the user ordered by data
       tags:
         - user
       parameters:
         - name: id
           in: path
           required: true
-          description: The id of the user, whose's statistic we want to get
+          description: The id of the user
           schema:
             type: integer
             minimum: 1
       responses:
         200:
-          description: Returns all events created by the user ordered by data
+          description: Returns all events joined by the user ordered by data
           content:
             application/json:
               schema:

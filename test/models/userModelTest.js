@@ -1770,8 +1770,8 @@ describe("userModel script", function() {
 
         });
     });
-    describe('getEventsCreated', function() {
-        it('should get 4 events created by the user', async function() {
+    describe('getEvents', function() {
+        it('should get events ordered descending by date and hour', async function() {
             const fakeUser2 = {
                 nombre: 'Fake2',
                 password: 'fakeHash2',
@@ -1823,22 +1823,20 @@ describe("userModel script", function() {
                     hora: '11:01',
                     localizacion: 'fake',
                     idcreador: fakeUser.id
-                },
-                {
-                    titulo: `FakeTitulo5`,
-                    descripcion: 'FakeDescripcion5',
-                    fecha: '2020-03-01',
-                    hora: '12:01',
-                    localizacion: 'fake',
-                    idcreador: fakeUser2.id
                 }
             ]
-            const promisesArray = fakeEvents.map(value => event.create(value))
-            result = await Promise.all(promisesArray)
+            let promises = fakeEvents.map(value => event.create(value))
+            result = await Promise.all(promises)
             result.forEach((value, index) => {
                 fakeEvents[index].id = value.id
             })
-            const eventsdb = await user.getEventsCreated(fakeUser.id)
+            const participation = {
+                idusuario: fakeUser2.id
+            }
+            promises = fakeEvents.map(value => event.join(value.id, participation))
+            await Promise.all(promises)
+            const eventsdb = await user.getEvents(fakeUser2.id)
+            
             expect(eventsdb).to.have.length(5)
             expect(eventsdb[0]).to.be.like(fakeEvents[4])
             expect(eventsdb[1]).to.be.like(fakeEvents[3])
@@ -1848,6 +1846,14 @@ describe("userModel script", function() {
         })
 
         it('should return 0 events', async function() {
+            let res = await user.create(fakeUser)
+            fakeUser.id = res.id
+            const eventsdb = await user.getEvents(fakeUser.id)
+            
+            expect(eventsdb).to.be.empty
+        })
+
+        it('should return only the user events', async function() {
             const fakeUser2 = {
                 nombre: 'Fake2',
                 password: 'fakeHash2',
@@ -1859,18 +1865,37 @@ describe("userModel script", function() {
             ])
             fakeUser.id = result[0].id
             fakeUser2.id = result[1].id
-            const fakeEvent = {
-                titulo: `FakeTitulo`,
-                descripcion: 'FakeDescripcion',
-                fecha: '2019-02-29',
-                hora: '00:00',
-                localizacion: 'fake',
-                idcreador: fakeUser2.id
+            const fakeEvents = [
+                {
+                    titulo: `FakeTitulo`,
+                    descripcion: 'FakeDescripcion',
+                    fecha: '2019-02-29',
+                    hora: '00:00',
+                    localizacion: 'fake',
+                    idcreador: fakeUser.id
+                },
+                {
+                    titulo: `FakeTitulo`,
+                    descripcion: 'FakeDescripcion',
+                    fecha: '2020-02-29',
+                    hora: '00:00',
+                    localizacion: 'fake',
+                    idcreador: fakeUser.id
+                }
+            ]
+            let promises = fakeEvents.map(value => event.create(value))
+            result = await Promise.all(promises)
+            result.forEach((value, index) => {
+                fakeEvents[index].id = value.id
+            })
+            const participation = {
+                idusuario: fakeUser2.id
             }
-            await event.create(fakeEvent)
-            const eventsdb = await user.getEventsCreated(fakeUser.id)
+            await event.join(fakeEvents[1].id, participation)
+            const eventsdb = await user.getEvents(fakeUser2.id)
             
-            expect(eventsdb).to.be.empty
+            expect(eventsdb).to.have.length(1)
+            expect(eventsdb[0]).to.be.like(fakeEvents[1])
         })
     })
 })
