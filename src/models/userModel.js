@@ -386,7 +386,7 @@ async function like(body) {
 async function unlike(idUser, idElement, type) {
     if (type === 'element') {
         let query = SQL`DELETE FROM likesElementos WHERE idUsuario = ${idUser} AND idElemento = ${idElement}`;
-        await dbCtrl.execute(query);
+        await dbCtrl.execute(query); 
 
         query = SQL`UPDATE elementos SET nLikes = nLikes - 1
             WHERE idElemento = ${idElement}`;
