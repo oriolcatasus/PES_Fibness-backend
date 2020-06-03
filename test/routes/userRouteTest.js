@@ -84,7 +84,7 @@ describe("user route", function() {
     });
 
     describe("GET /user/:id/trainings", function() {
-        it.skip("should return an array of trainings", async function() {
+        it("should return an array of trainings", async function() {
             let res = await request.post("/user")
                 .set("Content-Type", "application/json")
                 .send(fakeUser);
@@ -99,7 +99,7 @@ describe("user route", function() {
     });
 
     describe("GET /user/:id/routes", function() {
-        it.skip("should return an array of routes", async function() {
+        it("should return an array of routes", async function() {
             let res = await request.post("/user")
                 .set("Content-Type", "application/json")
                 .send(fakeUser);
@@ -108,22 +108,23 @@ describe("user route", function() {
                 .expect('Content-Type', /json/)
                 .expect(200);
             const trainings = res.body;
+            console.log("The lsit of routes is:")
+            console.log(trainings)
             expect(trainings).to.be.an('array');
             //expect(trainings).to.not.be.empty;
         });
     });
     describe("GET /user/:id/statistics", function() {
-        it.skip("should return an array of statistics", async function() {
+        it("should return an array of statistics", async function() {
             let res = await request.post("/user")
                 .set("Content-Type", "application/json")
                 .send(fakeUser);
             const idUser = res.body.id;
             res = await request.get(`/user/${idUser}/statistics`)
-                .expect('Content-Type', /json/)
-                .expect(200);
+            .expect('Content-Type', /json/)
+            .expect(200);
             const statistics = res.body;
             expect(statistics).to.be.an('array');
-            //expect(trainings).to.not.be.empty;
         });
     });
 
@@ -258,7 +259,20 @@ describe("user route", function() {
             await request.put('/user/badId/settings').expect(400);
         });
     });
-    
+
+    describe("GET /user/:id/globaldst", function() {
+        it("should return an array of statistics", async function() {
+            let res = await request.post("/user")
+                .set("Content-Type", "application/json")
+                .send(fakeUser);
+            const idUser = res.body.id;
+            console.log(`el id del usuario es de ${idUser}`);
+            res = await request.get(`/user/${idUser}/globaldst`)
+                .expect(200);
+                //.expect('Content-Type', /json/)
+            expect(res.body).to.have.property('dstrecorrida');
+        });
+    });
     describe('POST /user/fb', function() {
         it('should login a new user with fb', async function(){
             const res = await request.post('/user/fb')

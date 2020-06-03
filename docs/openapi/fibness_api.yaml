@@ -693,6 +693,33 @@ paths:
       responses:
         200:
           description: OK
+  /user/{id}/globaldst:
+    get:
+      summary: Gets the user global traveled distance of the user
+      description: Returns the global traveled distance of the given user
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user to get the global distance from
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: Settings of the user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dstrecorrido:
+                    type: string
+                    example: "1000" 
+                required:
+                  - dstrecorrido
           
   /user/shortInfo/{currentID}:
     get:

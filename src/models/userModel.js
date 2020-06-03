@@ -115,32 +115,47 @@ async function diets(id) {
     const res = await dbCtrl.execute(query)
     return res.rows
 }
+
 async function statistics(id){
     //we want to have a number related to the dayweek in the following order:
     //Monday = 1, Tuesday = 2 and so on until Sunday=7
-    console.log("hey --------------------------------------------");
     const currentdate = new Date();
     let weekday = currentdate.getDay()
     if (weekday == 0){
         weekday = 7
     }
     const since = (weekday - 1);
-    /*  //Notice that int order to specify a concrete type its necessary to add before the varible/value "::type"
-        //type has to be a valid postegress datatype.Exemple: integer,text,date, etc.
-        const query = {
-        text: "SELECT * FROM estadisticas WHERE idUsuario=$1 and fecha >= (CURRENT_DATE - $2::integer)",
-        values:[id,since],
-    }*/
-    const query = SQL `SELECT (fecha - CURRENT_DATE) + ${weekday}::integer as dia,dstrecorrida 
-                        FROM estadisticas WHERE idUsuario=${id} and fecha >= (CURRENT_DATE - ${since}::integer)
+    //Notice that in order to specify a concrete type "::type" it is necessary to add it after the variable/value 
+    //type has to be a valid postegress datatype.Exemple: integer,text,date, etc.
+    // const query = {
+    //     text: "SELECT (fecha - CURRENT_DATE) + $3::integer  as dia , dstrecorrida  FROM estadisticas WHERE idUsuario=$1 and fecha >= (CURRENT_DATE - $2::integer) ORDER BY dia asc",
+    //     values:[id,since,weekday],
+    // }
+   const query = SQL `SELECT (fecha - CURRENT_DATE) + ${weekday}::integer as dia ,dstrecorrida 
+                      FROM estadisticas WHERE idUsuario=${id} and fecha >= (CURRENT_DATE - ${since}::integer)
                         ORDER BY dia asc`
+    console.log(query);
+    
     let querystatisticslist = (await dbCtrl.execute(query)).rows;
+    console.log("The result of querystatis")
+    console.log(querystatisticslist)
+    //It is undefined if the user hasn't had a statistic yet. 
+    if (querystatisticslist.length == 0) {
+        console.log("es indefinido")
+        const newStatistic ={
+            dia: 1,
+            dstrecorrida: "0",    
+        }
+        querystatisticslist.splice(0,0,newStatistic); 
+    }
     let i = 0;
+    console.log(querystatisticslist)
 
     while(querystatisticslist.length < weekday){
         console.log("el dia es:")
         console.log(i + 1);
-        if(querystatisticslist[i].day != i+1){
+            
+        if(i == querystatisticslist.length || querystatisticslist[i].dia != i+1){
             const newStatistic ={
                 dia: i+1,
                 dstrecorrida: "0",    
@@ -151,8 +166,9 @@ async function statistics(id){
         console.log("a por el siguiente")
     }
     console.log(querystatisticslist);
-    return querystatisticslist
+    return querystatisticslist;
 }
+
 
 async function resetPassword ({email, password}) {
     const query = {
@@ -204,6 +220,14 @@ async function getSettings(id) {
     const query = SQL`SELECT sEdad, sDistancia, sInvitacion, sSeguidor, nMensaje
         FROM usuarios
         WHERE id = ${id}`
+    const res = await dbCtrl.execute(query);
+    return res.rows[0];
+}
+
+async function getGlobaldst(id){
+    const query = SQL`SELECT dstrecorrida
+        FROM usuarios
+        WHERE id =${id}`
     const res = await dbCtrl.execute(query);
     return res.rows[0];
 }
@@ -472,6 +496,7 @@ module.exports = {
     getInfo,
     getSettings,
     getProfileImg,
+    getGlobaldst,
     putInfo,
     putSettings,
     setProfileImg,

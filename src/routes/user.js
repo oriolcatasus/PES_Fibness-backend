@@ -117,6 +117,16 @@ router.get('/:id/settings', async function(req, res, next){
     }
 });
 
+
+router.get('/:id/globaldst', async function(req, res, next){
+    try {
+        const settings = await user.getGlobaldst(req.params.id);
+        res.status(200).send(settings);
+    } catch(err) {
+        res.status(400).send(err.message);
+    }
+});
+
 router.post('/fb', async function(req, res, next) {
     try {
         const result = await user.fbLogin(req.body);
