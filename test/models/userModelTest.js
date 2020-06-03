@@ -1508,9 +1508,11 @@ describe("userModel script", function() {
             assert.equal(res.length, 1);
 
             const commentSet = await comment.comments(idElem);
+            console.log(commentSet);
 
             assert.equal(commentSet[0].nlikes, 1);
             assert.equal(commentSet[0].texto, bodyComment.text);
+            assert.equal(commentSet[0].nombre, 'Fake')
         });
 
         it("should successfully unlike an element", async function() {

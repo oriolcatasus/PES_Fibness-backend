@@ -31,9 +31,9 @@ async function delComment(idComment) {
 
 async function comments(idElemento) {
     const query = {
-        text: "SELECT idComentario, idUsuario, fecha, texto, nLikes\
-               FROM comentarios\
-               WHERE idElemento = $1\
+        text: "SELECT c.idComentario, c.idUsuario, c.fecha, c.texto, c.nLikes, u.nombre\
+               FROM comentarios c, usuarios u\
+               WHERE idElemento = $1 and c.idUsuario = u.id\
                ORDER BY fecha",
         values: [idElemento]
     }
