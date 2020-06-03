@@ -21,7 +21,7 @@ async function create(routes) {
         status = 200;
     }
     //dstrecorrida de usuarios esta en enteros
-    const getglobaldstRecorrida = SQL `SELECT dstrecorrida FROM usuarios WHERE id=${routes.idUser}` 
+    const getglobaldstRecorrida = SQL `SELECT dstrecorrida FROM usuarios WHERE id=${routes.idUser}`
     let dstGlobal = (await dbCtrl.execute(getglobaldstRecorrida)).rows[0].dstrecorrida;
     dstGlobal += parseInt(routes.dstRecorrida);
     const updatequeryglobaldstRecorrida = SQL `UPDATE usuarios SET dstrecorrida = ${dstGlobal} WHERE id=${routes.idUser}`

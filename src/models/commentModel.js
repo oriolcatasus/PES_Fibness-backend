@@ -5,8 +5,8 @@ const dbCtrl = require("../ctrls/dbCtrl")
 async function comment(body) {
     let query = SQL`INSERT INTO comentarios(idUsuario, idElemento, texto)
         values(${body.idUser}, ${body.idElement}, ${body.text}) RETURNING idComentario`;
-    let res = await dbCtrl.execute(query);
-    let result = {
+    const res = await dbCtrl.execute(query);
+    const result = {
         idCom: res.rows[0].idcomentario
     }
     
@@ -19,7 +19,7 @@ async function comment(body) {
 
 async function delComment(idComment) {
     let query = SQL`SELECT idElemento FROM comentarios WHERE idComentario = ${idComment}`;
-    let idElem = (await dbCtrl.execute(query)).rows[0].idelemento;
+    const idElem = (await dbCtrl.execute(query)).rows[0].idelemento;
 
     query = SQL`DELETE FROM comentarios WHERE idComentario = ${idComment}`;
     await dbCtrl.execute(query);

@@ -368,10 +368,9 @@ async function like(body) {
             values(${body.idUser}, ${body.idElement})`;
         await dbCtrl.execute(query);
 
-    
         query = SQL`UPDATE elementos SET nLikes = nLikes + 1
             WHERE idElemento = ${body.idElement}`;
-        await dbCtrl.execute(query);   
+        await dbCtrl.execute(query);
     }
     else if (body.type == 'comment') {
         let query = SQL`INSERT INTO likesComentarios(idUsuario, idElemento)
@@ -379,8 +378,8 @@ async function like(body) {
         await dbCtrl.execute(query);
     
         query = SQL`UPDATE comentarios SET nLikes = nLikes + 1
-            WHERE idComentario = ${body.idElement}`;
-        await dbCtrl.execute(query);   
+                    WHERE idComentario = ${body.idElement}`;
+        await dbCtrl.execute(query);
     }
 }
 
@@ -388,18 +387,18 @@ async function unlike(idUser, idElement, type) {
     if (type == 'element') {
         let query = SQL`DELETE FROM likesElementos WHERE idUsuario = ${idUser} AND idElemento = ${idElement}`;
         await dbCtrl.execute(query);
-    
+
         query = SQL`UPDATE elementos SET nLikes = nLikes - 1
             WHERE idElemento = ${idElement}`;
-        await dbCtrl.execute(query);  
+        await dbCtrl.execute(query);
     }
     else if (type == 'comment') {
         let query = SQL`DELETE FROM likesComentarios WHERE idUsuario = ${idUser} AND idElemento = ${idElement}`;
         await dbCtrl.execute(query);
-    
+
         query = SQL`UPDATE comentarios SET nLikes = nLikes - 1
             WHERE idComentario = ${idElement}`;
-        await dbCtrl.execute(query);  
+        await dbCtrl.execute(query);
     }
 }
 

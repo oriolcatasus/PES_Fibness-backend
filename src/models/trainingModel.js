@@ -71,15 +71,12 @@ async function importE(body) {
         values: [body.idElement]
     }
     let res = await dbCtrl.execute(query);
-    //console.log(res.rows);
 
     query = {
         text: "INSERT INTO elementos (nombre, descripcion, idUsuario) values($1, $2, $3) RETURNING idElemento",
         values: [res.rows[0].nombre, res.rows[0].descripcion, body.idUser]
     }
     res = await dbCtrl.execute(query);
-
-    //console.log(res.rows);
 
     query = {
         text: "INSERT INTO entrenamientos (idElemento) values($1)",

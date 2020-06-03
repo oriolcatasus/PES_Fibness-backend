@@ -43,7 +43,7 @@ async function importE(body) {
             idComida: body.newId
         }
         await create(aliment);
-    } 
+    }
 }
 
 module.exports = {

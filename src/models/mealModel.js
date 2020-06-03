@@ -66,13 +66,13 @@ async function importE(body) {
 
         const idMeal = await create(meal)
 
-        let newBody = {
+        const newBody = {
             oldId: res.rows[i].idcomida,
             newId: idMeal.idComida
         }
 
         await aliment.importE(newBody)
-    } 
+    }
 }
 
 module.exports = {

@@ -18,7 +18,7 @@ async function create(routes) {
     //create routes
     query = SQL`INSERT INTO rutas(idElemento, origen, destino, distancia) values(${idElemento},${routes.origen},${routes.destino},${routes.distancia})`
     await dbCtrl.execute(query);
-    
+
     const ret = {
         idElemento: idElemento,
     }
@@ -88,9 +88,7 @@ async function importE(body) {
         destino: res2.rows[0].destino,
         distancia: res2.rows[0].distancia
     }
-
-
-    const newID = (await create(route)).idElemento;
+    await create(route);
 }
 
 module.exports = {
