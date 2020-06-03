@@ -48,16 +48,16 @@ async function aliments(idComida) {
 }
 
 async function importE(body) {
-    let query = {
+    const query = {
         text: "SELECT nombre, horaComida, tipoDia, idComida\
                FROM comidas\
                WHERE idElemento = $1",
         values: [body.oldId]
     }
-    let res = await dbCtrl.execute(query);
+    const res = await dbCtrl.execute(query);
 
     for (let i=0; i<res.rows.length; ++i) {
-        let meal = {
+        const meal = {
             nombre: res.rows[i].nombre,
             horaComida: res.rows[i].horacomida,
             tipoDia: res.rows[i].tipodia,
@@ -66,7 +66,7 @@ async function importE(body) {
 
         const idMeal = await create(meal)
 
-        newBody = {
+        let newBody = {
             oldId: res.rows[i].idcomida,
             newId: idMeal.idComida
         }

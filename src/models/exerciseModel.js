@@ -51,7 +51,7 @@ async function importE(body) {
                WHERE idEntrenamiento = $1",
         values: [body.oldId]
     }
-    let res = await dbCtrl.execute(query)
+    const res = await dbCtrl.execute(query)
     let res2;
 
     for (let i=0; i<res.rows.length; ++i) {
@@ -63,7 +63,7 @@ async function importE(body) {
         }
         res2 = await dbCtrl.execute(query);
 
-        let exercise = {
+        const exercise = {
             nombre: res.rows[i].nombre,
             descripcion: res.rows[i].descripcion,
             tiempoEjecucion: res.rows[i].tiempoejecucion,

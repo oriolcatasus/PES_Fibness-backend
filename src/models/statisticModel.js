@@ -8,7 +8,7 @@ async function create(routes) {
     query = (await dbCtrl.execute(query)).rows;
     let status  = 0;
     if (query.length == 0){
-        let createquery = SQL `INSERT INTO estadisticas(idUsuario, dstRecorrida) values(${routes.idUser},${routes.dstRecorrida})`;
+        const createquery = SQL `INSERT INTO estadisticas(idUsuario, dstRecorrida) values(${routes.idUser},${routes.dstRecorrida})`;
         await dbCtrl.execute(createquery);
         status = 201;
     }
@@ -16,15 +16,15 @@ async function create(routes) {
         let dstrecorridatotal = parseInt(query[0].dstrecorrida)
         dstrecorridatotal += parseInt(routes.dstRecorrida);
         dstrecorridatotal = dstrecorridatotal.toString();
-        let updatequery = SQL `UPDATE estadisticas SET dstRecorrida=${dstrecorridatotal} WHERE idUsuario=${routes.idUser} and fecha=CURRENT_DATE `;
+        const updatequery = SQL `UPDATE estadisticas SET dstRecorrida=${dstrecorridatotal} WHERE idUsuario=${routes.idUser} and fecha=CURRENT_DATE `;
         await dbCtrl.execute(updatequery);
         status = 200;
     }
     //dstrecorrida de usuarios esta en enteros
-    let getglobaldstRecorrida = SQL `SELECT dstrecorrida FROM usuarios WHERE id=${routes.idUser}` 
+    const getglobaldstRecorrida = SQL `SELECT dstrecorrida FROM usuarios WHERE id=${routes.idUser}` 
     let dstGlobal = (await dbCtrl.execute(getglobaldstRecorrida)).rows[0].dstrecorrida;
     dstGlobal += parseInt(routes.dstRecorrida);
-    let updatequeryglobaldstRecorrida = SQL `UPDATE usuarios SET dstrecorrida = ${dstGlobal} WHERE id=${routes.idUser}`
+    const updatequeryglobaldstRecorrida = SQL `UPDATE usuarios SET dstrecorrida = ${dstGlobal} WHERE id=${routes.idUser}`
     await dbCtrl.execute(updatequeryglobaldstRecorrida);
     return status;
 }

@@ -282,7 +282,9 @@ async function shortUsersInfo(currentID) {
                     FROM bloqueados
                     WHERE idBloqueador = ${currentID} AND idBloqueado = ${res.rows[i].id}`;
         const res2 = await dbCtrl.execute(query);
-        if (res2.rows.length == 0) blocked = false;
+        if (res2.rows.length == 0) {
+            blocked = false;
+        }
         res.rows[i].bloqueado = blocked;
     }
     return res.rows;
@@ -340,7 +342,7 @@ async function userInfo(id, id2) {
                        WHERE idSeguidor = ${id2} AND idSeguido = ${id}`
     const seg = await dbCtrl.execute(query);
     let sigue = false;
-    if (seg.rows.length == 1) sigue = true;
+    if (seg.rows.length == 1) {sigue = true;}
     res.rows.forEach(function (element) {
         element.seguir = sigue;
       });
@@ -350,7 +352,7 @@ async function userInfo(id, id2) {
                        WHERE idBloqueador = ${id2} AND idBloqueado = ${id}`
     const blo = await dbCtrl.execute(query);
     let bloqueado = false;
-    if (blo.rows.length == 1) bloqueado = true;
+    if (blo.rows.length == 1) {bloqueado = true;}
     res.rows.forEach(function (element) {
         element.bloqueado = bloqueado;
     });

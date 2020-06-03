@@ -54,13 +54,13 @@ async function dayMeals(idElemento, day) {
 }
 
 async function importE(body) {
-    let query = {
+    const query = {
         text: "SELECT nombre, descripcion\
                FROM elementos\
                WHERE idElemento = $1",
         values: [body.idElement]
     }
-    let res = await dbCtrl.execute(query);
+    const res = await dbCtrl.execute(query);
 
     const diet = {
         nombre: res.rows[0].nombre,
@@ -68,7 +68,7 @@ async function importE(body) {
         idUser: body.idUser,
     }
 
-    let newID = await create(diet);
+    const newID = await create(diet);
 
     body = {
         newId : newID.idElemento,

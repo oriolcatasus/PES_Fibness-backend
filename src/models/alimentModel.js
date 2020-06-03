@@ -27,16 +27,16 @@ async function update(newAlimento, idAlimento) {
 }
 
 async function importE(body) {
-    let query = {
+    const query = {
         text: "SELECT nombre, descripcion, calorias\
                FROM alimentos\
                WHERE idComida = $1",
         values: [body.oldId]
     }
-    let res = await dbCtrl.execute(query)
+    const res = await dbCtrl.execute(query)
 
     for (let i=0; i<res.rows.length; ++i) {
-        let aliment = {
+        const aliment = {
             nombre: res.rows[i].nombre,
             descripcion: res.rows[i].descripcion,
             calorias: res.rows[i].calorias,
