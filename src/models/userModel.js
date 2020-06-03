@@ -222,7 +222,7 @@ async function follow(body) {
     const res = await dbCtrl.execute(query);
     let iB = true;
 
-    if (res.rows.length == 0) {
+    if (res.rows.length === 0) {
         iB = false;
         query = SQL`INSERT INTO seguidores(idSeguidor, idSeguido)
             values(${body.idFollower}, ${body.idFollowed})`;
@@ -284,7 +284,7 @@ async function shortUsersInfo(currentID) {
                     FROM bloqueados
                     WHERE idBloqueador = ${currentID} AND idBloqueado = ${res.rows[i].id}`;
         const res2 = await dbCtrl.execute(query);
-        if (res2.rows.length == 0) {
+        if (res2.rows.length === 0) {
             blocked = false;
         }
         res.rows[i].bloqueado = blocked;
@@ -304,7 +304,7 @@ async function block(body) {
     let brFBd = false;
 
 
-    if (res.rows.length == 1) {
+    if (res.rows.length === 1) {
         unfollow(body.idBlocker, body.idBlocked);
         brFBd = true;
     }
@@ -316,7 +316,7 @@ async function block(body) {
     res = await dbCtrl.execute(query);
     let bdFBr = false;
 
-    if (res.rows.length == 1) {
+    if (res.rows.length === 1) {
         unfollow(body.idBlocked, body.idBlocker);
         bdFBr = true;
     }
@@ -344,7 +344,7 @@ async function userInfo(id, id2) {
                        WHERE idSeguidor = ${id2} AND idSeguido = ${id}`
     const seg = await dbCtrl.execute(query);
     let sigue = false;
-    if (seg.rows.length == 1) {sigue = true;}
+    if (seg.rows.length === 1) {sigue = true;}
     res.rows.forEach(function (element) {
         element.seguir = sigue;
       });
@@ -354,7 +354,7 @@ async function userInfo(id, id2) {
                        WHERE idBloqueador = ${id2} AND idBloqueado = ${id}`
     const blo = await dbCtrl.execute(query);
     let bloqueado = false;
-    if (blo.rows.length == 1) {bloqueado = true;}
+    if (blo.rows.length === 1) {bloqueado = true;}
     res.rows.forEach(function (element) {
         element.bloqueado = bloqueado;
     });
@@ -363,7 +363,7 @@ async function userInfo(id, id2) {
 }
 
 async function like(body) {
-    if (body.type == 'element') {
+    if (body.type === 'element') {
         let query = SQL`INSERT INTO likesElementos(idUsuario, idElemento)
             values(${body.idUser}, ${body.idElement})`;
         await dbCtrl.execute(query);
@@ -372,11 +372,11 @@ async function like(body) {
             WHERE idElemento = ${body.idElement}`;
         await dbCtrl.execute(query);
     }
-    else if (body.type == 'comment') {
+    else if (body.type === 'comment') {
         let query = SQL`INSERT INTO likesComentarios(idUsuario, idElemento)
             values(${body.idUser}, ${body.idElement})`;
         await dbCtrl.execute(query);
-    
+        
         query = SQL`UPDATE comentarios SET nLikes = nLikes + 1
                     WHERE idComentario = ${body.idElement}`;
         await dbCtrl.execute(query);
@@ -384,7 +384,7 @@ async function like(body) {
 }
 
 async function unlike(idUser, idElement, type) {
-    if (type == 'element') {
+    if (type === 'element') {
         let query = SQL`DELETE FROM likesElementos WHERE idUsuario = ${idUser} AND idElemento = ${idElement}`;
         await dbCtrl.execute(query);
 
@@ -392,7 +392,7 @@ async function unlike(idUser, idElement, type) {
             WHERE idElemento = ${idElement}`;
         await dbCtrl.execute(query);
     }
-    else if (type == 'comment') {
+    else if (type === 'comment') {
         let query = SQL`DELETE FROM likesComentarios WHERE idUsuario = ${idUser} AND idElemento = ${idElement}`;
         await dbCtrl.execute(query);
 
@@ -403,13 +403,13 @@ async function unlike(idUser, idElement, type) {
 }
 
 async function importE(body) {
-    if (body.type == "training") {
+    if (body.type === "training") {
         await training.importE(body);
     }
-    else if (body.type == "diet") {
+    else if (body.type === "diet") {
         await diet.importE(body);
     }
-    else if (body.type == "route") {
+    else if (body.type === "route") {
         await route.importE(body);
     }
 }
