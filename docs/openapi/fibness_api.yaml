@@ -1091,6 +1091,41 @@ paths:
         '400':
           description: >-
             Some required parameters are missing or with an incorrect type
+  '/user/import':
+    post:
+      summary: Imports an element from another user
+      description: Copies an element from another user in other to have it as your own and edit it.
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: "training"
+                  description: type of the element (training, diet or route ONLY TRAINING AND DIET WORK)
+                idElement:
+                  type: integer
+                  example: 2
+                  description: id of the element to be imported
+                idUser:
+                  type: string
+                  example: 5
+                  description: id of the user that will import the element (NOT the owner of the element)
+              required:
+                - idUser
+                - idElement
+                - type
+      responses:
+        '201':
+          description: Like created successfully
+        '400':
+          description: >-
+            Some required parameters are missing or with an incorrect type
   '/training':
     post:
       summary: Creates a training
