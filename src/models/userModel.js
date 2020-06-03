@@ -433,6 +433,7 @@ async function like(body) {
         query = SQL`UPDATE elementos SET nLikes = nLikes + 1
             WHERE idElemento = ${body.idElement}`;
         await dbCtrl.execute(query);
+        console.log(body.idUser, body.idElement)
     }
     else if (body.type === 'comment') {
         let query = SQL`INSERT INTO likesComentarios(idUsuario, idElemento)

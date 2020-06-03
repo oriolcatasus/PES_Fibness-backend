@@ -13,6 +13,7 @@ const meal = require("../../src/models/mealModel");
 const aliment = require("../../src/models/alimentModel");
 const event = require('../../src/models/eventModel');
 const statistic = require('../../src/models/statisticModel');
+const likeelemento = require('../../src/models/likeelementoModel.js');
 
 const testConstants = require('../constants')
 const constants = require('../../src/constants')
@@ -1875,6 +1876,37 @@ describe("userModel script", function() {
             //console.log(res2.rows);
 
         });
+
+        it("should return set of element liked correctly", async function(){
+            //create user
+            const fakeUser = {
+                nombre: "Oriol",
+                password: "hash",
+                email: "oriol@example.com",
+            }
+            const res = await user.create(fakeUser);
+            idUser = res.id; 
+
+            //create training 1 (and element)
+            const newTraining = {
+                nombre: "TrainingTest",
+                descripcion: "TrainingDescription",
+                idUser,
+            }
+            idTr = (await training.create(newTraining)).idElemento;
+
+            const bodyLike = {
+                idUser: idUser,
+                idElement: idTr,
+                type: 'element'
+            }
+
+            await user.like(bodyLike);
+
+            const liked = await likeelemento.liked(idUser, idTr);
+            assert.equal(liked.like, "true");
+        });
+
     });
     describe('getEvents', function() {
         it('should get events ordered descending by date and hour', async function() {
