@@ -1895,6 +1895,14 @@ describe("userModel script", function() {
             }
             idTr = (await training.create(newTraining)).idElemento;
 
+            //create training 2 (and element)
+            const newTraining2 = {
+                nombre: "TrainingTest2",
+                descripcion: "TrainingDescription",
+                idUser,
+            }
+            idTr2 = (await training.create(newTraining2)).idElemento;
+
             const bodyLike = {
                 idUser: idUser,
                 idElement: idTr,
@@ -1903,8 +1911,10 @@ describe("userModel script", function() {
 
             await user.like(bodyLike);
 
-            const liked = await likeelemento.liked(idUser, idTr);
-            //assert.equal(liked.like, "true");
+            let liked = await likeelemento.liked(idTr, idUser);
+            assert.equal(liked.like, true);
+            liked = await likeelemento.liked(idTr2, idUser);
+            assert.equal(liked.like, false);
         });
 
     });

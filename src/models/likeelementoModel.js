@@ -3,14 +3,18 @@ const SQL = require('sql-template-strings')
 const dbCtrl = require("../ctrls/dbCtrl")
 
 async function liked(idElemento, idUser) {
-    let query = SQL`SELECT *
-                    FROM likesElementos
-                    WHERE idElemento = ${idElemento} AND idUsuario = ${idUser}`
-    const res = await dbCtrl.execute(query);
+    const query = {
+        text: 'SELECT * \
+                FROM likesElementos \
+                WHERE idUsuario = $1 AND idElemento = $2',
+        values: [idUser, idElemento]
+    };
+
+    const res = (await dbCtrl.execute(query)).rows;
     console.log(idUser, idElemento)
 
     let elementLiked = true
-    if (res.rows.length == 0) {
+    if (res.length == 0) {
         elementLiked = false
     }
     const result = {
