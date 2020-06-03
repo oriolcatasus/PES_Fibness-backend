@@ -275,7 +275,8 @@ async function shortUsersInfo(currentID) {
                     FROM usuarios u
                     WHERE id <> ${currentID} AND id NOT IN (SELECT idBloqueador
                                                             FROM bloqueados
-                                                            WHERE idBloqueado = ${currentID})`;
+                                                            WHERE idBloqueado = ${currentID})
+                    ORDER BY u.dstrecorrida DESC`;
     const res = await dbCtrl.execute(query);
     for (let i=0; i<res.rows.length; ++i) {
         let blocked = true;
