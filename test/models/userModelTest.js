@@ -11,7 +11,8 @@ const comment = require("../../src/models/commentModel");
 const exercise = require("../../src/models/exerciseModel");
 const meal = require("../../src/models/mealModel");
 const aliment = require("../../src/models/alimentModel");
-const event = require('../../src/models/eventModel')
+const event = require('../../src/models/eventModel');
+const statistic = require('../../src/models/statisticModel');
 
 const testConstants = require('../constants')
 const constants = require('../../src/constants')
@@ -534,6 +535,46 @@ describe("userModel script", function() {
             let dietSet = await user.diets(idUser);
             assert.equal(dietSet.length, 0);
 
+        });
+        it("should return set of statistics correctly", async function(){
+            //create user
+            const fakeUser = {
+                nombre: "Oriol",
+                password: "hash",
+                email: "oriol@example.com",
+            }
+            const res = await user.create(fakeUser);
+            idUser = res.id;
+            //create statistic 1
+            const newStatistic = {
+                idUser: idUser,
+                dstRecorrida: '40'
+            }
+            await statistic.create(newStatistic);
+            //update the statistic adding dstRecorrida to the previous one
+            const newStatistic2 = {
+                idUser: idUser,
+                dstRecorrida: '60'
+            }
+            await statistic.create(newStatistic2);
+
+            const listSet = await user.statistics(idUser);
+            let i = 1;
+            const currentdate = new Date();
+            let weekday = currentdate.getDay();
+            if (weekday == 0 ){ weekday = 7;}
+
+            //We expect the length of the list to be equal to the number of days since the begining of that week until the current day
+            assert.equal(weekday,listSet.length);
+            //In this case all the values of dstRecorrida before the last one are equal to 0
+            while(i < listSet.length){
+                assert.equal(i,listSet[i-1].dia);
+                assert.equal(0,listSet[i-1].dstrecorrida);
+                i++; 
+            }
+            //The last statistic of the list corresponts allways to the currentDate
+            assert.equal(weekday,listSet[listSet.length-1].dia);
+            assert.equal(parseInt(newStatistic.dstRecorrida)+parseInt(newStatistic2.dstRecorrida),listSet[listSet.length-1].dstrecorrida)
         });
 
         it("should NOT return other things (trainings) both from the same user and others", async function() {

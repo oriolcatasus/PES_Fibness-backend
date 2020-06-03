@@ -63,6 +63,14 @@ router.get('/:id/diets', async function(req, res, next) {
         next(err);
     }
 });
+router.get('/:id/statistics', async function(req, res, next) {
+    try {
+        const statisticSet = await user.statistics(req.params.id);
+        res.status(200).send(statisticSet);
+    } catch (err) {
+        next(err);
+    }
+});
 
 router.put('/resetPassword', async function(req, res, next) {
     try {

@@ -112,6 +112,20 @@ describe("user route", function() {
             //expect(trainings).to.not.be.empty;
         });
     });
+    describe("GET /user/:id/statistics", function() {
+        it.skip("should return an array of statistics", async function() {
+            let res = await request.post("/user")
+                .set("Content-Type", "application/json")
+                .send(fakeUser);
+            const idUser = res.body.id;
+            res = await request.get(`/user/${idUser}/statistics`)
+                .expect('Content-Type', /json/)
+                .expect(200);
+            const statistics = res.body;
+            expect(statistics).to.be.an('array');
+            //expect(trainings).to.not.be.empty;
+        });
+    });
 
     describe("POST /user/resetPassword", function(){
         it("should reset the password of a user", async function() {

@@ -115,6 +115,44 @@ async function diets(id) {
     const res = await dbCtrl.execute(query)
     return res.rows
 }
+async function statistics(id){
+    //we want to have a number related to the dayweek in the following order:
+    //Monday = 1, Tuesday = 2 and so on until Sunday=7
+    console.log("hey --------------------------------------------");
+    const currentdate = new Date();
+    let weekday = currentdate.getDay()
+    if (weekday == 0){
+        weekday = 7
+    }
+    const since = (weekday - 1);
+    /*  //Notice that int order to specify a concrete type its necessary to add before the varible/value "::type"
+        //type has to be a valid postegress datatype.Exemple: integer,text,date, etc.
+        const query = {
+        text: "SELECT * FROM estadisticas WHERE idUsuario=$1 and fecha >= (CURRENT_DATE - $2::integer)",
+        values:[id,since],
+    }*/
+    const query = SQL `SELECT (fecha - CURRENT_DATE) + ${weekday}::integer as dia,dstrecorrida 
+                        FROM estadisticas WHERE idUsuario=${id} and fecha >= (CURRENT_DATE - ${since}::integer)
+                        ORDER BY dia asc`
+    let querystatisticslist = (await dbCtrl.execute(query)).rows;
+    let i = 0;
+
+    while(querystatisticslist.length < weekday){
+        console.log("el dia es:")
+        console.log(i + 1);
+        if(querystatisticslist[i].day != i+1){
+            const newStatistic ={
+                dia: i+1,
+                dstrecorrida: "0",    
+            } 
+            querystatisticslist.splice(i,0,newStatistic); 
+        }
+        i++;
+        console.log("a por el siguiente")
+    }
+    console.log(querystatisticslist);
+    return querystatisticslist
+}
 
 async function resetPassword ({email, password}) {
     const query = {
@@ -442,6 +480,7 @@ module.exports = {
     routes,
     trainings,
     diets,
+    statistics,
     follow,
     unfollow,
     followers,
