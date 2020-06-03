@@ -416,8 +416,8 @@ async function importE(body) {
 async function getEvents(id) {
     const query = SQL`
         SELECT *
-        FROM participacionevento pe INNER JOIN eventos e ON pe.idevento = e.id
-        WHERE idusuario=${id}
+        FROM eventos
+        WHERE idcreador=${id}
         ORDER BY fecha DESC, hora DESC`
     const res = await dbCtrl.execute(query)
     return res.rows
