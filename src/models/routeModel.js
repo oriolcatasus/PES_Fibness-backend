@@ -63,9 +63,39 @@ async function update(routes, idElemento) {
     await dbCtrl.execute(query_route);
 }
 
+async function importE(body) {
+    const query = {
+        text: "SELECT nombre, descripcion\
+               FROM elementos\
+               WHERE idElemento = $1",
+        values: [body.idElement]
+    }
+    const res = await dbCtrl.execute(query);
+
+    const query2 = {
+        text: "SELECT origen, destino, distancia\
+               FROM rutas\
+               WHERE idElemento = $1",
+        values: [body.idElement]
+    }
+    const res2 = await dbCtrl.execute(query2);
+
+    const route = {
+        nombre: res.rows[0].nombre,
+        descripcion: res.rows[0].descripcion,
+        idUser: body.idUser,
+        origen: res2.rows[0].origen,
+        destino: res2.rows[0].destino,
+        distancia: res2.rows[0].distancia
+    }
+
+
+    const newID = (await create(route)).idElemento;
+}
 
 module.exports = {
     create,
     del,
-    update
+    update,
+    importE
 }

@@ -7,6 +7,7 @@ const dbCtrl = require("../ctrls/dbCtrl")
 const constants = require('../constants')
 const training = require('../models/trainingModel.js')
 const diet = require('../models/dietModel.js')
+const route = require('../models/routeModel.js')
 
 const userResourcePath = path.join(constants.resourcePath, 'user')
 
@@ -409,7 +410,7 @@ async function importE(body) {
         await diet.importE(body);
     }
     else if (body.type == "route") {
-
+        await route.importE(body);
     }
 }
 

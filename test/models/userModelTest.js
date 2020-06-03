@@ -1768,6 +1768,69 @@ describe("userModel script", function() {
             assert.notEqual(oldMeals[0].idcomida, newMeals[0].idcomida);
             assert.equal(oldAliments[0].descripcion, newAliments[0].descripcion);
 
+            //create route (and element)
+            let newRoute = {
+                nombre: "RouteTest",
+                descripcion: "RouteDescription",
+                idUser: id,
+                origen:"Coodenateorigen",
+                destino:"Coordenatedestine",
+                distancia: "distancia",
+            }
+            let idElemento_resp = (await route.create(newRoute)).idElemento;
+            
+            //get the automatically generated id for the route in order to access it
+            queryGetID = {
+                text: "SELECT idElemento \
+                        FROM elementos \
+                        WHERE nombre = $1 and idUsuario = $2",
+                values: [newRoute.nombre, id],
+            };
+            res = (await dbCtrl.execute(queryGetID)).rows[0];
+            idElem = res.idelemento;
+            // Assert that the id that was return by the creation is the same as the id get by using the query
+            assert.equal(idElemento_resp, idElem);
+
+            body = {
+                type: "route",
+                idElement: idElem,
+                idUser: id2
+            }
+
+            await user.importE(body);
+
+            //get the route that we have created
+            query = {
+                text: "SELECT origen, destino, distancia \
+                        FROM rutas \
+                        WHERE idElemento = $1",
+                values: [idElem],
+            };
+
+            //make sure it really is the route we created
+            res = await dbCtrl.execute(query)
+
+            query = {
+                text: "SELECT idElemento\
+                        FROM elementos \
+                        WHERE idUsuario = $1 AND descripcion = $2",
+                values: [id2, "RouteDescription"]
+            };
+
+            idNewRoute = (await dbCtrl.execute(query)).rows[0].idelemento
+
+            query = {
+                text: "SELECT origen, destino, distancia \
+                        FROM rutas \
+                        WHERE idElemento = $1",
+                values: [idNewRoute],
+            };
+
+            res2 = await dbCtrl.execute(query)
+
+            //console.log(res.rows);
+            //console.log(res2.rows);
+
         });
     });
     describe('getEvents', function() {

@@ -1107,7 +1107,7 @@ paths:
                 type:
                   type: string
                   example: "training"
-                  description: type of the element (training, diet or route ONLY TRAINING AND DIET WORK)
+                  description: type of the element (training, diet or route)
                 idElement:
                   type: integer
                   example: 2
