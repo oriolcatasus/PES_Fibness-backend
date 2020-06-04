@@ -6,5 +6,4 @@
         primary key (idUsuario,fecha),
         foreign key (idUsuario) references usuarios (id) on delete cascade
     );
-
 -- Down Migration
