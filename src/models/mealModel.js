@@ -8,11 +8,9 @@ async function create(meal) {
         values: [meal.nombre, meal.horaComida, meal.idElemento, meal.tipoDia]
     }
     const idMeal = (await dbCtrl.execute(query)).rows[0].idcomida;
-    const ret = {
+    return {
         idComida: idMeal,
     }
-    return ret;
-
 }
 
 async function del(idComida) {

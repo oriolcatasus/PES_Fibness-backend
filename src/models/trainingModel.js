@@ -33,10 +33,9 @@ async function create(training) {
         values: [idElem],
     }
     await dbCtrl.execute(query);
-    const ret = {
+    return {
         idElemento: idElem,
     }
-    return ret;
 }
 
 async function update(elemento, idElemento) {

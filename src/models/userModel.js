@@ -121,26 +121,20 @@ async function statistics(id){
     //Monday = 1, Tuesday = 2 and so on until Sunday=7
     const currentdate = new Date();
     let weekday = currentdate.getDay()
-    if (weekday == 0){
+    if (weekday === 0){
         weekday = 7
     }
     const since = (weekday - 1);
     //Notice that in order to specify a concrete type "::type" it is necessary to add it after the variable/value 
     //type has to be a valid postegress datatype.Exemple: integer,text,date, etc.
-    // const query = {
-    //     text: "SELECT (fecha - CURRENT_DATE) + $3::integer  as dia , dstrecorrida  FROM estadisticas WHERE idUsuario=$1 and fecha >= (CURRENT_DATE - $2::integer) ORDER BY dia asc",
-    //     values:[id,since,weekday],
-    // }
-   const query = SQL `SELECT (fecha - CURRENT_DATE) + ${weekday}::integer as dia ,dstrecorrida 
+    const query = SQL `SELECT (fecha - CURRENT_DATE) + ${weekday}::integer as dia ,dstrecorrida 
                       FROM estadisticas WHERE idUsuario=${id} and fecha >= (CURRENT_DATE - ${since}::integer)
-                        ORDER BY dia asc`
-    console.log(query);
-    
-    let querystatisticslist = (await dbCtrl.execute(query)).rows;
+                        ORDER BY dia asc`    
+    const querystatisticslist = (await dbCtrl.execute(query)).rows;
     console.log("The result of querystatis")
     console.log(querystatisticslist)
     //It is undefined if the user hasn't had a statistic yet. 
-    if (querystatisticslist.length == 0) {
+    if (querystatisticslist.length === 0) {
         console.log("es indefinido")
         const newStatistic ={
             dia: 1,
@@ -155,7 +149,7 @@ async function statistics(id){
         console.log("el dia es:")
         console.log(i + 1);
             
-        if(i == querystatisticslist.length || querystatisticslist[i].dia != i+1){
+        if(i === querystatisticslist.length || querystatisticslist[i].dia !== i+1){
             const newStatistic ={
                 dia: i+1,
                 dstrecorrida: "0",    
@@ -406,7 +400,9 @@ async function userInfo(id, id2) {
                        WHERE idSeguidor = ${id2} AND idSeguido = ${id}`
     const seg = await dbCtrl.execute(query);
     let sigue = false;
-    if (seg.rows.length === 1) {sigue = true;}
+    if (seg.rows.length === 1) {
+        sigue = true;
+    }
     res.rows.forEach(function (element) {
         element.seguir = sigue;
       });
@@ -416,7 +412,9 @@ async function userInfo(id, id2) {
                        WHERE idBloqueador = ${id2} AND idBloqueado = ${id}`
     const blo = await dbCtrl.execute(query);
     let bloqueado = false;
-    if (blo.rows.length === 1) {bloqueado = true;}
+    if (blo.rows.length === 1) {
+        bloqueado = true;
+    }
     res.rows.forEach(function (element) {
         element.bloqueado = bloqueado;
     });

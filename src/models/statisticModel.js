@@ -7,7 +7,7 @@ async function create(routes) {
     let query = SQL `SELECT * FROM estadisticas WHERE idUsuario=${routes.idUser} and fecha=CURRENT_DATE`;
     query = (await dbCtrl.execute(query)).rows;
     let status  = 0;
-    if (query.length == 0){
+    if (query.length === 0){
         const createquery = SQL `INSERT INTO estadisticas(idUsuario, dstRecorrida) values(${routes.idUser},${routes.dstRecorrida})`;
         await dbCtrl.execute(createquery);
         status = 201;

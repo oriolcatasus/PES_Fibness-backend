@@ -14,7 +14,7 @@ async function liked(idElemento, idUser) {
     console.log(idUser, idElemento)
 
     let elementLiked = true
-    if (res.length == 0) {
+    if (res.length === 0) {
         elementLiked = false
     }
     const result = {

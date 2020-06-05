@@ -9,7 +9,6 @@ async function comment(body) {
     const result = {
         idCom: res.rows[0].idcomentario
     }
-    
     query = SQL`UPDATE elementos SET nComentarios = nComentarios + 1
         WHERE idElemento = ${body.idElement}`;
     await dbCtrl.execute(query);

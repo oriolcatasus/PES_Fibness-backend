@@ -207,24 +207,38 @@ describe('Event model', function() {
     })
 
     describe('disjoin', function() {
-        it('should remove a user from an event', async function() {
+        it('should remove a user from an event but not the event', async function() {
             let result = await event.create(fakeEvent)
             fakeEvent.id = result.id
             await event.join(fakeEvent.id, fakeParticipation)
             await event.disjoin(fakeEvent.id, fakeParticipation.idusuario)
-
-            const query = SQL`
-                SELECT *
-                FROM participacionevento
-                WHERE idevento=${fakeEvent.id} and idusuario=${fakeParticipation.idusuario}`
-            result = await dbCtrl.execute(query)
-            expect(result.rows).to.be.empty
+            result = await Promise.all([
+                dbCtrl.execute(SQL`
+                    SELECT *
+                    FROM participacionevento
+                    WHERE idevento=${fakeEvent.id} and idusuario=${fakeParticipation.idusuario}`
+                ),
+                event.get(fakeEvent.id)
+            ])
+            expect(result[0].rows).to.be.empty
+            expect(result[1]).to.not.be.undefined
         })
 
-        it('should not remove the event creator', async function() {
+        it('should not remove the event creator neither the event', async function() {
             let result = await event.create(fakeEvent)
             fakeEvent.id = result.id
-            await expect(event.disjoin(fakeEvent.id, fakeEvent.idcreador)).to.be.eventually.rejected
+            await expect(event.disjoin(fakeEvent.id, { idusuario: fakeEvent.idcreador }))
+                .to.be.eventually.rejected
+            const eventdb = event.get(fakeEvent.id)
+            expect(eventdb).to.not.be.undefined
+        })
+
+        it('should not remove the user from an event which they have not joined', async function() {
+            let result = await event.create(fakeEvent)
+            fakeEvent.id = result.id
+            await expect(event.disjoin(fakeEvent.id, fakeParticipation)).to.be.eventually.rejected
+            const eventdb = event.get(fakeEvent.id)
+            expect(eventdb).to.not.be.undefined
         })
     })
 
